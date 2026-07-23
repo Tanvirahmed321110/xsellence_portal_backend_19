@@ -6,32 +6,32 @@
             <section class="" style="position:relative">
 
                 <!--=================|| Users Buttons ||==================  -->
-                <div class="d-flex user-btns align-center gap-3 gap-sm-2 flex-wrap">
+                <t t-if="is_admin">
+                    <div class="d-flex user-btns align-center gap-3 gap-sm-2 mb-7 flex-wrap">
 
-                    <t t-foreach="active_employees" t-as="employee">
-                        <a t-att-href="'/dashboard?employee_id=%s' % employee.id"
-                           t-attf-class="user-btn d-flex align-center gap-2 #{'active' if selected_employee_id == employee.id else ''}">
+                        <t t-foreach="active_employees" t-as="employee">
+                            <a t-att-href="'/dashboard?employee_id=%s' % employee.id"
+                               t-attf-class="user-btn d-flex align-center gap-2 #{'active' if selected_employee_id == employee.id else ''}">
 
-                            <img t-if="employee.image_128"
-                                 t-att-src="image_data_uri(employee.image_128)"
-                                 t-att-alt="employee.name"
-                                 class="employee-avatar"/>
+                                <img t-if="employee.image_128"
+                                     t-att-src="image_data_uri(employee.image_128)"
+                                     t-att-alt="employee.name"
+                                     class="employee-avatar"/>
 
-                            <img t-else=""
-                                 src="/xsellence_portal/static/src/images/default_user.svg"
-                                 t-att-alt="employee.name"
-                                 class="employee-avatar"/>
+                                <img t-else=""
+                                     src="/xsellence_portal/static/src/images/default_user.svg"
+                                     t-att-alt="employee.name"
+                                     class="employee-avatar"/>
 
-                            <span t-esc="employee.name"/>
+                                <span t-esc="employee.name"/>
 
-                        </a>
-                    </t>
-
-
-                </div>
+                            </a>
+                        </t>
+                    </div>
+                </t>
 
                 <!--=================|| Carts Here ||==================  -->
-                <div class="grid-4 mt-7 grid-sm-2 gap-4 gap-sm-3 dashboard-items">
+                <div class="grid-4  grid-sm-2 gap-4 gap-sm-3 dashboard-items">
                     <!-- Total Tasks -->
                     <div class="card">
                         <p class="title">Total Tasks</p>

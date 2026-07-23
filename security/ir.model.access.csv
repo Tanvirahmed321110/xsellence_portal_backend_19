@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_xsellence_assignment_notification_user,xsellence.assignment.notification.user,model_xsellence_assignment_notification,xsellence_portal.group_general_employee,1,1,1,0
+access_xsellence_assignment_notification_admin,xsellence.assignment.notification.admin,model_xsellence_assignment_notification,xsellence_portal.group_admin,1,1,1,0

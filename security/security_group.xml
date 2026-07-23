@@ -30,6 +30,5 @@
         <field name="name">Admin</field>
         <field name="privilege_id" ref="xsellence_portal.privilege_xsellence_portal"/>
         <field name="sequence">30</field>
-        <field name="implied_ids" eval="[(4, ref('xsellence_portal.group_project_manager'))]"/>
     </record>
 </odoo>
