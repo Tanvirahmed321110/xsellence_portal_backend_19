@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Breadcrumb  -->
+    <template id="breadcrumb_component" name="Breadcrumb Component">
+        <t t-if="breadcrumb and len(breadcrumb) > 0">
+            <section class="breadcrumb-wrap mt-3">
+                <nav class="breadcrumb">
+                    <t t-foreach="breadcrumb" t-as="item" t-key="item_index">
+                        <t t-if="not item_last">
+                            <a t-if="item.get('url')" t-att-href="item['url']" class="breadcrumb-link">
+                                <t t-esc="item['name']"/>
+                            </a>
+                            <span t-else="" class="breadcrumb-current">
+                                <t t-esc="item['name']"/>
+                            </span>
+
+                            <span t-if="not item_last" class="separator">
+                                <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                                    <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                        </t>
+
+                        <t t-if="item_last">
+                            <span class="active">
+                                <t t-esc="item['name']"/>
+                            </span>
+                        </t>
+                    </t>
+                </nav>
+            </section>
+        </t>
+    </template>
+</odoo>

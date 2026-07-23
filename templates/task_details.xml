@@ -1,0 +1,361 @@
+<odoo>
+    <template id="task_details_page">
+        <t t-call="xsellence_portal.custom_layout">
+
+            <!-- ====================  Breadcrumb  ==================== -->
+            <t t-call="xsellence_portal.breadcrumb_component"/>
+
+            <!--========================|| Projects Here ||=========================-->
+            <section class="task-details mt-6">
+                <div class="flex-center history-and-card">
+                    <!--================||   Single Task Card here ||===============-->
+                    <div class="proj-card task-card">
+                        <div class="card-banner"></div>
+                        <div class="card-body">
+                            <div class="card-top">
+                                <div class="card-title-wrap">
+                                    <!-- Task Name -->
+                                    <div class="card-proj-name" t-esc="task.name if task.name else ''"></div>
+                                </div>
+                                <!-- Status -->
+                                <div >
+                                    <t t-if="task.custom_status == 'planning'">
+                                        <div class="sts sts-planning">Planning</div>
+                                    </t>
+
+                                    <t t-elif="task.custom_status == 'in_progress'">
+                                        <div class="sts sts-in-progress">In Progress</div>
+                                    </t>
+
+                                    <t t-elif="task.custom_status == 'review'">
+                                        <div class="sts sts-review">Under Review</div>
+                                    </t>
+
+                                    <t t-elif="task.custom_status == 'completed'">
+                                        <div class="sts sts-completed">Completed</div>
+                                    </t>
+
+                                    <t t-elif="task.custom_status == 'cancelled'">
+                                        <div class="sts sts-cancelled">Cancelled</div>
+                                    </t>
+
+                                    <t t-else="">
+                                        <div class="sts sts-default">N/A</div>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="info-label d-flex align-center gap-2">Assignee
+                                    <svg width="19" height="17" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="8" r="3.5" fill="currentColor"/>
+                                        <circle cx="6" cy="10" r="2.5" fill="currentColor" opacity="0.9"/>
+                                        <circle cx="18" cy="10" r="2.5" fill="currentColor" opacity="0.9"/>
+                                        <path d="M4 20c0-3.5 4-5.5 8-5.5s8 2 8 5.5" fill="currentColor"/>
+                                    </svg>
+                                </div>
+
+                                <!-- assignee names -->
+                                <div class="card-tags">
+                                    <t t-foreach="task.user_ids" t-as="assign">
+                                        <span class="tag " t-esc="assign.name if assign.name else ''"></span>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <div class="card-info-grid mt-5">
+                                <!-- Project Name -->
+                                <div class="info-item mt-2">
+                                    <div class="info-label d-flex ailign-center gap-1">Project
+                                        <svg width="18"
+                                             height="17" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v1H3V6z"></path>
+                                            <path d="M3 10h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="info-val mt-1" t-esc="task.project_id.name if task.project_id else ''">
+                                    </div>
+                                </div>
+
+                                <!-- For Project Priority -->
+                                <div class="card-manager">
+                                    <div class="manager-info mt-2">
+                                        <div class="info-label">Priority
+                                            <svg width="18" height="16" viewBox="0 0 24 24"
+                                                 fill="currentColor">
+                                                <path d="M4 2v20" stroke="currentColor" stroke-width="2"
+                                                      stroke-linecap="round"/>
+                                                <path d="M4 3h13l-2 4 2 4H4z"/>
+                                            </svg>
+
+                                        </div>
+                                        <div class=" info-val"
+                                             t-esc="task.custom_priority if task.custom_priority else ''"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="card-info-grid">
+
+                                <!-- For Assigned date -->
+                                <div class="info-item mt-2">
+                                    <div class="info-label">Assigned Date</div>
+                                    <div class="info-val mt-1">
+                                        <svg width="11" height="11" viewBox="0 0 24 24"
+                                             fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"
+                                             stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6"/>
+                                            <line x1="8" y1="2" x2="8" y2="6"/>
+                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                        </svg>
+                                        <t t-esc="task.date_assign.strftime('%d %b %y') if task.date_assign else ''"/>
+                                    </div>
+                                </div>
+
+                                <!-- For Deadline -->
+                                <div class="info-item mt-2">
+                                    <div class="info-label">Deadline</div>
+                                    <div class="info-val mt-1">
+                                        <svg width="11" height="11" viewBox="0 0 24 24"
+                                             fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"
+                                             stroke-linejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6"/>
+                                            <line x1="8" y1="2" x2="8" y2="6"/>
+                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                        </svg>
+                                        <span t-esc="task.date_deadline.strftime('%d %b %y') if task.date_deadline else ''">
+                                            22 April 2026
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="card-info-grid">
+                                <!-- For Assigned -->
+                                <div class="info-item mt-2">
+                                    <div class="info-label">Assigned By</div>
+                                    <div class="info-val mt-1">
+                                        <span t-esc="task.create_uid.name if task.create_uid.name else ''"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Task Description -->
+                            <div class="mt-4">
+                                <div class="info-label">Description</div>
+                                <div class="task-desc-wrap mt-2 flex-column gap-4">
+                                    <t t-esc="task.description if task.description else ''"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--=============  Card Footer  =============-->
+                        <div class="card-footer">
+                            <div class="state-dropdown ">
+                                <form action="/task/update_status" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="task_id" t-att-value="task.id"/>
+
+                                    <select class="filter-select" name="status" onchange="this.form.submit()">
+                                        <t t-foreach="status_selection" t-as="status">
+                                            <option t-att-value="status[0]"
+                                                    t-att-selected="status[0] == task.custom_status">
+                                                <t t-esc="status[1]"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </form>
+                            </div>
+                            <!-- Actions Buttons -->
+                            <div class="action-btns">
+
+                                <!-- Edit button -->
+                                <a t-att-href="'/task/edit/%s' % task.id" class="action-btn edit">
+                                    Edit
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 20h9"/>
+                                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                                    </svg>
+                                </a>
+
+                                <!-- Delete button -->
+                                <form action="/task/delete" method="post">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                    <button type="button" class="action-btn del"
+                                            onclick="return openDeleteModal(this)">
+                                        <svg width="12" height="12" viewBox="0 0 24 24"
+                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                             stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                            <path d="M10 11v6"/>
+                                            <path d="M14 11v6"/>
+                                            <path d="M9 6V4h6v2"/>
+                                        </svg>
+                                    </button>
+                                </form>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!--================||   History/Log Card Here  ||===============-->
+                    <div class="history-sidebar">
+                        <div class="history-header">
+                            <h5>🕓 Activity Log</h5>
+                            <span class="history-count" t-esc="len(messages)"/>
+                        </div>
+
+                       <div class="history-composer">
+                            <!-- submit message -->
+                            <form t-att-action="'/task/comment/%s' % task.id"
+                                  method="post"
+                                  class="history-comment-form">
+
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <textarea name="comment"
+                                          placeholder="Log a note or update..."
+                                          required="required"></textarea>
+
+                                <div class="composer-actions">
+                                    <button type="submit" class="btn btn-post btn-primary">
+                                        POST
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="history-body">
+
+                            <t t-foreach="messages" t-as="msg">
+                                <t t-if="msg.tracking_value_ids">
+                                    <t t-foreach="msg.tracking_value_ids" t-as="track">
+
+                                        <t t-set="avatar_class" t-value="'av-6'"/>
+                                        <t t-set="tag_class" t-value="'tag-update'"/>
+                                        <t t-set="tag_label" t-value="'Updated'"/>
+
+                                        <t t-if="track.field_id.name == 'custom_status'">
+                                            <t t-set="avatar_class" t-value="'av-1'"/>
+                                            <t t-set="tag_class" t-value="'tag-status'"/>
+                                            <t t-set="tag_label" t-value="'Status Changed'"/>
+                                        </t>
+
+                                        <t t-elif="track.field_id.name == 'custom_priority'">
+                                            <t t-set="avatar_class" t-value="'av-2'"/>
+                                            <t t-set="tag_class" t-value="'tag-priority'"/>
+                                            <t t-set="tag_label" t-value="'Priority Changed'"/>
+                                        </t>
+
+                                        <t t-elif="track.field_id.name == 'user_id'">
+                                            <t t-set="avatar_class" t-value="'av-3'"/>
+                                            <t t-set="tag_class" t-value="'tag-manager'"/>
+                                            <t t-set="tag_label" t-value="'Manager Changed'"/>
+                                        </t>
+
+                                        <t t-elif="track.field_id.name == 'assigned_user_ids'">
+                                            <t t-set="avatar_class" t-value="'av-4'"/>
+                                            <t t-set="tag_class" t-value="'tag-assignee'"/>
+                                            <t t-set="tag_label" t-value="'Assignee Changed'"/>
+                                        </t>
+
+                                        <t t-elif="track.field_id.name in ['date_deadline', 'date_start', 'date']">
+                                            <t t-set="avatar_class" t-value="'av-5'"/>
+                                            <t t-set="tag_class" t-value="'tag-date'"/>
+                                            <t t-set="tag_label" t-value="'Date Changed'"/>
+                                        </t>
+
+                                        <div class="history-item">
+                                            <div t-attf-class="history-avatar #{avatar_class}"
+                                                 t-esc="(msg.author_id.name or 'A')[0].upper()"/>
+
+                                            <div class="history-content">
+                                                <div class="history-meta">
+                                                    <span class="history-author"
+                                                          t-esc="msg.author_id.name or 'System'"/>
+                                                    <span class="history-date"
+                                                          t-esc="msg.date.strftime('%d %b %Y %I:%M%p') if msg.date else ''"/>
+                                                </div>
+
+                                                <div class="history-text">
+                                                    Changed
+                                                    <b t-esc="track.field_id.field_description"/>
+                                                    from
+                                                    <b t-esc="track.old_value_char or track.old_value_integer or track.old_value_datetime or '-'"/>
+                                                    to
+                                                    <b t-esc="track.new_value_char or track.new_value_integer or track.new_value_datetime or '-'"/>
+                                                    .
+                                                </div>
+                                                <div class="history-text" t-raw="msg.body or ''"/>
+
+                                                <span t-attf-class="history-tag #{tag_class}" t-esc="tag_label"/>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </t>
+                                <!--=========  When Empty ========-->
+                                <t t-else="">
+                                    <div class="history-item">
+                                        <div class="history-avatar av-6"
+                                             t-esc="(msg.author_id.name or 'A')[0].upper()"/>
+
+                                        <div class="history-content">
+                                            <div class="history-meta">
+                                                <span class="history-author" t-esc="msg.author_id.name or 'System'"/>
+                                                <span class="history-date"
+                                                      t-esc="msg.date.strftime('%d %b %Y %I:%M%p').replace('AM', 'am').replace('PM', 'pm') if msg.date else ''"/>
+                                            </div>
+
+                                            <div class="history-text" t-raw="msg.body or ''"/>
+
+                                            <span class="history-tag tag-note">Comment</span>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- =====  Delete Modal  ===== -->
+                <div class=" modal-overlay " id="deleteModal">
+                    <div class="modal-container">
+                        <div class="glass-icon">🗑️</div>
+                        <h3>Delete Task?</h3>
+                        <p>
+                            This action cannot be undone.
+                            <br/>
+                            The task will be permanently removed.
+                        </p>
+
+                        <div class="glass-actions">
+                            <button type="button" id="confirmYes" class="btn-glass-yes">
+                                Yes, Delete
+                            </button>
+                            <button class="btn-glass-no" onclick="closeModal('deleteModal')">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+        </t>
+        <!-- Trigger Button -->
+        <script>
+            deleteModalF('deleteModal');
+        </script>
+    </template>
+</odoo>

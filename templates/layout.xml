@@ -1,0 +1,598 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="custom_layout" name="Custom Layout">
+
+        <!-- <!DOCTYPE html> -->
+        <html lang="en">
+
+            <head>
+                <meta charset="UTF-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <!-- Ts Control Library CDN -->
+                <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/custom_class.css?v=4"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/my_component.css?v=8"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=35"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=27"/>
+                <t t-raw="header"/>
+            </head>
+
+            <body>
+                <audio id="click-sound" src="/xsellence_portal/static/src/audio/audio1.mp3"></audio>
+                <audio id="success-sound" src="/xsellence_portal/static/src/audio/success.wav"></audio>
+                <audio id="error-sound" src="/xsellence_portal/static/src/audio/error.wav"></audio>
+
+                <!-- ========================================
+                ||====== Header  Content Start Here  ======||
+                ========================================= -->
+                <header>
+                    <div class="header-wrap flex-between my-gap-4">
+                        <!-- mobile menu btn -->
+                        <div class="pl-4">
+                            <button class="mobile-menu-btn desktop-hide" id="mobile-menu-btn">
+                                <svg id="menu-icon" width="24"
+                                     height="24" viewBox="0 0 24 24" fill="none">
+                                    <line x1="3" y1="7" x2="21" y2="7" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round"></line>
+                                    <line x1="7" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round"></line>
+                                    <line x1="11" y1="17" x2="21" y2="17" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round"></line>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="left pl-4">
+                            <!-- Logo or Company Name -->
+                            <div class="wrapper logo">
+                                <svg>
+                                    <text x="50%" y="20%" dy=".40em" text-anchor="middle">
+                                        xsellence
+                                    </text>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 flex-between">
+                            <!-- Collaps Button -->
+                            <button class="btn-collaps tooltip-right " style="color: white;" id="collaps-btn">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <line x1="3" y1="7" x2="21" y2="7" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round"/>
+                                    <line x1="7" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round"/>
+                                    <line x1="11" y1="17" x2="21" y2="17" stroke="currentColor" stroke-width="2"
+                                          stroke-linecap="round"/>
+                                </svg>
+                                <span class="tooltip-text">Sidebar Open / Close</span>
+                            </button>
+
+
+                            <!--============== Header Right Here ==============-->
+                            <div class="head-right flex-between gap-5">
+
+                                <div class="date-notification d-flex gap-6 align-center">
+
+                                    <!-- Today's Date -->
+                                    <div class="date flex-column gap-1 align-center justify-center" style="gap:6px;">
+                                        <span id="live-date" style="font-size:13.5px"></span>
+                                        <span id="live-time"
+                                              style="font-size:12.5px;font-weight:500;color:#f1ac2d"></span>
+                                    </div>
+
+
+                                    <div class="d-flex gap-2 my-align-center mobile-hide">
+                                        <!-- Notification Icon -->
+                                        <button class="notification-wrap" id="notification-btn">
+                                            <div class="icon-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2"
+                                                     stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                                </svg>
+                                                <span class="badge-bounce" id="notification-badge">0</span>
+                                            </div>
+                                        </button>
+
+
+                                        <!-- Theme Toggle -->
+                                        <div class="theme-toggle" id="themeToggle">
+                                            <!-- Sun icon (light mode) -->
+                                            <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg"
+                                                 width="18"
+                                                 height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="5"/>
+                                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                                            </svg>
+                                            <!-- Moon icon (dark mode) -->
+                                            <!-- <svg class="theme-icon moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                                    </svg> -->
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="user">
+                                    <!--==========  Profile Image and Dropdown Here ============= -->
+                                    <div class="profile-img-wrapper">
+                                        <t t-set="current_user" t-value="request.env.user"/>
+                                        <t t-set="current_employee"
+                                           t-value="request.env['hr.employee'].sudo().search([('user_id','=',current_user.id)], limit=1)"/>
+
+                                        <a href="/profile" class="profile-img">
+                                            <t t-if="current_employee and current_employee.image_128">
+                                                <!-- Image with counter-spin -->
+                                                <img t-att-src="image_data_uri(current_employee.image_128)"
+                                                     alt="Profile Photo"
+                                                     class="profile-img-photo"/>
+                                            </t>
+                                            <t t-elif="current_user and current_user.name">
+                                                <!-- Extract initials from user name -->
+                                                <t t-set="display_name" t-value="current_user.name"/>
+                                                <t t-set="initials"
+                                                   t-value="(display_name[:2].upper() if len(display_name.split()) == 1 else ''.join([w[0].upper() for w in display_name.split() if w])[:2])"/>
+                                                <span class="profile-initials" t-esc="initials"/>
+                                            </t>
+                                            <t t-else="">
+                                                <!-- Fallback default user icon -->
+                                                <span class="profile-initials">U</span>
+                                            </t>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- ========================================
+                ||======  Sidebar Section Start Here  ======||
+                ========================================= -->
+                <aside class="" id="sidebar">
+                    <t t-set="selected_employee_param" t-value="request.params.get('employee_id')"/>
+                    <t t-set="employee_query_suffix"
+                       t-value="'?employee_id=%s' % selected_employee_param if selected_employee_param else ''"/>
+                    <div class="sidebar-wrap flex-column justify-between">
+
+                        <!--=================|| Main Menu Here ||===============-->
+                        <div class="p-3 sidebar-top">
+                            <p class="menu-group-title">Main Menu</p>
+                            <ul class="mt-3 flex-column gap-1 main-menus">
+                                <li>
+                                    <a t-att-href="'/dashboard%s' % employee_query_suffix" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu=='dashboard' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <rect x="3" y="3" width="7" height="7"/>
+                                                <rect x="14" y="3" width="7" height="7"/>
+                                                <rect x="14" y="14" width="7" height="7"/>
+                                                <rect x="3" y="14" width="7" height="7"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Dashboard</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a t-att-href="'/projects%s' % employee_query_suffix" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu=='projects' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path
+                                                        d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                            </svg>
+                                        </div>
+
+                                        <span class="text">Projects</span>
+                                        <div class="batch">2</div>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a t-att-href="'/tasks%s' % employee_query_suffix" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu == 'tasks' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path d="M9 11l3 3L22 4"/>
+                                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">My Tasks</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a t-att-href="'/timesheets%s' % employee_query_suffix" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu == 'timesheets' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <polyline points="12 6 12 12 16 14"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Timesheets</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a t-att-href="'/helpdesk%s' % employee_query_suffix" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu == 'helpdesk' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <!-- Helpdesk icon — headset -->
+                                                <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+                                                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/>
+                                                <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Helpdesk</span>
+                                        <div class="batch">1</div>
+                                    </a>
+                                </li>
+
+
+                                <li>
+                                    <a t-att-href="'/add_task%s' % employee_query_suffix" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu =='add_task' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke-width="2" stroke="currentColor"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <!-- Document -->
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                                <path d="M14 2v6h6"/>
+
+                                                <!-- Plus -->
+                                                <path d="M12 11v6M9 14h6"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Add Task</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a t-att-href="'/add_timesheet%s' % employee_query_suffix" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu == 'add_timesheet' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                                <line x1="8" y1="12" x2="16" y2="12"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Add Timesheet</span>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a t-att-href="'/employees%s' % employee_query_suffix" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu == 'employees' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <!-- Center/Main Employee -->
+                                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                                <circle cx="9" cy="7" r="4"/>
+
+                                                <!-- Right Side Employee (Background) -->
+                                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Employees</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+
+                        <!--===============|| Sidebar Bottom ||=================-->
+                        <div class="sidebar-bottom">
+                            <ul class="p-2 flex-column gap-1">
+                                <!-- Setting -->
+                                <li>
+                                    <a href="/dashboard" class="menu-item">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="3"/>
+                                                <path
+                                                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Setting</span>
+                                    </a>
+                                </li>
+
+                                <!-- Profile -->
+                                <li>
+                                    <a href="/profile" class="menu-item"
+                                       t-attf-class="menu-item #{active_menu =='profile' and 'active' or ''}">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                                <circle cx="12" cy="7" r="4"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Profile</span>
+                                    </a>
+                                </li>
+
+                                <!-- Logout -->
+                                <li>
+                                    <a class="menu-item" href="/web/session/logout?redirect=/web/login">
+                                        <div class="icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24"
+                                                 fill="none" stroke="currentColor" stroke-width="2"
+                                                 stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                                <polyline points="16 17 21 12 16 7"/>
+                                                <line x1="21" y1="12" x2="9" y2="12"/>
+                                            </svg>
+                                        </div>
+                                        <span class="text">Logout</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="powered-logo p-4">
+                                <a target="_blank" href="https://www.xsellencebdltd.com/" class="fs-xs ">
+                                    Powered by: Xsellece Bd
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+
+                <main class="main-content " id="main-content">
+                    <t t-raw="0"/>
+                </main>
+
+                <!-- XSELLENCE ADD START: static assignment notification popup -->
+                <div class="assignment-notification-stack" id="assignment-notification-stack">
+                </div>
+                <!-- XSELLENCE ADD END: static assignment notification popup -->
+
+
+                <!-- ==============================================
+                 ||======  notification Board  Start Here  ======||
+                 ============================================== -->
+                <div class="notification-sidebar" id="notification-sidebar">
+                    <div class="s3-header">
+                        <div>
+                            <h3>Notifications
+                                <span class="blink" id="notification-header-blink"></span>
+                            </h3>
+                        </div>
+                        <button id="close3">✕</button>
+                    </div>
+                    <div class="s3-body" id="notification-sidebar-body">
+                        <a href="#" class="s3-item new">
+                            <div class="s3-icon">🗂️</div>
+                            <div class="s3-text">
+                                <p>Task assigned by
+                                    <span class="s3-name">Rahim Uddin</span>
+                                </p>
+                                <small>2 MIN AGO</small>
+                            </div>
+                        </a>
+
+                        <div class="s3-item">
+                            <div class="s3-icon">📈</div>
+                            <div class="s3-text">
+                                <p>Your score went <span class="s3-name s3-up">▲ up</span> by
+                                    <span class="s3-name">12 points</span>
+                                </p>
+                                <small>5 MIN AGO</small>
+                            </div>
+                        </div>
+
+
+                        <a href="#" class="s3-item">
+                            <div class="s3-icon">📁</div>
+                            <div class="s3-text">
+                                <p>Project assigned by
+                                    <span class="s3-name">Karim Hassan</span>
+                                </p>
+                                <small>15 MIN AGO</small>
+                            </div>
+                        </a>
+                        <a href="#" class="s3-item">
+                            <div class="s3-icon">📁</div>
+                            <div class="s3-text">
+                                <p>Project assigned by
+                                    <span class="s3-name">Karim Hassan</span>
+                                </p>
+                                <small>15 MIN AGO</small>
+                            </div>
+                        </a>
+                        <a href="#" class="s3-item">
+                            <div class="s3-icon">📁</div>
+                            <div class="s3-text">
+                                <p>Project assigned by
+                                    <span class="s3-name">Karim Hassan</span>
+                                </p>
+                                <small>15 MIN AGO</small>
+                            </div>
+                        </a>
+                        <div class="s3-item">
+                            <div class="s3-icon">📉</div>
+                            <div class="s3-text">
+                                <p>Your score went <span class="s3-name s3-down">▼ down</span> by
+                                    <span class="s3-name s3-down">8 points</span>
+                                </p>
+                                <small>5 MIN AGO</small>
+                            </div>
+                        </div>
+
+
+                        <a href="#" class="s3-item ">
+                            <div class="s3-icon">🎧</div>
+                            <div class="s3-text">
+                                <p>Support ticket assigned by
+                                    <span class="s3-name">Nadia Islam</span>
+                                </p>
+                                <small>1 HR AGO</small>
+                            </div>
+                        </a>
+                        <a href="#" class="s3-item ">
+                            <div class="s3-icon">🎧</div>
+                            <div class="s3-text">
+                                <p>Support ticket assigned by
+                                    <span class="s3-name">Nadia Islam</span>
+                                </p>
+                                <small>1 HR AGO</small>
+                            </div>
+                        </a>
+                        <a href="#" class="s3-item ">
+                            <div class="s3-icon">🎧</div>
+                            <div class="s3-text">
+                                <p>Support ticket assigned by
+                                    <span class="s3-name">Nadia Islam</span>
+                                </p>
+                                <small>1 HR AGO</small>
+                            </div>
+                        </a>
+                        <div class="s3-empty" id="notification-empty-state">
+                            <div class="s3-empty-icon">🔔</div>
+                            <p>No notifications yet</p>
+                            <small>You're all caught up!</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="overlay" id="overlay"></div>
+
+
+                <!-- ======================================
+                ||======  Notice Board  Start Here  ======||
+                ======================================= -->
+                <div class="notic-board big" id="notic-board">
+                    <div>
+                        <!-- Ticker -->
+                        <div class="ticker-wrap d-flex">
+                            <div class="notice-icon-wrap">
+                                <div class="notice-icon">
+                                    <div class="ring"></div>
+                                    <div class="glow"></div>
+                                    <!-- Megaphone SVG -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                         fill="none" stroke="#f0a500" stroke-width="1.8" stroke-linecap="round"
+                                         stroke-linejoin="round">
+                                        <path d="M3 11v2"/>
+                                        <path d="M5 9v6"/>
+                                        <path d="M19 3v18"/>
+                                        <path d="M5 9c7-2 9-2 14-6v14c-5-4-7-4-14-6"/>
+                                        <path d="M9 15.3V19a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2.7"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="ticker-track">
+
+                                <!-- First copy -->
+                                <div class="ticker-item">
+                                    <span class="icon">📢</span>
+                                    <p>The office will be closed tomorrow due to a public holiday.</p>
+                                </div>
+                                <div class="ticker-item">
+                                    <span class="icon">📅</span>
+                                    <p>Monthly team meeting scheduled for Friday at 10:00 AM.</p>
+                                </div>
+                                <div class="ticker-item">
+                                    <span class="icon">⚠️</span>
+                                    <p>Please submit your timesheets before end of day Thursday.</p>
+                                </div>
+                                <div class="ticker-item">
+                                    <span class="icon">🎉</span>
+                                    <p>Congratulations to the sales team for exceeding Q1 targets!</p>
+                                </div>
+
+                                <!-- Duplicate copy for seamless loop -->
+                                <div class="ticker-item">
+                                    <span class="icon">📢</span>
+                                    <p>The office will be closed tomorrow due to a public holiday.</p>
+                                </div>
+                                <div class="ticker-item">
+                                    <span class="icon">📅</span>
+                                    <p>Monthly team meeting scheduled for Friday at 10:00 AM.</p>
+                                </div>
+                                <div class="ticker-item">
+                                    <span class="icon">⚠️</span>
+                                    <p>Please submit your timesheets before end of day Thursday.</p>
+                                </div>
+                                <div class="ticker-item">
+                                    <span class="icon">🎉</span>
+                                    <p>Congratulations to the sales team for exceeding Q1 targets!</p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!--    Javascript Links Here     -->
+                <script src="/xsellence_portal/static/src/js/main.js?v=10"></script>
+                <script>
+                    if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    document.documentElement.classList.add('sidebar-collapsed');
+                    }
+                </script>
+            </body>
+        </html>
+    </template>
+</odoo>

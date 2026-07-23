@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="create_ticket_page">
+        <t t-call="xsellence_portal.custom_layout">
+            <t t-call="xsellence_portal.breadcrumb_component"/>
+
+            <section class="projects-wrap mt-4 flex-column">
+                <div class="sec-title d-flex gap-2 align-center">
+                    Create New Ticket
+                    <span class="count fs-xs flex-center">+</span>
+                </div>
+
+                <div class="d-flex flex-1 flex-center mt-6">
+                    <form action="/helpdesk/create_ticket/submit"
+                          method="post"
+                          class="submit-form flex-column gap-5">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="d-flex gap-3 align-center">
+                            <div class="top flex-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 9a3 3 0 0 0 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 0 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/>
+                                    <path d="M13 5v14"/>
+                                    <path d="M9 12h8"/>
+                                    <path d="M13 8v8"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="section-title head-primary">Ticket Information</div>
+                                <p class="desc mt-1">Enter the support request details.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid-2 gap-5 grid-sm-1">
+                            <div class="input-control">
+                                <label for="name">Subject <span class="required">*</span></label>
+                                <input type="text" required="required" name="name" id="name"
+                                       placeholder="Ticket subject"/>
+                            </div>
+
+                            <div class="input-control">
+                                <label for="partner_id">Customer</label>
+                                <select name="partner_id" id="partner_id">
+                                    <option value="">Select Customer</option>
+                                    <t t-foreach="customers" t-as="customer">
+                                        <option t-att-value="customer.id"><t t-esc="customer.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid-2 gap-5 grid-sm-1">
+                            <div class="input-control">
+                                <label for="team_id">Helpdesk Team</label>
+                                <select name="team_id" id="team_id">
+                                    <option value="">Select Team</option>
+                                    <t t-foreach="teams" t-as="team">
+                                        <option t-att-value="team.id"><t t-esc="team.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <div class="input-control">
+                                <label for="user_id">Assignee</label>
+                                <select name="user_id" id="user_id">
+                                    <option value="">Select Assignee</option>
+                                    <t t-foreach="users" t-as="user">
+                                        <option t-att-value="user.id"><t t-esc="user.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid-2 gap-5 grid-sm-1">
+                            <div class="input-control" t-if="has_project_field">
+                                <label for="project_id">Project</label>
+                                <select name="project_id" id="project_id">
+                                    <option value="">Select Project</option>
+                                    <t t-foreach="projects" t-as="project">
+                                        <option t-att-value="project.id"><t t-esc="project.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <div class="input-control" t-if="priorities">
+                                <label for="priority">Priority</label>
+                                <select name="priority" id="priority">
+                                    <option value="">Select Priority</option>
+                                    <t t-foreach="priorities" t-as="priority">
+                                        <option t-att-value="priority[0]"><t t-esc="priority[1]"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid-1 gap-5 grid-sm-1">
+                            <div class="input-control">
+                                <label for="description">Description</label>
+                                <textarea name="description" id="description"
+                                          placeholder="Describe the issue..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-end w-100 gap-4">
+                            <button class="btn btn-danger" type="reset">Reset</button>
+                            <button type="submit" class="btn btn-primary">Submit Ticket</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </t>
+    </template>
+</odoo>

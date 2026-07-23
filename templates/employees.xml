@@ -1,0 +1,85 @@
+<odoo>
+    <template id="employees_page">
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css"/>
+        <t t-call="xsellence_portal.custom_layout">
+
+            <section class="helpdesk  mt-sm-0">
+
+                <!-- ====================  Breadcrumb  ==================== -->
+                <t t-call="xsellence_portal.breadcrumb_component"/>
+
+                <div class="flex-between flex-wrap gap-4 mt-3">
+                    <div class="sec-title d-flex gap-2 align-center">Our Employees
+                        <span
+                                class="count fs-xs flex-center" t-esc="total">
+                        </span>
+                    </div>
+                    <!-- add new timesheet button -->
+                    <!--                    <a class="btn btn-primary" href="/add_timesheet?source=timesheets">Add New Timesheet +</a>-->
+                </div>
+
+
+                <!--==============|| All Employees  ||================-->
+                <div class=" mt-7">
+                    <div class="grid-5 gap-5 grid-lg-4 gap-lg-4 grid-sm-2 gap-sm-3 employees">
+
+                        <t t-foreach="employees" t-as="employee">
+
+                            <div class="flip-card" data-name="Rakib Hasan">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front">
+                                        <div class="avatar-ring">
+                                            <t t-if="employee.image_128">
+                                                <img t-att-src="image_data_uri(employee.image_128)"
+                                                     t-att-alt="employee.name"
+                                                     class="employee-avatar"/>
+                                            </t>
+                                            <t t-else="">
+                                                <img src="/xsellence_portal/static/src/images/default_user.svg"
+                                                     t-att-alt="employee.name"
+                                                     class="employee-avatar"/>
+                                            </t>
+                                        </div>
+                                        <div class="emp-name" t-esc="employee.name"></div>
+                                        <t t-if="employee.job_id.name">
+                                            <div class="emp-role mt-1" t-esc="employee.job_id.name"></div>
+                                        </t>
+                                        <div class="flip-hint">↻ hover to flip</div>
+                                    </div>
+                                    <div class="flip-card-back">
+                                        <div class="emp-name" t-esc="employee.name"></div>
+                                        <div class="info-row">
+                                            <span class="icon">✉</span>
+                                            <span class="val" t-esc="employee.work_email"></span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="icon">☎</span>
+                                            <span class="val" t-esc="employee.mobile_phone">+880 1811-556677</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="icon">🏢</span>
+                                            <span class="val"
+                                                  t-esc="employee.department_id.name if employee.department_id else ''">
+                                                Engineering Team
+                                            </span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="icon">
+                                                <span class="status-dot"></span>
+                                            </span>
+                                            <span class="val">Active</span>
+                                        </div>
+                                        <div class="back-footer mt-2">
+                                            Joining Date: Dec 2024
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+                    </div>
+                </div>
+            </section>
+        </t>
+    </template>
+</odoo>

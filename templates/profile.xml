@@ -1,0 +1,200 @@
+<odoo>
+    <template id="profile_page">
+        <t t-call="xsellence_portal.custom_layout">
+
+            <section class="profile">
+                <div class="banner">
+                    <div class="banner-top">
+                        <div class="banner-dots">
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--========== Profile Info =========-->
+                <div class="flex-between profile-info">
+                    <div class=" d-flex gap-6 gap-sm-3 profile-info-wrap ">
+                        <div class="left">
+                            <!-- User Image -->
+                            <div class="profile-img">
+                                <t t-if="employee.image_512">
+                                      <img t-att-src="image_data_uri(employee.image_128)"
+                                         alt="profile image"/>
+                                </t>
+                                <t t-else="">
+                                    <!-- ✅ Image না থাকলে Odoo default avatar -->
+                                    <img src="/web/static/img/avatar_grey.png" alt="profile image"/>
+                                </t>
+                            </div>
+                        </div>
+                        <!-- User name post and id -->
+                        <div class="right" style="display:flex;flex-direction:column;gap:2px">
+                            <h4 class="name" t-esc="employee.name or 's'"></h4>
+                            <p class="post " t-esc="employee.job_id.name or ''"></p>
+                            <p class="id d-flex gap-1 align-center">ID:
+                                <span t-esc="employee.barcode if employee.barcode else ''"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Edit Profile Button Here -->
+                    <div class="mobile-hide">
+                        <a href="/edit_profile" class="btn btn-primary">
+                            <svg width="18" height="18"
+                                 viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 17.25V21h3.75L19.81 7.94l-3.75-3.75L3 17.25z" stroke="currentColor"
+                                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M14.06 4.19l3.75 3.75" stroke="currentColor" stroke-width="2"
+                                      stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Edit Profile
+                        </a>
+                    </div>
+                </div>
+
+
+                <!--================|| Main Information Here ================  -->
+                <div class="main-info mt-4  w-100">
+                    <div class="card shadow-md w-100">
+
+                        <!-- Card Header -->
+                        <div class="card-header  p-6 p-sm-4 flex-between w-100 border-bottom-primary">
+                            <div class="card-title d-flex align-center gap-4  w-100 ">
+                                <div class="icon flex-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                         stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                                <h4 style="font-weight: 500;" class="header-text">Personal Information</h4>
+                            </div>
+                        </div>
+
+
+                        <div class="card-body mt-2 p-6 p-sm-4">
+                            <div class="info-grid">
+
+                                <div class="info-field">
+                                    <div class="info-label">Joining Date</div>
+                                    <div class="info-value">01 Dec 2024</div>
+                                </div>
+
+                                <div class="info-field">
+                                    <div class="info-label">Work Deprtment</div>
+                                    <div class="info-value"
+                                         t-esc="employee.department_id.name if employee.department_id else '' ">
+                                    </div>
+                                </div>
+
+                                <div class="info-field">
+                                    <div class="info-label">Gender</div>
+                                    <div class="info-value">
+                                        <span class="badge badge-gender">♂
+                                            <t t-esc="employee.gender or '' "/>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="info-field">
+                                    <div class="info-label">Date of Birth</div>
+                                    <div class="info-value"
+                                         t-esc="employee.birthday.strftime('%d %B, %Y')  if employee.birthday else 'N/A'"></div>
+                                </div>
+
+                                <div class="info-field">
+                                    <div class="info-label">Blood Group</div>
+                                    <div class="info-value">
+                                        <span class="badge badge-blood">A+</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-field">
+                                    <div class="info-label">Position</div>
+                                    <div class="info-value" t-esc="employee.job_id.name if employee.job_id else 'N/A'"/>
+                                </div>
+
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <div class="info-grid mt-6">
+
+                                <div class="info-field">
+                                    <div class="info-label">Email Address</div>
+                                    <div class="info-value" t-esc="employee.work_email or 'N/A'"></div>
+                                </div>
+
+                                <div class="info-field">
+                                    <div class="info-label">Phone Number</div>
+                                    <div class="info-value" t-esc="employee.work_phone or 'N/A'"></div>
+                                </div>
+
+                                <div class="info-field" style="grid-column: 1 / -1">
+                                    <div class="info-label">Address</div>
+                                    <div class="info-value" t-esc="employee.private_street or 'N/A'"></div>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-5 desktop-hide mobile-show text-right">
+                                <a href="/edit_profile" class="btn btn-primary">
+                                    <svg width="18" height="18"
+                                         viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 17.25V21h3.75L19.81 7.94l-3.75-3.75L3 17.25z" stroke="currentColor"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M14.06 4.19l3.75 3.75" stroke="currentColor" stroke-width="2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Edit Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="id-card flex-column justify-between">
+                        <div class="id-card-label">Employee Card</div>
+                        <div class="id-card-avatar"
+                             t-esc="''.join([w[0].upper() for w in (employee.name or '').split()[:2]])"/>
+                        <div class="id-card-name" t-esc="employee.name or ''">Tanvir Ahmed</div>
+                        <div class="id-card-pos mt-1" t-esc="employee.job_id.name if employee.job_id else ''">Junior
+                            Developer
+                        </div>
+                        <div class="id-card-row">
+                            <div class="id-num">
+                                Employee ID
+                                <strong class="mt-2">#EMP-
+                                    <t t-esc="employee.barcode or ''"/>
+                                </strong>
+                            </div>
+                            <div style="font-size:1.8rem;opacity:0.4">🪪</div>
+                        </div>
+
+
+                        <!-- Repoting Manager -->
+                        <div class="card manager mt-5">
+                            <div class="card-header">
+                                <div class="card-title d-flex gap-3 fw-medium ">
+                                    <div class="card-icon">👔</div>
+                                    Reporting Manager
+                                </div>
+                            </div>
+                            <div class="manager-wrap mt-1 d-flex gap-4 p-4">
+                                <div class="manager-avatar">RM</div>
+                                <div>
+                                    <div class="manager-name fs-sm fw-bold"
+                                         t-esc="employee.parent_id.name if employee.parent_id else 'N/A'"/>
+                                    <div class="manager-role mt-1 fs-xs"
+                                         t-esc="employee.parent_id.job_id.name if employee.parent_id and employee.parent_id.job_id else 'N/A'"/>
+                                </div>
+                                <button class="manager-msg-btn">💬</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </t>
+    </template>
+</odoo>

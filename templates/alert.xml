@@ -1,0 +1,46 @@
+<odoo>
+    <!--==================||  For Success Page  ||=============== -->
+    <template id="success_page">
+        <t t-call="xsellence_portal.custom_layout">
+            <!-- SUCCESS -->
+            <div class="alert-wrap flex-center">
+                <div class="submit-form flex-column align-center justify-center ">
+                <div class="d5-wrap d5-success">
+                    <div class="d5-icon-circle">🎯</div>
+                    <div class="d5-divider"></div>
+                    <h2 t-esc="success_title"></h2>
+                    <p t-esc="success_desc"></p>
+                    <div class="d5-actions">
+                        <a t-att-href="success_btn_url" class="d5-btn-primary" t-esc="success_btn_label"></a>
+                        <a href="/dashboard" class="d5-btn-ghost">Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </t>
+    </template>
+
+
+
+
+    <!--==================||  For Error Page  ||=============== -->
+    <template id="error_page">
+        <t t-call="xsellence_portal.custom_layout">
+            <!-- FAILED -->
+           <div class="alert-wrap">
+                <div class="submit-form flex-column align-center justify-center">
+                <div class="d5-wrap d5-failed">
+                    <div class="d5-icon-circle">🚫</div>
+                    <div class="d5-divider"></div>
+                    <h2 t-esc="error_title"></h2>
+                    <p t-esc="error_desc">Your project could not be created at this time. Please review the errors below and try again.</p>
+                    <div class="d5-actions">
+                        <a t-att-href="error_btn_url" class="d5-btn-primary" t-esc="error_btn_label"></a>
+                        <a href="/dashboard" class="d5-btn-ghost">Go To Dashboard</a>
+                    </div>
+                </div>
+            </div>
+           </div>
+        </t>
+    </template>
+</odoo>

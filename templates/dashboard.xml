@@ -1,0 +1,483 @@
+<odoo>
+    <template id="dashboard_page">
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/dashboard.css?v=16"/>
+
+        <t t-call="xsellence_portal.custom_layout">
+            <section class="" style="position:relative">
+
+                <!--=================|| Users Buttons ||==================  -->
+                <div class="d-flex user-btns align-center gap-3 gap-sm-2 flex-wrap">
+
+                    <t t-foreach="active_employees" t-as="employee">
+                        <a t-att-href="'/dashboard?employee_id=%s' % employee.id"
+                           t-attf-class="user-btn d-flex align-center gap-2 #{'active' if selected_employee_id == employee.id else ''}">
+
+                            <img t-if="employee.image_128"
+                                 t-att-src="image_data_uri(employee.image_128)"
+                                 t-att-alt="employee.name"
+                                 class="employee-avatar"/>
+
+                            <img t-else=""
+                                 src="/xsellence_portal/static/src/images/default_user.svg"
+                                 t-att-alt="employee.name"
+                                 class="employee-avatar"/>
+
+                            <span t-esc="employee.name"/>
+
+                        </a>
+                    </t>
+
+
+                </div>
+
+                <!--=================|| Carts Here ||==================  -->
+                <div class="grid-4 mt-7 grid-sm-2 gap-4 gap-sm-3 dashboard-items">
+                    <!-- Total Tasks -->
+                    <div class="card">
+                        <p class="title">Total Tasks</p>
+                        <div class="card-value mt-4">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <line x1="9" y1="9" x2="15" y2="9"/>
+                                <line x1="9" y1="12" x2="15" y2="12"/>
+                                <line x1="9" y1="15" x2="12" y2="15"/>
+                            </svg>
+                            <h2 class="mt-3" t-esc="total_tasks"/>
+                        </div>
+                    </div>
+
+                    <!-- Completed Tasks -->
+                    <div class="card">
+                        <p class="title">Completed Tasks</p>
+                        <div class="card-value mt-4">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <h2 class="mt-3" t-esc="completed_tasks"/>
+                        </div>
+                    </div>
+
+                    <!-- Helpdesk New -->
+                    <div class="card">
+                        <p class="title">Helpdesk New</p>
+                        <div class="card-value mt-4">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <h2 class="mt-3" t-esc="helpdesk_new"/>
+                        </div>
+                    </div>
+
+                    <!-- Helpdesk Solved -->
+                    <div class="card">
+                        <p class="title">Helpdesk Solved</p>
+                        <div class="card-value mt-4">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                <polyline points="9 11 12 14 16 9"/>
+                            </svg>
+                            <h2 class="mt-3" t-esc="helpdesk_solved"/>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--=================|| Chart and My Performance ||==================  -->
+                <div class="chart-performance">
+                    <div class="chart">
+                        <div class="attendance-chart-body">
+                            <div class="section-title  ">Attendance Chart</div>
+                            <div class="attendance-chart-grid mt-3">
+                                <t t-foreach="attendance_chart" t-as="bar">
+                                    <div class="attendance-bar-item">
+                                        <div class="bar-value" t-esc="bar['hours']"/>
+                                        <div class="bar-track">
+                                            <div class="bar-fill"
+                                                 t-attf-style="--bar-height: #{bar['percent']}%;"></div>
+                                        </div>
+                                        <div class="bar-month" t-esc="bar['label']"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="d4-card my-performance">
+                        <div class="d4-section-title">My Performance</div>
+                        <div class="d4-main-title">Skills Score</div>
+                        <div class="d4-score-row ">
+                            <div class="d4-score-circle">
+                                <div style="text-align:center;">
+                                    <div class="d4-score-num" t-esc="overall_score"></div>
+                                    <div
+                                            style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:500;letter-spacing:0.5px;">
+                                        / 100
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d4-score-info">
+                                <div class="d4-score-label">Overall Score</div>
+                                <div class="d4-score-status">▲ Excellent</div>
+                            </div>
+                        </div>
+                        <div id="d4perf">
+                            <t t-foreach="performance_metrics" t-as="metric">
+                                <div class="d4-perf-item">
+                                    <div class="d4-perf-top">
+                                        <span class="d4-perf-name" t-esc="metric['name']"></span>
+                                        <span class="d4-perf-pct" t-esc="str(metric['percent']) + '%'"></span>
+                                    </div>
+                                    <div class="d4-perf-track">
+                                        <div class="d4-perf-bar"
+                                             t-attf-style="width:#{metric['percent']}%"></div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--=================|| Attendance and Leave ||==================  -->
+                <div class="grid-2 grid-sm-1 mt-7 gap-6 " style="align-items:stretch;">
+
+                    <!-- Project Progress -->
+                    <div class="project-progress p-4 radius-xl  ">
+                        <div class="section-title  ">Project Progress</div>
+                        <div class="proj-list mt-4 flex-column gap-5">
+                            <t t-if="project_progress">
+                                <t t-foreach="project_progress" t-as="project">
+                                    <div class="proj-item">
+                                        <div class="proj-meta">
+                                            <span class="proj-name" t-esc="project['name']"></span>
+                                            <span class="proj-pct" t-esc="str(project['percent']) + '%'"></span>
+                                        </div>
+                                        <div class="prog-track">
+                                            <div class="prog-bar"
+                                                 t-attf-style="width:#{project['percent']}%; background: linear-gradient(90deg,#d9117cac,#d9117c7a);">
+                                            </div>
+                                        </div>
+                                        <div class="proj-tags">
+                                            <span t-attf-class="tag #{project['status_class']}"
+                                                  t-esc="project['status_label']"></span>
+                                            <span class="tag tag-blue"
+                                                  t-esc="'Members %s' % project['member_count']"></span>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-if="not project_progress">
+                                <div class="proj-item">
+                                    <div class="proj-meta">
+                                        <span class="proj-name">No assigned projects</span>
+                                        <span class="proj-pct">0%</span>
+                                    </div>
+                                    <div class="prog-track">
+                                        <div class="prog-bar"
+                                             style="width:0%; background: linear-gradient(90deg,#d9117cac,#d9117c7a);">
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- 2×2 Mini Cards -->
+                    <div class="grid-2 gap-4 gap-sm-3 mini-cards">
+
+                        <div class="mini-card shadow-sm">
+                            <div class="mini-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                     fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div class="mini-val mt-4" t-esc="mini_cards[0]['value']"></div>
+                            <div class="mini-label" t-esc="mini_cards[0]['label']"></div>
+                        </div>
+
+                        <div class="mini-card shadow-sm">
+                            <div class="mini-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                     fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <div class="mini-val mt-4" t-esc="mini_cards[1]['value']"></div>
+                            <div class="mini-label" t-esc="mini_cards[1]['label']"></div>
+                        </div>
+
+                        <div class="mini-card shadow-sm">
+                            <div class="mini-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                     fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            </div>
+                            <div class="mini-val mt-5" t-esc="mini_cards[2]['value']"></div>
+                            <div class="mini-label " t-esc="mini_cards[2]['label']"></div>
+                        </div>
+
+                        <div class="mini-card shadow-sm">
+                            <div class="mini-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                     fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                            </div>
+                            <div class="mini-val mt-4" t-esc="mini_cards[3]['value']"></div>
+                            <div class="mini-label" t-esc="mini_cards[3]['label']"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!--=================|| Project Progress and other cards ||==================  -->
+                <div class=" gap-6  mt-7 leave-attendance">
+
+
+                    <!--=================|| For Attendance ||==================  -->
+                    <div class="attendance">
+                        <div class="section-title ">Attendance</div>
+
+                        <div class="grid-3 grid-sm-1 gap-4 gap-lg-3 mt-4 ">
+                            <!-- Card 1: Working Hours -->
+                            <div class="card card-hours">
+                                <div class="card-top flex-between">
+                                    <div class="card-icon icon-blue">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                             viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"
+                                             stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <polyline points="12 6 12 12 16 14"/>
+                                        </svg>
+                                    </div>
+                                    <span class="card-badge badge-blue" t-esc="working_hours_month_label"></span>
+                                </div>
+                                <div class="title">Working Hours</div>
+                                <div class="value mt-6"><t t-esc="working_hours_month"/>
+                                    <span class="value-unit">h</span>
+                                </div>
+                                <div class="card-footer">
+                                    <span class="footer-label">Daily avg</span>
+                                    <span class="footer-val col-blue" t-esc="working_hours_daily_avg"></span>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Check In -->
+                            <div class="card card-checkin">
+                                <div class="card-top flex-between">
+                                    <div class="card-icon icon-green">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                             viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"
+                                             stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                                            <polyline points="10 17 15 12 10 7"/>
+                                            <line x1="15" y1="12" x2="3" y2="12"/>
+                                        </svg>
+                                    </div>
+                                    <span class="card-badge badge-green">
+                                        <span class="live-dot" style="margin-right:4px;"></span>Today
+                                    </span>
+                                </div>
+                                <div class="title">Check In</div>
+                                <div class="value mt-6" t-esc="check_in_time"></div>
+                                <div class="card-footer">
+                                    <span class="footer-label">Expected</span>
+                                    <span class="footer-val col-green" t-esc="check_in_expected"></span>
+                                    <span class="trend trend-neutral" t-esc="check_in_trend"></span>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Check Out -->
+                            <div class="card card-checkout">
+                                <div class="card-top flex-between">
+                                    <div class="card-icon icon-amber">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                             viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"
+                                             stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                            <polyline points="16 17 21 12 16 7"/>
+                                            <line x1="21" y1="12" x2="9" y2="12"/>
+                                        </svg>
+                                    </div>
+                                    <span class="card-badge badge-amber">Today</span>
+                                </div>
+                                <div class="title">Check Out</div>
+                                <div class="value mt-6" t-esc="check_out_time"></div>
+                                <div class="card-footer">
+                                    <span class="footer-label">Duration</span>
+                                    <span class="footer-val col-amber" t-esc="check_out_duration"></span>
+                                    <span class="trend trend-neutral" t-esc="check_out_trend"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="leave">
+                        <div class="section-title"> Leave</div>
+                        <div class="grid-2 gap-4 mt-4">
+                            <div class="card">
+                                <div>Sick Leave</div> <span>12</span>
+                            </div>
+                            <div class="card">
+                                <div>Casual <span>12</span></div>
+                            </div>
+                        </div>
+                    </div> -->
+
+                    <!--=================|| For Leave ||==================-->
+                    <div class="leave">
+                        <div class="section-title">Leave</div>
+
+                        <div class="grid-2 gap-4 mt-4 gap-sm-3">
+
+                            <!-- Sick Leave -->
+                            <div class="card leave-card">
+                                <div class="leave-info w-100">
+
+
+                                    <span class="leave-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <rect x="3" y="10" width="18" height="6" rx="2" stroke="currentColor"
+                                                  stroke-width="2"/>
+                                            <circle cx="7" cy="8" r="2" stroke="currentColor" stroke-width="2"/>
+                                            <path d="M3 16v3M21 16v3" stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </span>
+
+                                    <div class="title">Sick Leave</div>
+                                    <div class="footer  ">
+                                        <div class="text-right fs-xs total">(<span t-esc="leave_stats[0]['used']"></span> / <span t-esc="leave_stats[0]['allocated']"></span>)
+                                        </div>
+                                        <div class="prog-track mt-3">
+                                            <div class="prog-bar"
+                                                 t-attf-style="width:#{leave_stats[0]['percent']}%; background: linear-gradient(90deg,#d9117cac,#d9117c7a);">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Casual Leave -->
+                            <div class="card leave-card">
+                                <div class="leave-info w-100">
+
+                                    <!-- Beach / Relax Icon -->
+                                    <span class="leave-icon">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M4 14c6-10 16-10 16-10s0 10-10 16C6 22 4 18 4 14z"
+                                                  stroke="currentColor" stroke-width="2"/>
+                                        </svg>
+                                    </span>
+
+                                    <div class="title">Casual Leave</div>
+                                    <div class="footer  ">
+                                        <div class="text-right fs-xs total">(<span t-esc="leave_stats[1]['used']"></span> / <span t-esc="leave_stats[1]['allocated']"></span>)
+                                        </div>
+                                        <div class="prog-track mt-3">
+                                            <div class="prog-bar"
+                                                 t-attf-style="width:#{leave_stats[1]['percent']}%; background: linear-gradient(90deg,#d9117cac,#d9117c7a);">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Data Popup -->
+<div id="demoDataPopup" class="demo-data-popup-overlay">
+    <div class="demo-data-popup-box">
+        <button type="button"
+                id="closeDemoDataPopup"
+                class="demo-data-popup-close">
+            ×
+        </button>
+
+        <h2>Demo Data</h2>
+    </div>
+</div>
+
+            </section>
+            <script>
+                const scoreElements = document.querySelectorAll('.d4-score-num');
+
+                scoreElements.forEach((element) => {
+                const target = parseInt(element.textContent);
+
+                function animateCounter() {
+                let start = 0;
+                const duration = 3000;
+                const startTime = performance.now();
+
+                function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                const value = Math.floor(progress * target);
+                element.textContent = value;
+
+                if (progress
+                &lt;
+                1) {
+                requestAnimationFrame(update);
+                } else {
+                setTimeout(animateCounter, 2000);
+                }
+                }
+
+                requestAnimationFrame(update);
+                }
+
+                animateCounter();
+                });
+
+
+
+                <!-- demo popup-->
+                document.addEventListener("DOMContentLoaded", function () {
+                    const popup = document.getElementById("demoDataPopup");
+                    const closeButton = document.getElementById("closeDemoDataPopup");
+
+                    setTimeout(function () {
+                        popup.classList.add("show");
+                    }, 4000);
+
+                    closeButton.addEventListener("click", function () {
+                        popup.classList.remove("show");
+                    });
+
+                    popup.addEventListener("click", function (event) {
+                        if (event.target === popup) {
+                            popup.classList.remove("show");
+                        }
+                    });
+                });
+            </script>
+        </t>
+    </template>
+</odoo>

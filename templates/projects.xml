@@ -1,0 +1,387 @@
+<odoo>
+    <template id="projects_page">
+        <t t-call="xsellence_portal.custom_layout">
+            <t t-set="employee_query_suffix"
+               t-value="'&amp;employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
+            <t t-set="employee_status_suffix"
+               t-value="'?employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
+            <t t-set="project_filter_onchange"
+               t-value='("if (this.value) { window.location = \"/projects?status=\" + this.value + \"%s\"; } else { window.location = \"/projects%s\"; }" % (employee_query_suffix, employee_status_suffix))'/>
+
+            <!-- ====================  Breadcrumb  ==================== -->
+            <div class="flex-between align-center gap-1 flex-wrap n-btn-wrap">
+                <t t-call="xsellence_portal.breadcrumb_component"/>
+                <a t-att-href="'/create_project?source=projects%s' % employee_query_suffix" class="btn btn-primary">Create Project +</a>
+            </div>
+
+            <!--========================|| Projects Here ||=========================-->
+            <section class="projects-wrap mt-4">
+
+                <!--================||   Filter Header ||===============-->
+                <div class="flex-between py-3 gap-5 row-gap-2" style="overflow-x: auto;">
+                    <div class="sec-title d-flex gap-2 align-center flex-1 text-nowrap">Projects
+                        <span class="count fs-xs flex-center">
+                            <t t-esc="total"/>
+                        </span>
+                    </div>
+
+                    <!-- Search Product -->
+                    <div class="search task-search">
+                        <div class="search-wrap  input-control shadow-md">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input class="search-input"
+                                   t-att-value="search"
+                                   type="text"
+                                   placeholder="Search task name or id..."/>
+                            <button type="submit" style="display:none;"></button>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 d-flex gap-4 justify-end">
+                        <!--  Filter Projects  -->
+                        <select class="filter-select bg-white"
+                                id="filter-status"
+                                t-att-onchange="project_filter_onchange">
+
+                            <option value="">All Status</option>
+
+                            <t t-foreach="statuses" t-as="status">
+                                <option t-att-value="status[0]">
+                                    <t t-esc="status[1]"/>
+                                </option>
+                            </t>
+
+                        </select>
+
+                        <div class="toggle-group">
+                            <!-- List View Button -->
+                            <button class="toggle-btn" id="btn-list" title="List View" onclick="setView('list')">
+                                <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
+                                    <rect x="1" y="2" width="16" height="2.5" rx="1.25" fill="currentColor"/>
+                                    <rect x="1" y="7.75" width="16" height="2.5" rx="1.25" fill="currentColor"/>
+                                    <rect x="1" y="13.5" width="16" height="2.5" rx="1.25" fill="currentColor"/>
+                                </svg>
+                            </button>
+                            <!-- Grid View Button -->
+                            <button class="toggle-btn active" id="btn-grid" title="Grid View" onclick="setView('grid')">
+                                <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
+                                    <rect x="1" y="1" width="7" height="7" rx="1.5" fill="currentColor"/>
+                                    <rect x="10" y="1" width="7" height="7" rx="1.5" fill="currentColor"/>
+                                    <rect x="1" y="10" width="7" height="7" rx="1.5" fill="currentColor"/>
+                                    <rect x="10" y="10" width="7" height="7" rx="1.5" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <t t-if="projects">
+                    <!--==============================|| Grid View All Projects Here ||============================-->
+                    <div class="view-panel visible" id="panel-grid">
+                        <div
+                                class="grid-5 grid-lg-4 grid-lg-4 gap-lg-4 row-gap-lg-5 gap-5 grid-sm-2 row-gap-sm-4 grid-md-2 projects mt-6 mt-lg-7 mt-sm-5 gap-sm-2">
+
+                            <!--================||   Single Project Card here ||===============-->
+                            <t t-foreach="projects" t-as="project">
+                                <div class="proj-card">
+                                    <div class="card-banner"></div>
+                                    <div class="card-body">
+                                        <div class="card-top">
+                                            <div class="card-title-wrap">
+                                                <!-- Project Name -->
+                                                <div class="card-proj-name">
+                                                    <t t-esc="project.name"/>
+                                                    <!-- Total Tasks -->
+                                                    <span
+                                                            class="info-val tasks-num " t-esc="project.task_count">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <!-- Status -->
+                                            <div>
+                                                <t t-if="project.custom_status == 'planning'">
+                                                    <div class="sts sts-planning">Planning</div>
+                                                </t>
+
+                                                <t t-elif="project.custom_status == 'in_progress'">
+                                                    <div class="sts sts-in-progress">In Progress</div>
+                                                </t>
+
+                                                <t t-elif="project.custom_status == 'review'">
+                                                    <div class="sts sts-review">Under Review</div>
+                                                </t>
+
+                                                <t t-elif="project.custom_status == 'completed'">
+                                                    <div class="sts sts-completed">Completed</div>
+                                                </t>
+
+                                                <t t-elif="project.custom_status == 'cancelled'">
+                                                    <div class="sts sts-cancelled">Cancelled</div>
+                                                </t>
+
+                                                <t t-else="">
+                                                    <div class="sts sts-default">N/A</div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        <!-- tags -->
+                                        <div class="card-tags">
+                                            <t t-foreach="project.tag_ids" t-as="tag" t-key="tag.id">
+                                                <span class="tag" t-esc="tag.name"></span>
+                                            </t>
+                                        </div>
+                                        <div class="card-info-grid mt-2">
+
+                                            <!-- customer -->
+                                            <div class="info-item">
+                                                <div class="info-label">Customer</div>
+                                                <div class="info-val mt-1" t-esc="project.partner_id.name">
+                                                </div>
+                                            </div>
+
+                                            <!-- Planned Date -->
+                                            <div class="info-item">
+                                                <div class="info-label">Planned Date</div>
+                                                <div class="info-val mt-1">
+                                                    <svg width="11" height="11" viewBox="0 0 24 24"
+                                                         fill="none" stroke="#9ca3af" stroke-width="2"
+                                                         stroke-linecap="round"
+                                                         stroke-linejoin="round">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                                    </svg>
+                                                    <t t-esc="project.date_start.strftime('%d %b %y') if project.date_start else ''"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-info-grid">
+                                            <div class="card-manager">
+
+                                                <!-- Project Manager -->
+                                                <div class="manager-info">
+                                                    <div class="info-label">Project Manager</div>
+                                                    <div class="manager-name" t-esc="project.user_id.name"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="info-item">
+                                                <!-- Allocated Time -->
+                                                <div class="info-label">Allocated Time</div>
+                                                <div class="info-val mt-1">
+                                                    <svg width="11" height="11" viewBox="0 0 24 24"
+                                                         fill="none" stroke="#9ca3af" stroke-width="2"
+                                                         stroke-linecap="round"
+                                                         stroke-linejoin="round">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                                    </svg>
+                                                    <span t-esc="project.allocated_hours">Working Hours</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ======= Card Footer ======== -->
+                                    <div class="card-footer flex-wrap row-gap-3">
+                                        <div class="deadline-wrap">
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af"
+                                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <polyline points="12 6 12 12 16 14"/>
+                                            </svg>
+                                            <!-- deadline -->
+                                            <div>
+                                                <div class="deadline-date"
+                                                     t-esc="project.date.strftime('%d %b %y') if project.date else '' ">
+                                                    20 May 2026
+                                                </div>
+                                                <div class="deadline-left">
+                                                    <t t-esc="project.remaining_days"/>
+                                                    days
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ======== Card Btns ======= -->
+                                        <div class="action-btns">
+
+                                            <!-- View Task -->
+                                            <t t-if="project.task_count">
+                                                <a t-att-href="'/tasks?project_id=%s%s' % (project.id, employee_query_suffix)"
+                                                   class="action-btn view-task-btn tooltip">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                        <path d="M9 11L12 14L20 6" stroke="currentColor"
+                                                              stroke-width="2"
+                                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <path
+                                                                d="M20 12V19C20 20.1046 19.1046 21 18 21H5C3.89543 21 3 20.1046 3 19V6C3 4.89543 3.89543 4 5 4H16"
+                                                                stroke="currentColor" stroke-width="2"
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"/>
+                                                    </svg>
+                                                    Tasks
+                                                    <span class="tooltip-text">View All Tasks</span>
+                                                </a>
+                                            </t>
+
+                                            <!-- Add Task button: show only if project has no task -->
+                                            <t t-if="project.task_count == 0">
+                                            <a t-att-href="'/add_task?project_id=%s&amp;source=projects%s' % (project.id, employee_query_suffix)"
+                                               class="action-btn view-task-btn tooltip">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                        <path d="M12 5V19"
+                                                              stroke="currentColor"
+                                                              stroke-width="2"
+                                                              stroke-linecap="round"/>
+                                                        <path d="M5 12H19"
+                                                              stroke="currentColor"
+                                                              stroke-width="2"
+                                                              stroke-linecap="round"/>
+                                                    </svg>
+                                                    Add
+                                                    <span class="tooltip-text">Create a new Task</span>
+                                                </a>
+                                            </t>
+
+                                            <!-- View Project -->
+                                            <a t-att-href=" '/projects/details/%s' % project.id "
+                                               class="action-btn btn-primary tooltip">View
+                                                <svg width="14" height="14" viewBox="0 0 24 24"
+                                                     fill="none" stroke="currentColor" stroke-width="2"
+                                                     stroke-linecap="round"
+                                                     stroke-linejoin="round">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                </svg>
+                                                <span class="tooltip-text">View Project Details</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                        </div>
+                    </div>
+
+                    <!--==============================|| List View All Projects Here ||============================-->
+                    <div class="view-panel" id="panel-list">
+                        <div class="table-wrap mt-5 ">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        <th>Project Manager</th>
+                                        <th>Project Status</th>
+                                        <th>Start Date</th>
+                                        <th>Deadline</th>
+                                        <th>View Details</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <t t-foreach="projects" t-as="project">
+                                        <tr>
+                                            <td t-esc="project.name"></td>
+                                            <td t-esc="project.user_id.name"></td>
+                                            <td>
+                                                <t t-if="project.custom_status == 'planning'">
+                                                    <div class="sts sts-planning">Planning</div>
+                                                </t>
+
+                                                <t t-elif="project.custom_status == 'in_progress'">
+                                                    <div class="sts sts-in-progress">In Progress</div>
+                                                </t>
+
+                                                <t t-elif="project.custom_status == 'review'">
+                                                    <div class="sts sts-review">Under Review</div>
+                                                </t>
+
+                                                <t t-elif="project.custom_status == 'completed'">
+                                                    <div class="sts sts-completed">Completed</div>
+                                                </t>
+
+                                                <t t-elif="project.custom_status == 'cancelled'">
+                                                    <div class="sts sts-cancelled">Cancelled</div>
+                                                </t>
+
+                                                <t t-else="">
+                                                    <div class="sts sts-default">N/A</div>
+                                                </t>
+                                            </td>
+                                            <td t-esc="project.date_start or ''"></td>
+                                            <td t-esc="project.date or ''"></td>
+                                            <td>
+                                                <div class="d-inline-block">
+                                                    <!-- View Project -->
+                                                    <a t-att-href=" '/projects/details/%s' % project.id "
+                                                       class="action-btn btn-primary tooltip">View
+                                                        <svg width="14" height="14" viewBox="0 0 24 24"
+                                                             fill="none" stroke="currentColor" stroke-width="2"
+                                                             stroke-linecap="round"
+                                                             stroke-linejoin="round">
+                                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                            <circle cx="12" cy="12" r="3"/>
+                                                        </svg>
+                                                        <span class="tooltip-text">View Project</span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+                </t>
+
+
+                <t t-if="not projects">
+                    <div class="design-wrapper  mt-7" id="error-container">
+                        <div class="empty-4">
+                            <div class="e4-glass">
+                                <div class="e4-ring">
+                                    <span class="e4-icon-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                            <circle cx="11" cy="11" r="7"></circle>
+                                            <path d="M16.5 16.5L21 21"></path>
+                                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <h2 class="e4-title">Data <strong style="color: red;">'NOT'</strong> Found
+                                </h2>
+                                <p class="e4-sub">No records matched your current search or filter criteria.</p>
+                                <div class="e4-pills">
+                                    <span class="e4-pill">0 results</span>
+                                    <span class="e4-pill">try new filter</span>
+                                    <span class="e4-pill">clear search</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+
+                <!-- Pagination -->
+                <t t-call="xsellence_portal.reusable_pagination"/>
+
+
+            </section>
+
+            <!--    Javascript Links Here     -->
+            <script src="/xsellence_portal/static/src/js/project.js?v=2"></script>
+
+
+        </t>
+    </template>
+</odoo>

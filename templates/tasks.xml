@@ -1,0 +1,377 @@
+<odoo>
+    <template id="tasks_page">
+        <t t-call="xsellence_portal.custom_layout">
+            <t t-set="employee_query_suffix"
+               t-value="'&amp;employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
+            <t t-set="employee_status_suffix"
+               t-value="'?employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
+            <t t-set="task_filter_onchange"
+               t-value='("if (this.value) { window.location = \"/tasks?status=\" + this.value + \"%s\"; } else { window.location = \"/tasks%s\"; }" % (employee_query_suffix, employee_status_suffix))'/>
+
+            <!-- ====================  Breadcrumb  ==================== -->
+            <div class="flex-between align-center gap-1 flex-wrap n-btn-wrap">
+                <t t-call="xsellence_portal.breadcrumb_component"/>
+                <a t-att-href="'/add_task?source=tasks%s' % employee_query_suffix" class="btn btn-primary">Add New Task +</a>
+            </div>
+
+            <!--========================|| Tasks Here ||=========================-->
+            <section class="projects-wrap mt-4">
+                <div class="flex-between py-3 gap-5 row-gap-2" style="overflow-x: auto;">
+                    <div class="sec-title d-flex gap-2 align-center flex-1 text-nowrap">My Tasks
+                        <span
+                                class="count fs-xs flex-center" t-esc="total">
+                        </span>
+                    </div>
+
+                    <div class="search task-search">
+                        <div class="search-wrap  input-control shadow-md">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input class="search-input" type="text" placeholder="Search task name or id..."/>
+                        </div>
+                    </div>
+
+
+                    <div class="flex-1 d-flex gap-4 justify-end">
+                        <!-- Filter by Status-->
+                        <select class="filter-select bg-white  "
+                                id="filter-status"
+                                t-att-onchange="task_filter_onchange">
+                            <option value="">All Status</option>
+                            <t t-foreach="statuses" t-as="status">
+                                <option t-att-value="status[0]" t-esc="status[1]">
+                                </option>
+                            </t>
+                        </select>
+
+                        <div class="toggle-group" data-oe-model="ir.ui.view" data-oe-id="1898" data-oe-field="arch"
+                             data-oe-xpath="/t[1]/t[1]/section[1]/div[1]/div[3]/div[1]">
+
+                            <button class="toggle-btn" id="btn-list" title="List View" onclick="setView('list')">
+                                <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
+                                    <rect x="1" y="2" width="16" height="2.5" rx="1.25" fill="currentColor"></rect>
+                                    <rect x="1" y="7.75" width="16" height="2.5" rx="1.25" fill="currentColor"></rect>
+                                    <rect x="1" y="13.5" width="16" height="2.5" rx="1.25" fill="currentColor"></rect>
+                                </svg>
+                            </button>
+
+                            <button class="toggle-btn active" id="btn-grid" title="Grid View" onclick="setView('grid')">
+                                <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
+                                    <rect x="1" y="1" width="7" height="7" rx="1.5" fill="currentColor"></rect>
+                                    <rect x="10" y="1" width="7" height="7" rx="1.5" fill="currentColor"></rect>
+                                    <rect x="1" y="10" width="7" height="7" rx="1.5" fill="currentColor"></rect>
+                                    <rect x="10" y="10" width="7" height="7" rx="1.5" fill="currentColor"></rect>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--==============  When task Available  ===============-->
+                <t t-if="tasks">
+                    <!--==============================|| Grid View All Projects Here ||============================-->
+                    <div class="view-panel visible" id="panel-grid">
+                        <div class="grid-5 grid-lg-4 gap-lg-4 gap-4  grid-sm-2 row-gap-lg-6 row-gap-sm-4 grid-md-2 tasks mt-6 mt-sm-5 gap-sm-2">
+                            <t t-foreach="tasks" t-as="task">
+                                <!--================||   Single Task Card here ||===============-->
+                                <div class="proj-card task-card">
+                                    <div class="card-banner"> </div>
+                                    <div class="card-body">
+                                        <div class="card-top">
+                                            <div class="card-title-wrap">
+                                                <!-- Task Name -->
+                                                <div class="card-proj-name" t-esc="task.name"></div>
+                                            </div>
+                                            <!-- Status -->
+                                            <div>
+                                                <t t-if="task.custom_status == 'planning'">
+                                                    <div class="sts sts-planning">Planning</div>
+                                                </t>
+
+                                                <t t-elif="task.custom_status == 'in_progress'">
+                                                    <div class="sts sts-in-progress">In Progress</div>
+                                                </t>
+
+                                                <t t-elif="task.custom_status == 'review'">
+                                                    <div class="sts sts-review">Under Review</div>
+                                                </t>
+
+                                                <t t-elif="task.custom_status == 'completed'">
+                                                    <div class="sts sts-completed">Completed</div>
+                                                </t>
+
+                                                <t t-elif="task.custom_status == 'cancelled'">
+                                                    <div class="sts sts-cancelled">Cancelled</div>
+                                                </t>
+
+                                               <t t-else="">
+                                                    <div class="sts sts-default">N/A</div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        <div class="assignee">
+                                            <div class="info-label d-flex align-center gap-2">Assignee
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                    <circle cx="12" cy="8" r="3.5" fill="currentColor"/>
+                                                    <circle cx="6" cy="10" r="2.5" fill="currentColor" opacity="0.9"/>
+                                                    <circle cx="18" cy="10" r="2.5" fill="currentColor" opacity="0.9"/>
+                                                    <path d="M4 20c0-3.5 4-5.5 8-5.5s8 2 8 5.5" fill="currentColor"/>
+                                                </svg>
+                                            </div>
+
+                                            <!-- assignee names -->
+                                            <div class="card-tags">
+                                                <t t-foreach="task.user_ids" t-as="assign">
+                                                    <span class="tag " t-esc="assign.name"></span>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        <div class="card-info-grid">
+                                            <!-- Project Name -->
+                                            <div class="info-item">
+                                                <div class="info-label d-flex gap-1 align-center">Project
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v1H3V6z"/>
+                                                        <path d="M3 10h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="info-val mt-1 tooltip">
+                                                    <t t-esc="task.project_id.name[:14] + '...' if task.project_id.name and len(task.project_id.name) > 22 else task.project_id.name"/>
+                                                    <span class="tooltip-text" t-esc="task.project_id.name">d f dfd
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- For Assigned date -->
+                                            <div class="info-item">
+                                                <div class="info-label">Assigned Date</div>
+                                                <div class="info-val mt-1">
+                                                    <svg width="11" height="11" viewBox="0 0 24 24"
+                                                         fill="none" stroke="#9ca3af" stroke-width="2"
+                                                         stroke-linecap="round"
+                                                         stroke-linejoin="round">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                                    </svg>
+                                                    <t t-esc="task.date_assign.strftime('%d %b %y') if task.date_assign else ''"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-info-grid">
+
+                                            <!-- For Project Priority -->
+                                            <div class="card-manager">
+                                                <div class="manager-info">
+                                                    <div class="info-label">Priority</div>
+                                                    <div class="manager-name" t-esc="task.custom_priority"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- For Deadline -->
+                                            <div class="info-item">
+                                                <div class="info-label">Deadline</div>
+                                                <div class="info-val mt-1">
+                                                    <svg width="11" height="11" viewBox="0 0 24 24"
+                                                         fill="none" stroke="#9ca3af" stroke-width="2"
+                                                         stroke-linecap="round"
+                                                         stroke-linejoin="round">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                                    </svg>
+                                                    <span t-esc="task.date_deadline.strftime('%d %b %y') if task.date_deadline else ''"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="state-dropdown ">
+                                            <form action="task/update_status" method="post">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                                <input type="hidden" name="redirect_url"
+                                                       t-att-value="request.httprequest.referrer"/>
+
+                                                <select class="filter-select" name="status"
+                                                        onchange="this.form.submit()">
+                                                    <t t-foreach="statuses" t-as="status">
+                                                        <option t-att-value="status[0]" t-esc="status[1]"
+                                                                t-att-selected="task.custom_status == status[0]"></option>
+                                                    </t>
+                                                </select>
+                                            </form>
+                                        </div>
+
+                                        <!-- Actions Buttons -->
+                                        <div class="action-btns">
+                                            <!-- View Button Here -->
+                                            <a t-att-href="'/tasks/task_details/%s' % task.id"
+                                               class="action-btn view-btn">
+                                                <svg width="14" height="14"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2"
+                                                     stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                </svg>
+                                            </a>
+
+                                            <!-- Delete button -->
+                                            <form method="post" action="/task/delete">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                                <button type="button" class="action-btn del"
+                                                        onclick="return openDeleteModal(this)">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24"
+                                                         fill="none" stroke="currentColor" stroke-width="2"
+                                                         stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="3 6 5 6 21 6"/>
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                                        <path d="M10 11v6"/>
+                                                        <path d="M14 11v6"/>
+                                                        <path d="M9 6V4h6v2"/>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- Timesheet Button Here -->
+                                    <div class="timesheet px-4 pb-4 mt-1">
+                                        <a t-att-href="'/tasks/add_timesheet?task_id=%s&amp;project_id=%s%s' % (task.id, task.project_id.id, employee_query_suffix)"
+                                           class="btn btn-primary w-100">
+                                            <svg width="18" height="18"
+                                                 viewBox="0 0 24 24" fill="none">
+                                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                                                <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2"/>
+                                            </svg>
+                                            Timesheet
+                                        </a>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+
+                    <!-- =====  Delete Modal  ===== -->
+                    <div class="modal-overlay " id="deleteModal">
+                        <div class="modal-container">
+                            <div class="glass-icon">🗑️</div>
+                            <h3>Delete Task?</h3>
+                            <p>
+                                This action cannot be undone.
+                                <br/>
+                                The task will be permanently removed.
+                            </p>
+
+                            <div class="glass-actions">
+                                <button type="button" id="confirmYes" class="btn-glass-yes">
+                                    Yes, Delete
+                                </button>
+                                <button class="btn-glass-no" onclick="closeModal('deleteModal')">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--==============================|| List View All Projects Here ||============================-->
+                    <div class="view-panel" id="panel-list">
+                        <div class="table-wrap mt-5 ">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Task Name</th>
+                                        <th>Project Name</th>
+                                        <th>Task Status</th>
+                                        <th>Start Date</th>
+                                        <th>Deadline</th>
+                                        <th>View Details</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <t t-foreach="tasks" t-as="task">
+                                        <tr>
+                                            <td t-esc="task.name"></td>
+                                            <td t-esc="task.project_id.name if task.project_id.name else ''"></td>
+                                            <td class="">
+                                                <div class="sts" t-esc="task.custom_status"></div>
+                                            </td>
+                                            <td t-esc="task.date_assign.strftime('%d %b %%y') if task.date_assign else ''"></td>
+                                            <td t-esc="task.date_deadline.strftime('%d %b %%y')  if task.date_deadline else ''"></td>
+                                            <td>
+                                                <div class="d-inline-block">
+                                                    <!-- View Project -->
+                                                    <a t-att-href=" '/tasks/task_details/%s' % task.id "
+                                                       class="action-btn btn-primary tooltip">View
+                                                        <svg width="14" height="14" viewBox="0 0 24 24"
+                                                             fill="none" stroke="currentColor" stroke-width="2"
+                                                             stroke-linecap="round"
+                                                             stroke-linejoin="round">
+                                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                            <circle cx="12" cy="12" r="3"/>
+                                                        </svg>
+                                                        <span class="tooltip-text">View Task</span>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+
+
+                <!--================ When task empty ===============-->
+                 <t t-if="not tasks">
+                    <div class="design-wrapper  mt-7" id="error-container">
+                        <div class="empty-4">
+                            <div class="e4-glass">
+                                <div class="e4-ring">
+                                    <span class="e4-icon-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                            <circle cx="11" cy="11" r="7"></circle>
+                                            <path d="M16.5 16.5L21 21"></path>
+                                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <h2 class="e4-title">Data <strong style="color: red;">'NOT'</strong> Found
+                                </h2>
+                                <p class="e4-sub">No records matched your current search or filter criteria.</p>
+                                <div class="e4-pills">
+                                    <span class="e4-pill">0 results</span>
+                                    <span class="e4-pill">try new filter</span>
+                                    <span class="e4-pill">clear search</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+
+
+                <!-- Pagination -->
+                <t t-call="xsellence_portal.reusable_pagination"/>
+
+
+            </section>
+        </t>
+
+
+        <script src="/xsellence_portal/static/src/js/task.js?v=2"></script>
+    </template>
+</odoo>

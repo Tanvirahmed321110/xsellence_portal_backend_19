@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ==================== Project Task Tree/List View ==================== -->
+    <record id="view_project_task_list_inherit" model="ir.ui.view">
+        <field name="name">project.task.list.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_tree2"/>
+        <field name="arch" type="xml">
+
+            <!-- Order: Newest first -->
+            <xpath expr="//list" position="attributes">
+                <attribute name="default_order">create_date desc</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+
+
+    <!-- ==================== Project Form View ==================== -->
+    <record id="view_project_task_form_inherit" model="ir.ui.view">
+        <field name="name">project.task.form.inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+             <!-- Show all active users in Assignees -->
+            <xpath expr="//field[@name='user_ids']" position="attributes">
+                <attribute name="domain">[('active', '=', True)]</attribute>
+            </xpath>
+            <!-- Add Assign Date -->
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="date_assign" widget="date" class="custom_date_field"/>
+            </xpath>
+
+            <!-- Add Custom Priority -->
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="custom_priority" widget="selection"/>
+                <field name="custom_status" widget="selection"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+</odoo>

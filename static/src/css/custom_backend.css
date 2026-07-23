@@ -1,0 +1,33 @@
+@import 'web.variables';
+
+.o_form_view input,.o_form_view textarea {
+   border:1px solid #ddd !important; /* Light gray background */
+   border-radius:4px !important;
+    padding: 5px !important;
+}
+.o_form_view input:focus,.o_form_view textarea:focus{
+    border:1px solid var(--o-cc1-btn-primary) !important;
+}
+
+.o_form_view:not(.o_field_highlight) .o_field_html .note-editable {
+    border: var(--border-width) solid #f3f3f3;
+    border-width: 0 0 var(--border-width) 0;
+    border-radius: 0;
+}
+
+.o_form_view .o_field_html{
+    border-bottom: var(--border-width) solid #ddd ;
+}
+
+.o_field_widget.o_required_modifier.o_field_selection{
+    border-bottom:1px solid #ddd !important;
+}
+textarea.o_input.o_field_translate{
+    border:none !important;
+    border-bottom:1px solid #ddd !important;
+}
+
+.o_form_view:not(.o_field_highlight) .o_field_widget:not(.o_field_invalid):not(.o_field_highlight) .o_input:not(:hover):not(:focus) {
+    --o-input-border-color: transparent;
+    border-bottom: 1px solid #ddd;
+}

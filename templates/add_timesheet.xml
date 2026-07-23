@@ -1,0 +1,154 @@
+<odoo>
+    <template id="add_timesheet_page">
+        <t t-call="xsellence_portal.custom_layout">
+
+            <!-- ====================  Breadcrumb  ==================== -->
+            <t t-call="xsellence_portal.breadcrumb_component"/>
+
+            <!--========================|| Projects Here ||=========================-->
+            <section class="projects-wrap mt-4 flex-column">
+                <div class="sec-title d-flex gap-2 align-center">Add New Timesheet
+                    <span
+                            class="count fs-xs flex-center">+
+                    </span>
+                </div>
+
+
+                <div class="d-flex flex-1 flex-center mt-6">
+                    <form action="/tasks/add_timesheet/submit" method="post" class="submit-form flex-column gap-5">
+
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="d-flex gap-3 align-center">
+                            <div class="top flex-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="section-title head-primary">Submit Timesheet</div>
+                                <p class="desc mt-1">Add the details of your new timesheet</p>
+                            </div>
+                        </div>
+
+                        <div class="grid-2 gap-5 grid-sm-1">
+                            <!--======= For Date =======-->
+                            <div class="input-control">
+                                <label for="date">Date
+                                    <span class="required">*</span>
+                                </label>
+                                <input type="date" name="date" id="date" t-att-value="today.strftime('%Y-%m-%d')"/>
+                            </div>
+
+                            <!--======= For Project =======-->
+                            <div class="input-control">
+                                <label for="project_select"
+                                       class="select-open-label"
+                                       data-select-target="project_select">
+                                    Project
+                                    <span class="required">*</span>
+                                </label>
+
+                                <select name="project_id" id="project_select" required="required">
+                                    <option value="">Select Project</option>
+                                    <t t-foreach="projects" t-as="project">
+                                        <option t-att-value="project.id"
+                                                t-att-selected="'selected' if selected_project and selected_project.id == project.id else None">
+                                            <t t-esc="project.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid-2 gap-5 grid-sm-1">
+                            <!--======= For Task =======-->
+                            <div class="input-control ">
+                                <label for="task_select" data-select-target="task_select" class="select-open-label">Task
+                                    <span class="required">*</span>
+                                </label>
+                                <select name="task_id" id="task_select" required="required">
+                                    <option value="">Select Task</option>
+                                    <t t-foreach="tasks" t-as="task">
+                                        <option t-esc="task.name" t-att-value="task.id" id="tasks"
+                                                t-att-selected="selected_task and selected_task.id == task.id">
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+
+                            <!--======= For Time Spent =======-->
+                            <div class="input-control">
+                                <label for="unit_amount" class="tooltip-icon tooltip">Time Spent
+                                    <span class="required">*</span>
+                                    <span style="color:var(--color-secondary)">ⓘ</span>
+                                    <span class="tooltip-text"
+                                          style="font-size:11px;font-weight:400;padding:10px;8px;line-height:1.8">
+                                        Example:
+                                        <br/>
+                                        1.55 = 1 hour 55 minutes,
+                                        <br/>
+                                        1.30 = 1 hour 30 minutes,
+                                        <br/>
+                                        1.22 = 1 hour 22 minutes,
+                                        <br/>
+                                        1.7 = 1 hour 7 minutes.
+                                    </span>
+                                </label>
+                                <input
+                                        type="text"
+                                        name="unit_amount"
+                                        inputmode="decimal"
+                                        pattern="^\d+(\.(\d|[0-5]\d))?$"
+                                        required="1"
+                                        id="unit_amount"
+                                        placeholder="Time Spent e.g. 1.5 = 1h30m, 1.22 = 1h22m"
+                                        title="Use 1.30 for 1 hour 30m, or 1.22 for 1 hour 22m ,1.7 for 1 hour 7m"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid-1 gap-5 grid-sm-1">
+                            <!--======= For Description =======-->
+                            <div class="input-control">
+                                <label for="description">Description</label>
+                                <textarea name="name" id="description" placeholder="Description..."></textarea>
+                            </div>
+                        </div>
+
+
+                        <!-- <div id="toast" class="toast show error">
+                            <span id="toast-msg">Submited Task</span>
+                        </div> -->
+                        <!-- <div id="toast" class="toast show success">
+                            <span id="toast-msg">Error Message</span>
+                        </div> -->
+
+                        <!--======= For Rest and Sumbit Buttons =======-->
+                        <div class="d-flex justify-end w-100 gap-4">
+                            <!-- Reset Button -->
+                            <button class="btn btn-danger" type="reset">Reset
+                                <svg width="12" height="12"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 12a9 9 0 1 1-3-6.7"></path>
+                                    <path d="M21 3v6h-6"></path>
+                                </svg>
+                            </button>
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary" style="gap:8px">Submit
+                                <svg width="12"
+                                     height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M2 21l20-9L2 3v7l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </section>
+        </t>
+    </template>
+</odoo>
