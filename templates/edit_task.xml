@@ -75,7 +75,7 @@
                                 <label for="">Deadline
                                     <span class="required">*</span>
                                 </label>
-                                <input type="date" name="date_deadline" required="required"
+                                <input type="date" name="date_deadline" required="required" t-att-min="today"
                                        t-att-value="str(task.date_deadline)[:10] if task.date_deadline else ''"/>
                             </div>
                         </div>

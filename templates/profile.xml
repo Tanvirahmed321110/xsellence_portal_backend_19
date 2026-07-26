@@ -16,13 +16,19 @@
                     <div class=" d-flex gap-6 gap-sm-3 profile-info-wrap ">
                         <div class="left">
                             <div class="profile-img">
-                                <t t-if="employee and employee.id and employee.image_128">
-                                    <img t-att-src="'/web/image/hr.employee/%s/image_128' % employee.id"
-                                         t-att-alt="employee.name or user.name or 'profile image'"/>
+                                <t t-if="employee and employee.image_128">
+                                    <img t-att-src="image_data_uri(employee.image_128)"
+                                         alt="Profile Photo"
+                                         class="profile-img-photo"/>
+                                </t>
+                                <t t-elif="user and user.name">
+                                    <t t-set="display_name" t-value="user.name"/>
+                                    <t t-set="initials"
+                                       t-value="(display_name[:2].upper() if len(display_name.split()) == 1 else ''.join([w[0].upper() for w in display_name.split() if w])[:2])"/>
+                                    <span class="profile-initials" t-esc="initials"/>
                                 </t>
                                 <t t-else="">
-                                    <img src="/web/static/img/avatar_grey.png"
-                                         t-att-alt="user.name or 'profile image'"/>
+                                    <span class="profile-initials">U</span>
                                 </t>
                             </div>
                         </div>

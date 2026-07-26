@@ -100,7 +100,7 @@ class XsellencePortal(http.Controller):
 
 
         # for pagination
-        per_page = int(kw.get('per_page', 20))
+        per_page = int(kw.get('per_page', 24))
         total = request.env['account.analytic.line'].sudo().search_count(domain)
 
         # ===== Pager Object Banano (reusable function call) =====

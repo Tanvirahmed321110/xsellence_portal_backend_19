@@ -1,3 +1,6 @@
+from urllib.parse import urlencode
+
+
 # ========== Reusable Pagination Utility ==========
 def get_pager(url, total, page=1, per_page=12, url_args=None):
     """
@@ -22,6 +25,13 @@ def get_pager(url, total, page=1, per_page=12, url_args=None):
     start = offset + 1 if total else 0
     end = min(offset + per_page, total)
 
+    filtered_url_args = {
+        str(key): value
+        for key, value in url_args.items()
+        if value not in (None, '', False)
+    }
+    query_string = urlencode(filtered_url_args)
+
     return {
         'page': page,
         'per_page': per_page,
@@ -37,4 +47,5 @@ def get_pager(url, total, page=1, per_page=12, url_args=None):
         'pages': list(range(1, total_pages + 1)),
         'url': url,
         'url_args': url_args,
+        'query_string': query_string,
     }

@@ -75,7 +75,7 @@
                                 <label for="date_deadline">Deadline
                                     <span class="required">*</span>
                                 </label>
-                                <input type="date" id="date_deadline" name="date_deadline" required="required"/>
+                                <input type="date" id="date_deadline" name="date_deadline" required="required" t-att-min="today"/>
                             </div>
                         </div>
 

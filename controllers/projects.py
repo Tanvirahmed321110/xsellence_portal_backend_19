@@ -8,6 +8,21 @@ from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
 
 # ========== For Projects Page  ============
 class XsellencePortal(http.Controller):
+    def _can_manage_projects(self):
+        user = request.env.user
+        return (
+            user.has_group('xsellence_portal.group_project_manager')
+            or user.has_group('xsellence_portal.group_admin')
+        )
+
+    def _project_manager_only_response(self, back_url='/projects'):
+        return request.render('xsellence_portal.error_page', {
+            'error_title': 'Access Denied',
+            'error_desc': 'Only Project Manager users can create, edit, delete, or update projects.',
+            'error_btn_label': 'Back',
+            'error_btn_url': back_url,
+        })
+
     def _dedupe_stage_records(self, stages):
         unique_stages = request.env['project.project.stage'].sudo().browse()
         seen_names = set()
@@ -18,6 +33,14 @@ class XsellencePortal(http.Controller):
             seen_names.add(key)
             unique_stages |= stage
         return unique_stages
+
+    def _parse_portal_date(self, raw_value):
+        if not raw_value:
+            return False
+        try:
+            return date.fromisoformat(str(raw_value).strip())
+        except (TypeError, ValueError):
+            return False
 
     def _project_stage_model(self):
         return request.env['project.project.stage'].sudo()
@@ -99,6 +122,7 @@ class XsellencePortal(http.Controller):
             'active_menu': 'projects',
             'projects': projects,
             'statuses': statuses,
+            'can_manage_projects': self._can_manage_projects(),
             'status': status or '',
             'selected_employee_id': selected_employee_id,
             'pager': pager,
@@ -114,6 +138,9 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/create_project', type='http', auth='user', website=True)
     def create_project_f(self, **kw):
+        if not self._can_manage_projects():
+            return self._project_manager_only_response('/projects')
+
         source = kw.get('source')
 
         tags = request.env['project.tags'].sudo().search([])
@@ -156,6 +183,8 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/submit_project', type='http', auth='user', methods=['POST'], website=True, csrf=True)
     def submit_project(self, **post):
+        if not self._can_manage_projects():
+            return self._project_manager_only_response('/projects')
 
         assigned_user_ids = request.httprequest.form.getlist('assigned_user_ids')
         tags = request.httprequest.form.getlist('tag_ids')
@@ -166,6 +195,14 @@ class XsellencePortal(http.Controller):
             return request.render('xsellence_portal.error_page', {
                 'error_title': 'Project Creation Failed',
                 'error_desc': 'Project name is required.',
+                'error_btn_label': 'Try Again',
+                'error_btn_url': '/create_project',
+            })
+        project_end_date = self._parse_portal_date(post.get('date'))
+        if project_end_date and project_end_date < date.today():
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Project Creation Failed',
+                'error_desc': 'End date cannot be earlier than today.',
                 'error_btn_label': 'Try Again',
                 'error_btn_url': '/create_project',
             })
@@ -191,7 +228,7 @@ class XsellencePortal(http.Controller):
         if stage_id:
             create_data['stage_id'] = stage_id
 
-        project = request.env['project.project'].create(create_data)
+        project = request.env['project.project'].sudo().create(create_data)
 
         # ❌  Error Page
         if not project:
@@ -230,6 +267,7 @@ class XsellencePortal(http.Controller):
         return request.render('xsellence_portal.project_details_page', {
             'active_menu': 'projects',
             'project': project,
+            'can_manage_projects': self._can_manage_projects(),
             'status_selection': status_selection,
             'messages': messages,
             'breadcrumb': [
@@ -278,6 +316,10 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/project/update_status', type='http', auth='user', csrf=True)
     def update_project_status(self, project_id=None, status=None, **kw):
+        if not self._can_manage_projects():
+            back_url = f"/projects/details/{project_id}" if project_id else '/projects'
+            return self._project_manager_only_response(back_url)
+
         project = False
         if project_id:
             project = request.env['project.project'].sudo().browse(int(project_id))
@@ -293,6 +335,8 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/project/edit/<int:project_id>', type='http', auth='user', website=True, methods=['GET'])
     def edit_project_page(self, project_id, **kwargs):
+        if not self._can_manage_projects():
+            return self._project_manager_only_response(f"/projects/details/{project_id}")
 
         # project fetch
         project = request.env['project.project'].sudo().browse(project_id)
@@ -320,6 +364,7 @@ class XsellencePortal(http.Controller):
             'tags': tags,
             'status_selection': status_selection,
             'priority': priority_selection,
+            'today': date.today().strftime('%Y-%m-%d'),
         })
 
     # ========================
@@ -327,6 +372,9 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/project/edit/<int:project_id>', type='http', auth='user', website=True, methods=['POST'], csrf=True)
     def edit_project_submit(self, project_id, **kw):
+        if not self._can_manage_projects():
+            return self._project_manager_only_response(f"/projects/details/{project_id}")
+
         project = request.env['project.project'].sudo().browse(project_id)
 
         if not project.exists():
@@ -343,6 +391,14 @@ class XsellencePortal(http.Controller):
         project_name = (kw.get('name') or project.name or '').strip()
         if not project_name:
             return request.redirect(f"/project/edit/{project_id}")
+        project_end_date = self._parse_portal_date(kw.get('date'))
+        if project_end_date and project_end_date < date.today():
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Project Update Failed',
+                'error_desc': 'End date cannot be earlier than today.',
+                'error_btn_label': 'Back to Edit Project',
+                'error_btn_url': f'/project/edit/{project_id}',
+            })
 
         vals = {
             'name': project_name,
@@ -376,6 +432,9 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/project/delete', type="http", auth="user", methods=['POST'], website=True, csrf=True)
     def delete_project(self, project_id=None, **kw):
+        if not self._can_manage_projects():
+            back_url = f"/projects/details/{project_id}" if project_id and str(project_id).isdigit() else '/projects'
+            return self._project_manager_only_response(back_url)
 
         last_id = request.session.get('last_project_id')
 

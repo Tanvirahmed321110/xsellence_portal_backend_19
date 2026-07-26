@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Xsellence Portal",
-    "version": "19.0.1.0.0",
+    "version": "0.1",
     "summary": "Project, task, timesheet, employee, and support portal",
     "description": """
         Xsellence Portal provides a custom website dashboard for project,
         task, timesheet, employee, notification, and support workflows.
     """,
-    "author": "Tanvir Ahmed",
+    "author": "Tanvir Ahmed,Shamiul Basir",
     "website": "https://www.xsellencebdltd.com",
     "license": "LGPL-3",
     "category": "Services/Xsellence Portal",

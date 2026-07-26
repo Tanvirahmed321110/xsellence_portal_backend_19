@@ -7,6 +7,21 @@ from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
 
 
 class XsellencePortal(http.Controller):
+    def _can_manage_tasks(self):
+        user = request.env.user
+        return (
+            user.has_group('xsellence_portal.group_project_manager')
+            or user.has_group('xsellence_portal.group_admin')
+        )
+
+    def _task_manager_only_response(self, back_url='/tasks'):
+        return request.render('xsellence_portal.error_page', {
+            'error_title': 'Access Denied',
+            'error_desc': 'Only Project Manager users can create, edit, delete, or update tasks.',
+            'error_btn_label': 'Back',
+            'error_btn_url': back_url,
+        })
+
     def _dedupe_stage_records(self, stages):
         unique_stages = request.env['project.task.type'].sudo().browse()
         seen_names = set()
@@ -17,6 +32,14 @@ class XsellencePortal(http.Controller):
             seen_names.add(key)
             unique_stages |= stage
         return unique_stages
+
+    def _parse_portal_date(self, raw_value):
+        if not raw_value:
+            return False
+        try:
+            return date.fromisoformat(str(raw_value).strip())
+        except (TypeError, ValueError):
+            return False
 
     def _task_stage_model(self):
         return request.env['project.task.type'].sudo()
@@ -117,6 +140,7 @@ class XsellencePortal(http.Controller):
             'active_menu': 'tasks',
             'tasks': tasks,
             'statuses': statuses,
+            'can_manage_tasks': self._can_manage_tasks(),
             'selected_status': status,
             'selected_employee_id': selected_employee_id,
             'pager': pager,
@@ -147,6 +171,7 @@ class XsellencePortal(http.Controller):
         return request.render('xsellence_portal.task_details_page', {
             'active_menu': 'tasks',
             'task': task,
+            'can_manage_tasks': self._can_manage_tasks(),
             'status_selection': status_selection,
             'messages': messages,
             'breadcrumb': [
@@ -194,6 +219,10 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/task/update_status', type='http', auth='user', methods=['POST'], csrf=True)
     def update_project_status(self, task_id=None, status=None, redirect_url=None, **kw):
+        if not self._can_manage_tasks():
+            back_url = f"/tasks/task_details/{task_id}" if task_id else '/tasks'
+            return self._task_manager_only_response(back_url)
+
         task = False
         if task_id:
             task = self._get_visible_task(int(task_id))
@@ -210,6 +239,9 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/add_task', type='http', auth='user', website=True)
     def add_task_f(self, **kw):
+        if not self._can_manage_tasks():
+            return self._task_manager_only_response('/tasks')
+
         source = kw.get('source')
         selected_project_id = kw.get('project_id')
 
@@ -254,6 +286,8 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/add_task/submit', type='http', auth='user', methods=['POST'], website=True, csrf=True)
     def add_task_submit(self, **kw):
+        if not self._can_manage_tasks():
+            return self._task_manager_only_response('/tasks')
 
         # Assignees (multiple select)
         assignee_ids = request.httprequest.form.getlist('user_ids')
@@ -264,6 +298,14 @@ class XsellencePortal(http.Controller):
             return request.render('xsellence_portal.error_page', {
                 'error_title': 'Task Creation Failed',
                 'error_desc': 'Task name is required.',
+                'error_btn_label': 'Try Again',
+                'error_btn_url': '/add_task',
+            })
+        task_deadline = self._parse_portal_date(kw.get('date_deadline'))
+        if task_deadline and task_deadline < date.today():
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Task Creation Failed',
+                'error_desc': 'Deadline cannot be earlier than today.',
                 'error_btn_label': 'Try Again',
                 'error_btn_url': '/add_task',
             })
@@ -307,6 +349,9 @@ class XsellencePortal(http.Controller):
     # ==========================
     @http.route('/task/edit/<int:task_id>', type='http', auth='user', website=True, methods=['GET'], csrf=True)
     def edit_task_form(self, task_id, **kw):
+        if not self._can_manage_tasks():
+            return self._task_manager_only_response(f"/tasks/task_details/{task_id}")
+
         task = self._get_visible_task(task_id)
 
         if not task.exists():
@@ -326,6 +371,7 @@ class XsellencePortal(http.Controller):
             'users': users,
             'statuses': statuses,
             'priority': priority,
+            'today': date.today().strftime('%Y-%m-%d'),
             'breadcrumb': [
                 {'name': 'Dashboard', 'url': '/dashboard'},
                 {'name': 'Tasks', 'url': '/tasks'},
@@ -338,6 +384,9 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/task/edit/<int:task_id>', type='http', auth='user', website=True, methods=['POST'], csrf=True)
     def edit_task_submit(self, task_id, **kw):
+        if not self._can_manage_tasks():
+            return self._task_manager_only_response(f"/tasks/task_details/{task_id}")
+
         task = self._get_visible_task(task_id)
 
         if not task.exists():
@@ -348,6 +397,14 @@ class XsellencePortal(http.Controller):
         task_name = (kw.get('name') or task.name or '').strip()
         if not task_name:
             return request.redirect(f"/task/edit/{task_id}")
+        task_deadline = self._parse_portal_date(kw.get('date_deadline'))
+        if task_deadline and task_deadline < date.today():
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Task Update Failed',
+                'error_desc': 'Deadline cannot be earlier than today.',
+                'error_btn_label': 'Back to Edit Task',
+                'error_btn_url': f'/task/edit/{task_id}',
+            })
 
         vals = {
             'name': task_name,
@@ -372,6 +429,9 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/task/delete', type='http', auth='user', methods=['POST'], website=True, csrf=True)
     def delete_task(self, task_id=None, **kw):
+        if not self._can_manage_tasks():
+            back_url = f"/tasks/task_details/{task_id}" if task_id and str(task_id).isdigit() else '/tasks'
+            return self._task_manager_only_response(back_url)
 
         if not task_id:
             return request.render('xsellence_portal.error_page', {

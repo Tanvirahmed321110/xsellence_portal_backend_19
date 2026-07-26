@@ -11,7 +11,9 @@
             <!-- ====================  Breadcrumb  ==================== -->
             <div class="flex-between align-center gap-1 flex-wrap n-btn-wrap">
                 <t t-call="xsellence_portal.breadcrumb_component"/>
-                <a t-att-href="'/add_task?source=tasks%s' % employee_query_suffix" class="btn btn-primary">Add New Task +</a>
+                <t t-if="can_manage_tasks">
+                    <a t-att-href="'/add_task?source=tasks%s' % employee_query_suffix" class="btn btn-primary">Add New Task +</a>
+                </t>
             </div>
 
             <!--========================|| Tasks Here ||=========================-->
@@ -77,7 +79,7 @@
                 <t t-if="tasks">
                     <!--==============================|| Grid View All Projects Here ||============================-->
                     <div class="view-panel visible" id="panel-grid">
-                        <div class="grid-5 grid-lg-4 gap-lg-4 gap-4  grid-sm-2 row-gap-lg-6 row-gap-sm-4 grid-md-2 tasks mt-6 mt-sm-5 gap-sm-2">
+                        <div class="grid-5 grid-lg-4 grid-md-2 gap-lg-4 gap-4  grid-sm-2 row-gap-lg-6 row-gap-sm-4 grid-md-2 tasks mt-6 mt-sm-5 gap-sm-2">
                             <t t-foreach="tasks" t-as="task">
                                 <!--================||   Single Task Card here ||===============-->
                                 <div class="proj-card task-card">
@@ -172,23 +174,30 @@
                                         </div>
                                     </div>
                                     <div class="card-footer">
-                                        <div class="state-dropdown ">
-                                            <form action="task/update_status" method="post">
-                                                <input type="hidden" name="csrf_token"
-                                                       t-att-value="request.csrf_token()"/>
-                                                <input type="hidden" name="task_id" t-att-value="task.id"/>
-                                                <input type="hidden" name="redirect_url"
-                                                       t-att-value="request.httprequest.referrer"/>
+                                        <t t-if="can_manage_tasks">
+                                            <div class="state-dropdown ">
+                                                <form action="task/update_status" method="post">
+                                                    <input type="hidden" name="csrf_token"
+                                                           t-att-value="request.csrf_token()"/>
+                                                    <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                                    <input type="hidden" name="redirect_url"
+                                                           t-att-value="request.httprequest.referrer"/>
 
-                                                <select class="filter-select" name="status"
-                                                        onchange="this.form.submit()">
-                                                    <t t-foreach="statuses" t-as="status">
-                                                        <option t-att-value="status.id" t-esc="status.name"
-                                                                t-att-selected="task.stage_id.id == status.id"></option>
-                                                    </t>
-                                                </select>
-                                            </form>
-                                        </div>
+                                                    <select class="filter-select" name="status"
+                                                            onchange="this.form.submit()">
+                                                        <t t-foreach="statuses" t-as="status">
+                                                            <option t-att-value="status.id" t-esc="status.name"
+                                                                    t-att-selected="task.stage_id.id == status.id"></option>
+                                                        </t>
+                                                    </select>
+                                                </form>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="state-dropdown">
+                                                <div class="filter-select" t-esc="task.stage_id.name or 'N/A'"></div>
+                                            </div>
+                                        </t>
 
                                         <!-- Actions Buttons -->
                                         <div class="action-btns">
@@ -204,24 +213,26 @@
                                                 </svg>
                                             </a>
 
-                                            <!-- Delete button -->
-                                            <form method="post" action="/task/delete">
-                                                <input type="hidden" name="csrf_token"
-                                                       t-att-value="request.csrf_token()"/>
-                                                <input type="hidden" name="task_id" t-att-value="task.id"/>
-                                                <button type="button" class="action-btn del"
-                                                        onclick="return openDeleteModal(this)">
-                                                    <svg width="12" height="12" viewBox="0 0 24 24"
-                                                         fill="none" stroke="currentColor" stroke-width="2"
-                                                         stroke-linecap="round" stroke-linejoin="round">
-                                                        <polyline points="3 6 5 6 21 6"/>
-                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                                        <path d="M10 11v6"/>
-                                                        <path d="M14 11v6"/>
-                                                        <path d="M9 6V4h6v2"/>
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                            <t t-if="can_manage_tasks">
+                                                <!-- Delete button -->
+                                                <form method="post" action="/task/delete">
+                                                    <input type="hidden" name="csrf_token"
+                                                           t-att-value="request.csrf_token()"/>
+                                                    <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                                    <button type="button" class="action-btn del"
+                                                            onclick="return openDeleteModal(this)">
+                                                        <svg width="12" height="12" viewBox="0 0 24 24"
+                                                             fill="none" stroke="currentColor" stroke-width="2"
+                                                             stroke-linecap="round" stroke-linejoin="round">
+                                                            <polyline points="3 6 5 6 21 6"/>
+                                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                                            <path d="M10 11v6"/>
+                                                            <path d="M14 11v6"/>
+                                                            <path d="M9 6V4h6v2"/>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            </t>
                                         </div>
                                     </div>
 
@@ -244,6 +255,7 @@
 
 
                     <!-- =====  Delete Modal  ===== -->
+                    <t t-if="can_manage_tasks">
                     <div class="modal-overlay " id="deleteModal">
                         <div class="modal-container">
                             <div class="glass-icon">🗑️</div>
@@ -264,6 +276,7 @@
                             </div>
                         </div>
                     </div>
+                    </t>
 
                     <!--==============================|| List View All Projects Here ||============================-->
                     <div class="view-panel" id="panel-list">

@@ -1,6 +1,6 @@
 <odoo>
     <template id="dashboard_page">
-        <link rel="stylesheet" href="/xsellence_portal/static/src/css/dashboard.css?v=16"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/dashboard.css?v=17"/>
 
         <t t-call="xsellence_portal.custom_layout">
             <section class="" style="position:relative">
@@ -31,7 +31,7 @@
                 </t>
 
                 <!--=================|| Carts Here ||==================  -->
-                <div class="grid-4  grid-sm-2 gap-4 gap-sm-3 dashboard-items">
+                <div class="grid-4 grid-md-2  grid-sm-2 gap-4 gap-sm-3 dashboard-items">
                     <!-- Total Tasks -->
                     <div class="card">
                         <p class="title">Total Tasks</p>
@@ -147,7 +147,7 @@
 
 
                 <!--=================|| Attendance and Leave ||==================  -->
-                <div class="grid-2 grid-sm-1 mt-7 gap-6 " style="align-items:stretch;">
+                <div class="grid-2 grid-md-1  grid-sm-1 mt-7 gap-6 " style="align-items:stretch;">
 
                     <!-- Project Progress -->
                     <div class="project-progress p-4 radius-xl  ">
@@ -275,7 +275,8 @@
                                     <span class="card-badge badge-blue" t-esc="working_hours_month_label"></span>
                                 </div>
                                 <div class="title">Working Hours</div>
-                                <div class="value mt-6"><t t-esc="working_hours_month"/>
+                                <div class="value mt-6">
+                                    <t t-esc="working_hours_month"/>
                                     <span class="value-unit">h</span>
                                 </div>
                                 <div class="card-footer">
@@ -368,7 +369,9 @@
 
                                     <div class="title">Sick Leave</div>
                                     <div class="footer  ">
-                                        <div class="text-right fs-xs total">(<span t-esc="leave_stats[0]['used']"></span> / <span t-esc="leave_stats[0]['allocated']"></span>)
+                                        <div class="text-right fs-xs total">(<span
+                                                t-esc="leave_stats[0]['used']"></span> / <span
+                                                t-esc="leave_stats[0]['allocated']"></span>)
                                         </div>
                                         <div class="prog-track mt-3">
                                             <div class="prog-bar"
@@ -393,7 +396,9 @@
 
                                     <div class="title">Casual Leave</div>
                                     <div class="footer  ">
-                                        <div class="text-right fs-xs total">(<span t-esc="leave_stats[1]['used']"></span> / <span t-esc="leave_stats[1]['allocated']"></span>)
+                                        <div class="text-right fs-xs total">(<span
+                                                t-esc="leave_stats[1]['used']"></span> / <span
+                                                t-esc="leave_stats[1]['allocated']"></span>)
                                         </div>
                                         <div class="prog-track mt-3">
                                             <div class="prog-bar"
@@ -410,17 +415,17 @@
                 </div>
 
                 <!-- Demo Data Popup -->
-<div id="demoDataPopup" class="demo-data-popup-overlay">
-    <div class="demo-data-popup-box">
-        <button type="button"
-                id="closeDemoDataPopup"
-                class="demo-data-popup-close">
-            ×
-        </button>
+                <div id="demoDataPopup" class="demo-data-popup-overlay">
+                    <div class="demo-data-popup-box">
+                        <button type="button"
+                                id="closeDemoDataPopup"
+                                class="demo-data-popup-close">
+                            ×
+                        </button>
 
-        <h2>Demo Data</h2>
-    </div>
-</div>
+                        <h2>Demo Data</h2>
+                    </div>
+                </div>
 
             </section>
             <script>
@@ -457,25 +462,24 @@
                 });
 
 
-
                 <!-- demo popup-->
                 document.addEventListener("DOMContentLoaded", function () {
-                    const popup = document.getElementById("demoDataPopup");
-                    const closeButton = document.getElementById("closeDemoDataPopup");
+                const popup = document.getElementById("demoDataPopup");
+                const closeButton = document.getElementById("closeDemoDataPopup");
 
-                    setTimeout(function () {
-                        popup.classList.add("show");
-                    }, 4000);
+                setTimeout(function () {
+                popup.classList.add("show");
+                }, 4000);
 
-                    closeButton.addEventListener("click", function () {
-                        popup.classList.remove("show");
-                    });
+                closeButton.addEventListener("click", function () {
+                popup.classList.remove("show");
+                });
 
-                    popup.addEventListener("click", function (event) {
-                        if (event.target === popup) {
-                            popup.classList.remove("show");
-                        }
-                    });
+                popup.addEventListener("click", function (event) {
+                if (event.target === popup) {
+                popup.classList.remove("show");
+                }
+                });
                 });
             </script>
         </t>

@@ -132,23 +132,31 @@
 
                         <!--=============  Card Footer  =============-->
                         <div class="card-footer">
-                            <div class="state-dropdown ">
-                                <form action="/task/update_status" method="post">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <input type="hidden" name="task_id" t-att-value="task.id"/>
+                            <t t-if="can_manage_tasks">
+                                <div class="state-dropdown ">
+                                    <form action="/task/update_status" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="task_id" t-att-value="task.id"/>
 
-                                    <select class="filter-select" name="status" onchange="this.form.submit()">
-                                        <t t-foreach="status_selection" t-as="status">
-                                            <option t-att-value="status.id"
-                                                    t-att-selected="status.id == task.stage_id.id">
-                                                <t t-esc="status.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
-                                </form>
-                            </div>
+                                        <select class="filter-select" name="status" onchange="this.form.submit()">
+                                            <t t-foreach="status_selection" t-as="status">
+                                                <option t-att-value="status.id"
+                                                        t-att-selected="status.id == task.stage_id.id">
+                                                    <t t-esc="status.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </form>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="state-dropdown">
+                                    <div class="filter-select" t-esc="task.stage_id.name or 'N/A'"></div>
+                                </div>
+                            </t>
                             <!-- Actions Buttons -->
-                            <div class="action-btns">
+                            <t t-if="can_manage_tasks">
+                                <div class="action-btns">
 
                                 <!-- Edit button -->
                                 <a t-att-href="'/task/edit/%s' % task.id" class="action-btn edit">
@@ -179,7 +187,8 @@
                                     </button>
                                 </form>
 
-                            </div>
+                                </div>
+                            </t>
 
                         </div>
                     </div>
@@ -306,6 +315,7 @@
 
 
                 <!-- =====  Delete Modal  ===== -->
+                <t t-if="can_manage_tasks">
                 <div class=" modal-overlay " id="deleteModal">
                     <div class="modal-container">
                         <div class="glass-icon">🗑️</div>
@@ -326,6 +336,7 @@
                         </div>
                     </div>
                 </div>
+                </t>
 
             </section>
 

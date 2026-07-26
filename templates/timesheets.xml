@@ -1,6 +1,6 @@
 <odoo>
     <template id="timesheet_page">
-        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=2"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=4"/>
         <t t-call="xsellence_portal.custom_layout">
             <t t-set="selected_employee_param" t-value="str(selected_employee_id) if selected_employee_id else ''"/>
             <t t-set="timesheet_filter_onchange"
@@ -14,7 +14,7 @@
                 <div class="flex-between flex-wrap gap-4">
                     <div class="sec-title d-flex gap-2 align-center">Timesheets Tasks
                         <span
-                                class="count fs-xs flex-center" t-esc="len(timesheets)">
+                                class="count fs-xs flex-center" t-esc="total">
                         </span>
                     </div>
                     <!-- add new timesheet button -->
@@ -107,7 +107,12 @@
                                             <t t-esc="item.task_id.name or '-'"/>
                                         </td>
                                         <td>
-                                            <t t-esc="item.name or '-'"/>
+                                            <div class="tooltip timesheet-desc-tooltip">
+                                                <div class="timesheet-desc-clamp">
+                                                    <t t-esc="item.name or '-'"/>
+                                                </div>
+                                                <span class="tooltip-text" t-esc="item.name or '-'"></span>
+                                            </div>
                                         </td>
                                         <td>
                                             <span class="time-spent" t-field="item.unit_amount"
@@ -199,32 +204,6 @@
                     </div>
                 </div>
 
-                <!-- Pagination -->
-                <t t-if="len(timesheets) > 15">
-                    <div class="pagination">
-                        <span class="page-info">Showing 1–6 of 24 projects</span>
-                        <div class="page-btns">
-                            <button class="page-btn">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                     stroke-linejoin="round">
-                                    <polyline points="15 18 9 12 15 6"/>
-                                </svg>
-                            </button>
-                            <button class="page-btn active">1</button>
-                            <button class="page-btn">2</button>
-                            <button class="page-btn">3</button>
-                            <button class="page-btn">4</button>
-                            <button class="page-btn">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                     stroke-linejoin="round">
-                                    <polyline points="9 18 15 12 9 6"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </t>
             </section>
 
 
@@ -232,6 +211,6 @@
             <t t-call="xsellence_portal.reusable_pagination"/>
         </t>
 
-        <script src="/xsellence_portal/static/src/js/timesheet.js?v=1"></script>
+        <script src="/xsellence_portal/static/src/js/timesheet.js?v=2"></script>
     </template>
 </odoo>

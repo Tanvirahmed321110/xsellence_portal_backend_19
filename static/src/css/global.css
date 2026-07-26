@@ -619,6 +619,7 @@ body.dark-theme .table-wrap .action-btn.del {
 .pagination .page-btns {
     display: flex;
     gap: 8px;
+    flex-wrap:wrap;
 }
 
 .pagination .page-btn svg {
@@ -2964,6 +2965,7 @@ aside .sidebar-bottom {
 
 .task-card .filter-select {
     font-weight: 500;
+    max-width:160px;
 }
 
 .task-card .task-desc {

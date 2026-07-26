@@ -24,7 +24,7 @@ class XsellencePortalHelpdesk(http.Controller):
     # ========================
     # Helpdesk page
     # ========================
-    @http.route('/helpdesk', type='http', auth='user', website=True)
+    @http.route('/helpdesks', type='http', auth='user', website=True)
     def helpdesk_f(self, **kw):
         return request.render('xsellence_portal.helpdesk_page', {
             'active_menu': 'helpdesk',
@@ -33,7 +33,7 @@ class XsellencePortalHelpdesk(http.Controller):
     # ========================
     # Helpdesk ticket details
     # ========================
-    @http.route('/helpdesk/ticket_details', type='http', auth='user', website=True)
+    @http.route('/helpdesks/ticket_details', type='http', auth='user', website=True)
     def ticket_details_f(self, **kw):
         return request.render('xsellence_portal.ticket_details_page', {
             'active_menu': 'helpdesk',

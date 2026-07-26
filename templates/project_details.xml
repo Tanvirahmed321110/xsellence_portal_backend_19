@@ -266,25 +266,33 @@
 
                         <!--=============  Card Footer  =============-->
                         <div class="card-footer">
-                            <form method="post" action="/project/update_status">
-                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                <input type="hidden" name="project_id" t-att-value="project.id"/>
+                            <t t-if="can_manage_projects">
+                                <form method="post" action="/project/update_status">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="project_id" t-att-value="project.id"/>
 
+                                    <div class="state-dropdown">
+                                        <select class="filter-select" name="status" onchange="this.form.submit()">
+                                            <t t-foreach="status_selection" t-as="status">
+                                                <option t-att-value="status.id"
+                                                        t-att-selected="status.id == project.stage_id.id">
+                                                    <t t-esc="status.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </form>
+                            </t>
+                            <t t-else="">
                                 <div class="state-dropdown">
-                                    <select class="filter-select" name="status" onchange="this.form.submit()">
-                                        <t t-foreach="status_selection" t-as="status">
-                                            <option t-att-value="status.id"
-                                                    t-att-selected="status.id == project.stage_id.id">
-                                                <t t-esc="status.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
+                                    <div class="filter-select" t-esc="project.stage_id.name or 'N/A'"></div>
                                 </div>
-                            </form>
+                            </t>
 
 
                             <!-- Actions Buttons -->
-                            <div class="action-btns">
+                            <t t-if="can_manage_projects">
+                                <div class="action-btns">
 
                                 <!-- Edit button -->
                                 <a t-att-href="'/project/edit/%s' % project.id" class="action-btn edit">
@@ -313,7 +321,8 @@
                                         </svg>
                                     </button>
                                 </form>
-                            </div>
+                                </div>
+                            </t>
                         </div>
                     </div>
 
@@ -439,6 +448,7 @@
                 </div>
 
                 <!-- =====  Delete Modal  ===== -->
+                <t t-if="can_manage_projects">
                 <div class="modal-overlay " id="deleteModal">
                     <div class="modal-container">
                         <div class="glass-icon">🗑️</div>
@@ -459,6 +469,7 @@
                         </div>
                     </div>
                 </div>
+                </t>
             </section>
         </t>
     </template>

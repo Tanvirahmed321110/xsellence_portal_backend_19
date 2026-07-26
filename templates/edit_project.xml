@@ -111,7 +111,7 @@
                                 <label for="date">End Date
                                     <span class="required">*</span>
                                 </label>
-                                <input type="date" t-att-value="str(project.date) if project.date else ''" name="date"
+                                <input type="date" t-att-value="str(project.date) if project.date else ''" name="date" t-att-min="today"
                                        id="date" placeholder="Company Name"/>
                             </div>
                         </div>

@@ -1106,6 +1106,13 @@
     }
 }
 
+@media (max-width:1080px){
+    .leave-attendance {
+    grid-template-columns: 1fr;
+}.chart-performance {
+    grid-template-columns: 1fr 1fr;
+}
+}
 
 
 /*==================||  Mobile Responsive Start Here  ||====================*/

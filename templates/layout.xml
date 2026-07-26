@@ -12,8 +12,8 @@
                 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
                 <link rel="stylesheet" href="/xsellence_portal/static/src/css/custom_class.css?v=4"/>
                 <link rel="stylesheet" href="/xsellence_portal/static/src/css/my_component.css?v=8"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=35"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=27"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=38"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=31"/>
                 <t t-raw="header"/>
             </head>
 
@@ -246,7 +246,7 @@
                                 </li>
 
                                 <li>
-                                    <a t-att-href="'/helpdesk%s' % employee_query_suffix" class="menu-item"
+                                    <a t-att-href="'/helpdesks%s' % employee_query_suffix" class="menu-item"
                                        t-attf-class="menu-item #{active_menu == 'helpdesk' and 'active' or ''}">
                                         <div class="icon">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -266,26 +266,28 @@
                                 </li>
 
 
-                                <li>
-                                    <a t-att-href="'/add_task%s' % employee_query_suffix" class="menu-item"
-                                       t-attf-class="menu-item #{active_menu =='add_task' and 'active' or ''}">
-                                        <div class="icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                                 viewBox="0 0 24 24"
-                                                 fill="none" stroke-width="2" stroke="currentColor"
-                                                 stroke-linecap="round"
-                                                 stroke-linejoin="round">
-                                                <!-- Document -->
-                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                                <path d="M14 2v6h6"/>
+                                <t t-if="request.env.user.has_group('xsellence_portal.group_project_manager') or request.env.user.has_group('xsellence_portal.group_admin')">
+                                    <li>
+                                        <a t-att-href="'/add_task%s' % employee_query_suffix" class="menu-item"
+                                           t-attf-class="menu-item #{active_menu =='add_task' and 'active' or ''}">
+                                            <div class="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                     viewBox="0 0 24 24"
+                                                     fill="none" stroke-width="2" stroke="currentColor"
+                                                     stroke-linecap="round"
+                                                     stroke-linejoin="round">
+                                                    <!-- Document -->
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                                    <path d="M14 2v6h6"/>
 
-                                                <!-- Plus -->
-                                                <path d="M12 11v6M9 14h6"/>
-                                            </svg>
-                                        </div>
-                                        <span class="text">Add Task</span>
-                                    </a>
-                                </li>
+                                                    <!-- Plus -->
+                                                    <path d="M12 11v6M9 14h6"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text">Add Task</span>
+                                        </a>
+                                    </li>
+                                </t>
 
                                 <li>
                                     <a t-att-href="'/add_timesheet%s' % employee_query_suffix" class="menu-item"
@@ -507,7 +509,12 @@
                             </div>
                         </a>
                         <div class="s3-empty" id="notification-empty-state">
-                            <div class="s3-empty-icon">🔔</div>
+                            <div class="s3-empty-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                </svg>
+                            </div>
                             <p>No notifications yet</p>
                             <small>You're all caught up!</small>
                         </div>
@@ -586,7 +593,7 @@
 
 
                 <!--    Javascript Links Here     -->
-                <script src="/xsellence_portal/static/src/js/main.js?v=10"></script>
+                <script src="/xsellence_portal/static/src/js/main.js?v=12"></script>
                 <script>
                     if (localStorage.getItem('sidebarCollapsed') === 'true') {
                     document.documentElement.classList.add('sidebar-collapsed');

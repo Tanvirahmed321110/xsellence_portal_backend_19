@@ -342,9 +342,9 @@ openSidebarDesktop();
         day: '2-digit', month: 'short', year: 'numeric',
         timeZone: 'Asia/Dhaka'
     });
-    timeEl.textContent = now.toLocaleTimeString('en-GB', {
+    timeEl.textContent = now.toLocaleTimeString('en-US', {
         hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: false,
+        hour12: true,
         timeZone: 'Asia/Dhaka'
     });
 }

@@ -115,7 +115,7 @@
                                 <label for="date">End Date
                                     <span class="required">*</span>
                                 </label>
-                                <input type="date" required="required" name="date" id="date"
+                                <input type="date" required="required" name="date" id="date" t-att-min="today"
                                        placeholder="Company Name"/>
                             </div>
                         </div>

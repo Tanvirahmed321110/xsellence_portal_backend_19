@@ -21,7 +21,7 @@
 
                 <!--==============|| All Employees  ||================-->
                 <div class=" mt-7">
-                    <div class="grid-5 gap-5 grid-lg-4 gap-lg-4 grid-sm-2 gap-sm-3 employees">
+                    <div class="grid-5 gap-5 grid-md-2 grid-lg-4 gap-lg-4 grid-sm-2 gap-sm-3 employees">
 
                         <t t-foreach="employees" t-as="employee">
 
@@ -54,7 +54,7 @@
                                         </div>
                                         <div class="info-row">
                                             <span class="icon">☎</span>
-                                            <span class="val" t-esc="employee.mobile_phone">+880 1811-556677</span>
+                                            <span class="val" t-esc="employee.mobile_phone">_</span>
                                         </div>
                                         <div class="info-row">
                                             <span class="icon">🏢</span>
