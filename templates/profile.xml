@@ -15,15 +15,14 @@
                 <div class="flex-between profile-info">
                     <div class=" d-flex gap-6 gap-sm-3 profile-info-wrap ">
                         <div class="left">
-                            <!-- User Image -->
                             <div class="profile-img">
-                                <t t-if="employee.image_512">
-                                      <img t-att-src="image_data_uri(employee.image_128)"
-                                         alt="profile image"/>
+                                <t t-if="employee and employee.id and employee.image_128">
+                                    <img t-att-src="'/web/image/hr.employee/%s/image_128' % employee.id"
+                                         t-att-alt="employee.name or user.name or 'profile image'"/>
                                 </t>
                                 <t t-else="">
-                                    <!-- ✅ Image না থাকলে Odoo default avatar -->
-                                    <img src="/web/static/img/avatar_grey.png" alt="profile image"/>
+                                    <img src="/web/static/img/avatar_grey.png"
+                                         t-att-alt="user.name or 'profile image'"/>
                                 </t>
                             </div>
                         </div>
@@ -92,7 +91,7 @@
                                     <div class="info-label">Gender</div>
                                     <div class="info-value">
                                         <span class="badge badge-gender">♂
-                                            <t t-esc="employee.gender or '' "/>
+                                            <!--                                            <t t-esc="employee.gender or '' "/>-->
                                         </span>
                                     </div>
                                 </div>
