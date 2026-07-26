@@ -96,13 +96,13 @@
                             </div>
                             <!--======= For Status =======-->
                             <div class="input-control ">
-                                <label for="custom_status" data-select-target="custom_status" class="select-open-label">
+                                <label for="stage_id" data-select-target="stage_id" class="select-open-label">
                                     Task Status
                                 </label>
-                                <select name="custom_status" id="custom_status">
+                                <select name="stage_id" id="stage_id">
                                     <t t-foreach="statuses" t-as="item">
-                                        <option t-att-value="item[0]">
-                                            <t t-esc="item[1]"/>
+                                        <option t-att-value="item.id">
+                                            <t t-esc="item.name"/>
                                         </option>
                                     </t>
                                 </select>
@@ -167,6 +167,11 @@
                 // <!-- Ts Control Library Code -->
                 new TomSelect("#assignees", {
                 create: true, // allow new names
+                persist: false
+                });
+
+                new TomSelect("#stage_id", {
+                create: true,
                 persist: false
                 });
             </script>

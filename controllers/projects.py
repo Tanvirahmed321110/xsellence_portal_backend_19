@@ -8,6 +8,39 @@ from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
 
 # ========== For Projects Page  ============
 class XsellencePortal(http.Controller):
+    def _dedupe_stage_records(self, stages):
+        unique_stages = request.env['project.project.stage'].sudo().browse()
+        seen_names = set()
+        for stage in stages:
+            key = (stage.name or '').strip().casefold()
+            if not key or key in seen_names:
+                continue
+            seen_names.add(key)
+            unique_stages |= stage
+        return unique_stages
+
+    def _project_stage_model(self):
+        return request.env['project.project.stage'].sudo()
+
+    def _get_project_stages(self):
+        stages = self._project_stage_model().search([], order='sequence, id')
+        return self._dedupe_stage_records(stages)
+
+    def _resolve_project_stage_id(self, raw_stage_value):
+        if not raw_stage_value:
+            return False
+        stage_value = str(raw_stage_value).strip()
+        if not stage_value:
+            return False
+        if stage_value.isdigit():
+            return int(stage_value)
+
+        stages = self._get_project_stages()
+        existing_stage = stages.filtered(lambda stage: (stage.name or '').strip().casefold() == stage_value.casefold())[:1]
+        if existing_stage:
+            return existing_stage.id
+
+        return self._project_stage_model().create({'name': stage_value}).id
 
     # ========================
     # For All Projects
@@ -29,8 +62,8 @@ class XsellencePortal(http.Controller):
 
         status_domain = []
         status = kw.get('status')
-        if status:
-            status_domain = [('custom_status', '=', status)]
+        if status and str(status).isdigit():
+            status_domain = [('stage_id', '=', int(status))]
 
         # ===== Final Domain Merge =====
         domain = base_domain + status_domain
@@ -60,7 +93,7 @@ class XsellencePortal(http.Controller):
             limit=pager['per_page']
         )
 
-        statuses = request.env['project.project']._fields['custom_status'].selection
+        statuses = self._get_project_stages()
 
         return request.render('xsellence_portal.projects_page', {
             'active_menu': 'projects',
@@ -91,7 +124,7 @@ class XsellencePortal(http.Controller):
             ('id', '!=', request.env.ref('base.user_admin').id)
         ])
 
-        status_selection = request.env['project.project']._fields['custom_status'].selection
+        status_selection = self._get_project_stages()
         priority = request.env['project.project']._fields['custom_priority'].selection
 
         if source == 'projects':
@@ -128,8 +161,16 @@ class XsellencePortal(http.Controller):
         tags = request.httprequest.form.getlist('tag_ids')
         partner_id = post.get('partner_id')
 
+        project_name = (post.get('name') or '').strip()
+        if not project_name:
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Project Creation Failed',
+                'error_desc': 'Project name is required.',
+                'error_btn_label': 'Try Again',
+                'error_btn_url': '/create_project',
+            })
         create_data = {
-            'name': post.get('name'),
+            'name': project_name,
             'github_link': post.get('github_link'),
             'dev_link': post.get('dev_link'),
             'dev_password': post.get('dev_password'),
@@ -139,7 +180,6 @@ class XsellencePortal(http.Controller):
             'live_password': post.get('live_password'),
             'partner_id': int(partner_id) if partner_id else False,
             'user_id': int(post.get('user_id')) if post.get('user_id') else False,
-            'custom_status': post.get('custom_status'),
             'date_start': post.get('date_start') or date.today(),
             'date': post.get('date') or date.today(),
             'custom_priority': post.get('custom_priority'),
@@ -147,6 +187,9 @@ class XsellencePortal(http.Controller):
             'assigned_user_ids': [(6, 0, [int(x) for x in assigned_user_ids if x])],
             'tag_ids': [(6, 0, [int(x) for x in tags if x])],
         }
+        stage_id = self._resolve_project_stage_id(post.get('stage_id'))
+        if stage_id:
+            create_data['stage_id'] = stage_id
 
         project = request.env['project.project'].create(create_data)
 
@@ -182,8 +225,7 @@ class XsellencePortal(http.Controller):
             ('res_id', '=', project.id)
         ], order='date desc')
 
-        status_selection = request.env['project.project'].fields_get(
-            ['custom_status'])['custom_status']['selection']
+        status_selection = self._get_project_stages()
 
         return request.render('xsellence_portal.project_details_page', {
             'active_menu': 'projects',
@@ -236,9 +278,12 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/project/update_status', type='http', auth='user', csrf=True)
     def update_project_status(self, project_id=None, status=None, **kw):
-        if project_id and status:
+        project = False
+        if project_id:
             project = request.env['project.project'].sudo().browse(int(project_id))
-            project.write({'custom_status': status})
+        stage_id = self._resolve_project_stage_id(status)
+        if project and stage_id:
+            project.write({'stage_id': stage_id})
 
         return request.redirect(f"/projects/details/{project_id}")
 
@@ -260,9 +305,9 @@ class XsellencePortal(http.Controller):
         users = request.env['res.users'].sudo().search([])
         tags = request.env['project.tags'].sudo().search([])
 
-        status_field = request.env['project.project']._fields.get('custom_status')
+        status_field = request.env['project.project']._fields.get('stage_id')
         priority_field = request.env['project.project']._fields.get('custom_priority')
-        status_selection = status_field.selection if status_field else []
+        status_selection = self._get_project_stages() if status_field else []
         priority_selection = priority_field.selection if priority_field else []
 
         # project object
@@ -295,15 +340,17 @@ class XsellencePortal(http.Controller):
 
         assigned_user_ids = request.httprequest.form.getlist('assigned_user_ids')
         assigned_user_ids = [safe_int(user) for user in assigned_user_ids if safe_int(user)]
+        project_name = (kw.get('name') or project.name or '').strip()
+        if not project_name:
+            return request.redirect(f"/project/edit/{project_id}")
 
         vals = {
-            'name': kw.get('name', project.name),
+            'name': project_name,
             'partner_id': safe_int(kw.get('partner_id')),
             'user_id': safe_int(kw.get('user_id')),
             'date_start': kw.get('date_start') or False,
             'date': kw.get('date') or False,
             'description': kw.get('description', ''),
-            'custom_status': kw.get('custom_status', ''),
             'custom_priority': kw.get('custom_priority', ''),
             'tag_ids': [(6, 0, tag_ids)],
             'assigned_user_ids': [(6, 0, assigned_user_ids)],
@@ -317,6 +364,9 @@ class XsellencePortal(http.Controller):
             'dev_user': kw.get('dev_user', ''),
             'dev_password': kw.get('dev_password', ''),
         }
+        stage_id = self._resolve_project_stage_id(kw.get('stage_id'))
+        if stage_id:
+            vals['stage_id'] = stage_id
 
         project.write(vals)
         return request.redirect(f"/projects/details/{project_id}")

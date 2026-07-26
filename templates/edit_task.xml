@@ -97,11 +97,11 @@
                             <!--======= For Status =======-->
                             <div class="input-control ">
                                 <label for="">Task Status</label>
-                                <select name="custom_status" id="custom_status">
+                                <select name="stage_id" id="stage_id">
                                     <t t-foreach="statuses" t-as="item">
-                                        <option t-att-value="item[0]"
-                                                t-att-selected="'selected' if item[0] == task.custom_status else None">
-                                            <t t-esc="item[1]"/>
+                                        <option t-att-value="item.id"
+                                                t-att-selected="'selected' if item.id == task.stage_id.id else None">
+                                            <t t-esc="item.name"/>
                                         </option>
                                     </t>
                                 </select>
@@ -161,6 +161,11 @@
             <script>
                 new TomSelect("#assignees", {
                 create: false,
+                persist: false
+                });
+
+                new TomSelect("#stage_id", {
+                create: true,
                 persist: false
                 });
             </script>

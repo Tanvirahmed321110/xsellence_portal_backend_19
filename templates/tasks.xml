@@ -42,7 +42,9 @@
                                 t-att-onchange="task_filter_onchange">
                             <option value="">All Status</option>
                             <t t-foreach="statuses" t-as="status">
-                                <option t-att-value="status[0]" t-esc="status[1]">
+                                <option t-att-value="status.id"
+                                        t-att-selected="'selected' if str(selected_status or '') == str(status.id) else None"
+                                        t-esc="status.name">
                                 </option>
                             </t>
                         </select>
@@ -88,29 +90,7 @@
                                             </div>
                                             <!-- Status -->
                                             <div>
-                                                <t t-if="task.custom_status == 'planning'">
-                                                    <div class="sts sts-planning">Planning</div>
-                                                </t>
-
-                                                <t t-elif="task.custom_status == 'in_progress'">
-                                                    <div class="sts sts-in-progress">In Progress</div>
-                                                </t>
-
-                                                <t t-elif="task.custom_status == 'review'">
-                                                    <div class="sts sts-review">Under Review</div>
-                                                </t>
-
-                                                <t t-elif="task.custom_status == 'completed'">
-                                                    <div class="sts sts-completed">Completed</div>
-                                                </t>
-
-                                                <t t-elif="task.custom_status == 'cancelled'">
-                                                    <div class="sts sts-cancelled">Cancelled</div>
-                                                </t>
-
-                                               <t t-else="">
-                                                    <div class="sts sts-default">N/A</div>
-                                                </t>
+                                                <div class="sts sts-default" t-esc="task.stage_id.name or 'N/A'"></div>
                                             </div>
                                         </div>
                                         <div class="assignee">
@@ -203,8 +183,8 @@
                                                 <select class="filter-select" name="status"
                                                         onchange="this.form.submit()">
                                                     <t t-foreach="statuses" t-as="status">
-                                                        <option t-att-value="status[0]" t-esc="status[1]"
-                                                                t-att-selected="task.custom_status == status[0]"></option>
+                                                        <option t-att-value="status.id" t-esc="status.name"
+                                                                t-att-selected="task.stage_id.id == status.id"></option>
                                                     </t>
                                                 </select>
                                             </form>
@@ -306,7 +286,7 @@
                                             <td t-esc="task.name"></td>
                                             <td t-esc="task.project_id.name if task.project_id.name else ''"></td>
                                             <td class="">
-                                                <div class="sts" t-esc="task.custom_status"></div>
+                                                <div class="sts" t-esc="task.stage_id.name or 'N/A'"></div>
                                             </td>
                                             <td t-esc="task.date_assign.strftime('%d %b %%y') if task.date_assign else ''"></td>
                                             <td t-esc="task.date_deadline.strftime('%d %b %%y')  if task.date_deadline else ''"></td>

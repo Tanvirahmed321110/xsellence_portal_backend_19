@@ -19,7 +19,7 @@
                           class="submit-form flex-column gap-5">
 
                         <input type="hidden" name="csrf_token"
-                               t-att-value="project.id"/>
+                               t-att-value="request.csrf_token()"/>
 
                         <div class="d-flex gap-3 align-center">
                             <div class="top flex-center">
@@ -82,14 +82,14 @@
 
                             <!--======= For  Status =======-->
                             <div class="input-control">
-                                <label for="custom_status">Project Status
+                                <label for="stage_id">Project Status
                                 </label>
-                                <select name="custom_status" id="custom_status">
+                                <select name="stage_id" id="stage_id">
                                     <option disabled="disabled" value="Select Status">Select Status</option>
                                     <t t-foreach="status_selection" t-as="status">
-                                        <option t-att-value="status[0]"
-                                                t-att-selected="'selected' if status[0] == project.custom_status else None">
-                                            <t t-esc="status[1]"/>
+                                        <option t-att-value="status.id"
+                                                t-att-selected="'selected' if status.id == project.stage_id.id else None">
+                                            <t t-esc="status.name"/>
                                         </option>
                                     </t>
                                 </select>
@@ -258,6 +258,11 @@
 
                 new TomSelect("#tag_ids", {
                 create: true, // allow new names
+                persist: false
+                });
+
+                new TomSelect("#stage_id", {
+                create: true,
                 persist: false
                 });
             </script>

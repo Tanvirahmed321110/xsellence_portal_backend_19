@@ -7,6 +7,46 @@ from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
 
 
 class XsellencePortal(http.Controller):
+    def _dedupe_stage_records(self, stages):
+        unique_stages = request.env['project.task.type'].sudo().browse()
+        seen_names = set()
+        for stage in stages:
+            key = (stage.name or '').strip().casefold()
+            if not key or key in seen_names:
+                continue
+            seen_names.add(key)
+            unique_stages |= stage
+        return unique_stages
+
+    def _task_stage_model(self):
+        return request.env['project.task.type'].sudo()
+
+    def _get_task_stages(self, project_id=False):
+        domain = [('user_id', '=', False)]
+        if project_id:
+            domain += ['|', ('project_ids', '=', False), ('project_ids', 'in', [project_id])]
+        stages = self._task_stage_model().search(domain, order='sequence, id')
+        return self._dedupe_stage_records(stages)
+
+    def _resolve_task_stage_id(self, raw_stage_value, project_id=False):
+        if not raw_stage_value:
+            return False
+        stage_value = str(raw_stage_value).strip()
+        if not stage_value:
+            return False
+        if stage_value.isdigit():
+            return int(stage_value)
+
+        stages = self._get_task_stages(project_id=project_id)
+        existing_stage = stages.filtered(lambda stage: (stage.name or '').strip().casefold() == stage_value.casefold())[:1]
+        if existing_stage:
+            return existing_stage.id
+
+        create_vals = {'name': stage_value}
+        if project_id:
+            create_vals['project_ids'] = [(4, project_id)]
+        return self._task_stage_model().create(create_vals).id
+
     def _get_visible_task_domain(self, user=None, selected_user=False):
         user = user or request.env.user
         domain = [('create_uid.login', '!=', '__system__')]
@@ -38,8 +78,8 @@ class XsellencePortal(http.Controller):
         if project_id and str(project_id).isdigit():
             domain.append(('project_id', '=', int(project_id)))
 
-        if status:
-            domain.append(('custom_status', '=', status))
+        if status and str(status).isdigit():
+            domain.append(('stage_id', '=', int(status)))
 
         # ===== Pagination Setup =====
         per_page = int(kw.get('per_page', 20))
@@ -61,7 +101,8 @@ class XsellencePortal(http.Controller):
         )
 
 
-        statuses = Task._fields['custom_status'].selection
+        current_project_id = int(project_id) if project_id and str(project_id).isdigit() else False
+        statuses = self._get_task_stages(project_id=current_project_id)
 
         tasks = Task.search(
             domain,
@@ -95,7 +136,7 @@ class XsellencePortal(http.Controller):
         task = self._get_visible_task(task_id)
         if not task.exists():
             return request.redirect('/tasks')
-        status_selection = request.env['project.task'].sudo()._fields['custom_status'].selection
+        status_selection = self._get_task_stages(project_id=task.project_id.id if task.project_id else False)
 
         # log message
         messages = request.env['mail.message'].sudo().search([
@@ -153,10 +194,12 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/task/update_status', type='http', auth='user', methods=['POST'], csrf=True)
     def update_project_status(self, task_id=None, status=None, redirect_url=None, **kw):
-        if task_id and status:
+        task = False
+        if task_id:
             task = self._get_visible_task(int(task_id))
-            if task:
-                task.write({'custom_status': status})
+        stage_id = self._resolve_task_stage_id(status, project_id=task.project_id.id if task else False)
+        if task and stage_id:
+            task.write({'stage_id': stage_id})
 
         if not redirect_url:
             return request.redirect(f"/tasks/task_details/{task_id}")
@@ -190,7 +233,8 @@ class XsellencePortal(http.Controller):
 
         projects = request.env['project.project'].sudo().search([])
         users = request.env['res.users'].sudo().search([('login', '!=', '__system__')])
-        statuses = request.env['project.task'].sudo()._fields['custom_status'].selection
+        current_project_id = int(selected_project_id) if selected_project_id and str(selected_project_id).isdigit() else False
+        statuses = self._get_task_stages(project_id=current_project_id)
         priority = request.env['project.task'].sudo()._fields['custom_priority'].selection
 
         return request.render('xsellence_portal.add_task_page', {
@@ -215,16 +259,29 @@ class XsellencePortal(http.Controller):
         assignee_ids = request.httprequest.form.getlist('user_ids')
         user_ids = [(6, 0, [int(uid) for uid in assignee_ids if uid])]
 
+        task_name = (kw.get('name') or '').strip()
+        if not task_name:
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Task Creation Failed',
+                'error_desc': 'Task name is required.',
+                'error_btn_label': 'Try Again',
+                'error_btn_url': '/add_task',
+            })
         task = {
-            'name': kw.get('name'),
+            'name': task_name,
             'project_id': int(kw.get('project_id')) if kw.get('project_id') else False,
             'date_assign': kw.get('date_assign') or date.today(),
             'date_deadline': kw.get('date_deadline'),
             'custom_priority': kw.get('custom_priority'),
-            'custom_status': kw.get('custom_status'),
             'user_ids': user_ids,
             'description': kw.get('description'),
         }
+        stage_id = self._resolve_task_stage_id(
+            kw.get('stage_id'),
+            project_id=task['project_id'] if task.get('project_id') else False,
+        )
+        if stage_id:
+            task['stage_id'] = stage_id
 
         new_task = request.env['project.task'].sudo().create(task)
 
@@ -258,7 +315,7 @@ class XsellencePortal(http.Controller):
         projects = request.env['project.project'].sudo().search([])
         users = request.env['res.users'].sudo().search([('login', '!=', '__system__')])
 
-        statuses = request.env['project.task'].sudo()._fields['custom_status'].selection
+        statuses = self._get_task_stages(project_id=task.project_id.id if task.project_id else False)
         priority = request.env['project.task'].sudo()._fields['custom_priority'].selection
 
         return request.render('xsellence_portal.edit_task_page', {
@@ -288,16 +345,24 @@ class XsellencePortal(http.Controller):
 
         assign_ids = request.httprequest.form.getlist('user_ids')
         user_ids = [(6, 0, [int(uid) for uid in assign_ids if uid])]
+        task_name = (kw.get('name') or task.name or '').strip()
+        if not task_name:
+            return request.redirect(f"/task/edit/{task_id}")
 
         vals = {
-            'name': kw.get('name', task.name),
+            'name': task_name,
             'project_id': int(kw['project_id']) if kw.get('project_id') else False,
             'date_deadline': kw.get('date_deadline') or False,
-            'custom_status': kw.get('custom_status', ''),
             'custom_priority': kw.get('custom_priority', ''),
             'description': kw.get('description', ''),
             'user_ids': user_ids,
         }
+        stage_id = self._resolve_task_stage_id(
+            kw.get('stage_id'),
+            project_id=vals['project_id'] if vals.get('project_id') else (task.project_id.id if task.project_id else False),
+        )
+        if stage_id:
+            vals['stage_id'] = stage_id
 
         task.write(vals)
         return request.redirect(f"/tasks/task_details/{task_id}")
