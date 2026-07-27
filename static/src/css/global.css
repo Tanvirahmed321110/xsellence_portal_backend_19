@@ -3698,6 +3698,10 @@ aside .sidebar-bottom {
         text-align: center;
         min-width: 290px;
     }
+
+    .powered-logo {
+        padding-top: 0px;
+    }
 }
 
 @media (max-width: 480px){
