@@ -1779,6 +1779,7 @@ aside .sidebar-bottom {
     margin-left: 0px;
     transition: var(--transition-base);
     left: 0px;
+    width:100%;
 }
 
 .notic-board.big {

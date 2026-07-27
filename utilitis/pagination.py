@@ -31,6 +31,7 @@ def get_pager(url, total, page=1, per_page=12, url_args=None):
         if value not in (None, '', False)
     }
     query_string = urlencode(filtered_url_args)
+    query_string_xml = query_string.replace("&", "&amp;")
 
     return {
         'page': page,
@@ -48,4 +49,5 @@ def get_pager(url, total, page=1, per_page=12, url_args=None):
         'url': url,
         'url_args': url_args,
         'query_string': query_string,
+        'query_string_xml': query_string_xml,
     }

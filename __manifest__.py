@@ -43,12 +43,17 @@
         "templates/breadcrumb.xml",
         "templates/alert.xml",
         "templates/pagination.xml",
+        "views/hr_announcement_views.xml",
         "views/project_inherit_view.xml",
         "views/project_task_inherit_view.xml",
     ],
     "assets": {
         "web.assets_backend": [
-            "xsellence_portal/static/src/css/custom_backend.css",
+            # "xsellence_portal/static/src/css/custom_backend.css",
+        ],
+        "web.assets_frontend": [
+            # "xsellence_portal/static/src/js/main.js",
+            # "xsellence_portal/static/src/js/notice_board.js",
         ],
     },
     "demo": [

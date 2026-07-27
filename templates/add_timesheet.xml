@@ -105,7 +105,7 @@
                                         pattern="^\d+(\.(\d|[0-5]\d))?$"
                                         required="1"
                                         id="unit_amount"
-                                        placeholder="Time Spent e.g. 1.5 = 1h30m, 1.22 = 1h22m"
+                                        placeholder="Time Spent e.g. 1.5 = 1h05m, 1.22 = 1h22m"
                                         title="Use 1.30 for 1 hour 30m, or 1.22 for 1 hour 22m ,1.7 for 1 hour 7m"
                                 />
                             </div>

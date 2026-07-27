@@ -133,7 +133,8 @@
 
                                 <div class="info-field">
                                     <div class="info-label">Phone Number</div>
-                                    <div class="info-value" t-esc="employee.work_phone or 'N/A'"></div>
+                                    <div class="info-value"
+                                         t-esc="employee.mobile_phone or employee.work_phone or employee.private_phone or 'N/A'"></div>
                                 </div>
 
                                 <div class="info-field" style="grid-column: 1 / -1">

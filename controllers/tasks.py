@@ -7,6 +7,34 @@ from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
 
 
 class XsellencePortal(http.Controller):
+    def _stage_badge_style(self, stage_name):
+        normalized = (stage_name or '').strip().casefold()
+        keyword_palette = [
+            (('done', 'complete', 'completed', 'closed', 'finish'), ('#166534', '#dcfce7', '#166534')),
+            (('cancel', 'reject', 'blocked'), ('#991b1b', '#fee2e2', '#991b1b')),
+            (('progress', 'working', 'active'), ('#1d4ed8', '#dbeafe', '#1d4ed8')),
+            (('review', 'qa', 'test', 'approval'), ('#6d28d9', '#ede9fe', '#6d28d9')),
+            (('new', 'todo', 'plan', 'inbox', 'today', 'week', 'month', 'later'), ('#9a3412', '#ffedd5', '#9a3412')),
+        ]
+        for keywords, colors in keyword_palette:
+            if any(keyword in normalized for keyword in keywords):
+                text_color, bg_color, border_color = colors
+                return f"color:{text_color};background:{bg_color};border:1px solid {border_color};"
+
+        fallback_palette = [
+            ('#0f766e', '#ccfbf1', '#0f766e'),
+            ('#1d4ed8', '#dbeafe', '#1d4ed8'),
+            ('#7c2d12', '#ffedd5', '#7c2d12'),
+            ('#6d28d9', '#ede9fe', '#6d28d9'),
+            ('#be123c', '#ffe4e6', '#be123c'),
+            ('#365314', '#ecfccb', '#365314'),
+            ('#92400e', '#fef3c7', '#92400e'),
+            ('#0f766e', '#cffafe', '#0f766e'),
+        ]
+        palette_index = sum(ord(char) for char in normalized) % len(fallback_palette) if normalized else 0
+        text_color, bg_color, border_color = fallback_palette[palette_index]
+        return f"color:{text_color};background:{bg_color};border:1px solid {border_color};"
+
     def _can_manage_tasks(self):
         user = request.env.user
         return (
@@ -140,6 +168,7 @@ class XsellencePortal(http.Controller):
             'active_menu': 'tasks',
             'tasks': tasks,
             'statuses': statuses,
+            'task_stage_styles': {task.id: self._stage_badge_style(task.stage_id.name) for task in tasks},
             'can_manage_tasks': self._can_manage_tasks(),
             'selected_status': status,
             'selected_employee_id': selected_employee_id,
@@ -172,6 +201,7 @@ class XsellencePortal(http.Controller):
             'active_menu': 'tasks',
             'task': task,
             'can_manage_tasks': self._can_manage_tasks(),
+            'task_stage_style': self._stage_badge_style(task.stage_id.name),
             'status_selection': status_selection,
             'messages': messages,
             'breadcrumb': [

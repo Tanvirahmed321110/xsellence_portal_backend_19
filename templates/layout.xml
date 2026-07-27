@@ -510,7 +510,9 @@
                         </a>
                         <div class="s3-empty" id="notification-empty-state">
                             <div class="s3-empty-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                                     stroke-linejoin="round" aria-hidden="true">
                                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                                     <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                                 </svg>
@@ -526,15 +528,13 @@
                 <!-- ======================================
                 ||======  Notice Board  Start Here  ======||
                 ======================================= -->
-                <div class="notic-board big" id="notic-board">
+                <div class="notic-board big" id="notic-board" >
                     <div>
-                        <!-- Ticker -->
                         <div class="ticker-wrap d-flex">
                             <div class="notice-icon-wrap">
                                 <div class="notice-icon">
                                     <div class="ring"></div>
                                     <div class="glow"></div>
-                                    <!-- Megaphone SVG -->
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                                          fill="none" stroke="#f0a500" stroke-width="1.8" stroke-linecap="round"
                                          stroke-linejoin="round">
@@ -547,53 +547,15 @@
                                 </div>
                             </div>
 
-                            <div class="ticker-track">
-
-                                <!-- First copy -->
-                                <div class="ticker-item">
-                                    <span class="icon">📢</span>
-                                    <p>The office will be closed tomorrow due to a public holiday.</p>
-                                </div>
-                                <div class="ticker-item">
-                                    <span class="icon">📅</span>
-                                    <p>Monthly team meeting scheduled for Friday at 10:00 AM.</p>
-                                </div>
-                                <div class="ticker-item">
-                                    <span class="icon">⚠️</span>
-                                    <p>Please submit your timesheets before end of day Thursday.</p>
-                                </div>
-                                <div class="ticker-item">
-                                    <span class="icon">🎉</span>
-                                    <p>Congratulations to the sales team for exceeding Q1 targets!</p>
-                                </div>
-
-                                <!-- Duplicate copy for seamless loop -->
-                                <div class="ticker-item">
-                                    <span class="icon">📢</span>
-                                    <p>The office will be closed tomorrow due to a public holiday.</p>
-                                </div>
-                                <div class="ticker-item">
-                                    <span class="icon">📅</span>
-                                    <p>Monthly team meeting scheduled for Friday at 10:00 AM.</p>
-                                </div>
-                                <div class="ticker-item">
-                                    <span class="icon">⚠️</span>
-                                    <p>Please submit your timesheets before end of day Thursday.</p>
-                                </div>
-                                <div class="ticker-item">
-                                    <span class="icon">🎉</span>
-                                    <p>Congratulations to the sales team for exceeding Q1 targets!</p>
-                                </div>
-
-                            </div>
+                            <div class="ticker-track" id="ticker-track"></div>
                         </div>
-
                     </div>
                 </div>
 
 
                 <!--    Javascript Links Here     -->
                 <script src="/xsellence_portal/static/src/js/main.js?v=12"></script>
+                <script src="/xsellence_portal/static/src/js/notice_board.js?v=3"></script>
                 <script>
                     if (localStorage.getItem('sidebarCollapsed') === 'true') {
                     document.documentElement.classList.add('sidebar-collapsed');

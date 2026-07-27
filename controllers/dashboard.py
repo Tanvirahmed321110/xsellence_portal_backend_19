@@ -6,6 +6,8 @@ from odoo.http import request
 
 
 class XsellencePortal(http.Controller):
+    _APPROVED_LEAVE_STATES = ("validate", "validate1")
+
     def _safe_model(self, model_name):
         try:
             return request.env[model_name].sudo()
@@ -26,6 +28,12 @@ class XsellencePortal(http.Controller):
             return "--"
         localized = fields.Datetime.context_timestamp(request.env.user, value)
         return localized.strftime("%I:%M %p").lstrip("0")
+
+    def _format_float_hour(self, hour_value):
+        if hour_value in (None, False):
+            return "--"
+        base_dt = datetime.combine(fields.Date.context_today(request.env.user), time.min) + timedelta(hours=float(hour_value))
+        return base_dt.strftime("%I:%M %p").lstrip("0")
 
     def _month_bounds(self, current_day):
         start_month = current_day.replace(day=1)
@@ -101,27 +109,36 @@ class XsellencePortal(http.Controller):
                 or 0.0
             )
 
+        category_keywords = (
+            (("sick", "medical", "ill"), "Sick Leave"),
+            (("casual", "annual", "earned", "vacation"), "Casual Leave"),
+        )
+
+        approved_allocations = allocation_model.search(
+            [
+                ("employee_id", "=", selected_employee.id),
+                ("state", "in", self._APPROVED_LEAVE_STATES),
+            ]
+        )
+        approved_leaves = leave_model.search(
+            [
+                ("employee_id", "=", selected_employee.id),
+                ("state", "in", self._APPROVED_LEAVE_STATES),
+            ]
+        )
+
         stats = []
-        for keyword, label in (("sick", "Sick Leave"), ("casual", "Casual Leave")):
-            leave_type = leave_type_model.search([("name", "ilike", keyword)], limit=1)
-            if not leave_type:
+        for keywords, label in category_keywords:
+            matching_types = leave_type_model.search([]).filtered(
+                lambda leave_type: any(keyword in (leave_type.name or "").casefold() for keyword in keywords)
+            )
+
+            if not matching_types:
                 stats.append({"label": label, "used": 0, "allocated": 0, "percent": 0})
                 continue
 
-            allocations = allocation_model.search(
-                [
-                    ("employee_id", "=", selected_employee.id),
-                    ("holiday_status_id", "=", leave_type.id),
-                    ("state", "=", "validate"),
-                ]
-            )
-            leaves = leave_model.search(
-                [
-                    ("employee_id", "=", selected_employee.id),
-                    ("holiday_status_id", "=", leave_type.id),
-                    ("state", "=", "validate"),
-                ]
-            )
+            allocations = approved_allocations.filtered(lambda allocation: allocation.holiday_status_id.id in matching_types.ids)
+            leaves = approved_leaves.filtered(lambda leave: leave.holiday_status_id.id in matching_types.ids)
 
             allocated_days = sum(_days(allocation) for allocation in allocations)
             used_days = abs(sum(_days(leave) for leave in leaves))
@@ -138,13 +155,42 @@ class XsellencePortal(http.Controller):
 
         return stats
 
+    def _get_schedule_window(self, selected_employee, target_date):
+        if not selected_employee:
+            return "--", "--"
+
+        calendar = (
+            selected_employee.resource_calendar_id
+            or selected_employee.company_id.resource_calendar_id
+            or request.env.company.resource_calendar_id
+        )
+        if not calendar or not getattr(calendar, "attendance_ids", False):
+            return "--", "--"
+
+        weekday = str(target_date.weekday())
+        schedule_lines = calendar.attendance_ids.filtered(
+            lambda line: line.dayofweek == weekday and not getattr(line, "display_type", False)
+        )
+        if not schedule_lines:
+            return "--", "--"
+
+        hour_from = min(schedule_lines.mapped("hour_from"))
+        hour_to = max(schedule_lines.mapped("hour_to"))
+        return self._format_float_hour(hour_from), self._format_float_hour(hour_to)
+
+    def _local_date(self, dt_value):
+        if not dt_value:
+            return False
+        localized = fields.Datetime.context_timestamp(request.env.user, dt_value)
+        return localized.date()
+
     # ========================
     # For Dashboard Route
     # ========================
     @http.route("/dashboard", type="http", auth="user", website=True)
     def dashboard_f(self, **kw):
         user = request.env.user
-        today = date.today()
+        today = fields.Date.context_today(user)
         active_employees = request.env["hr.employee"].sudo().search(
             [("active", "=", True)],
             order="name asc",
@@ -216,60 +262,77 @@ class XsellencePortal(http.Controller):
         completed_projects = Project.search_count(project_domain + [("custom_status", "=", "completed")])
         selected_projects = Project.search(project_domain, order="create_date desc", limit=5)
 
+        Attendance = self._safe_model("hr.attendance")
         filtered_timesheets = Timesheet.search(timesheet_domain)
         total_hours = sum(filtered_timesheets.mapped("unit_amount"))
 
         start_year = date(today.year, 1, 1)
         next_year = date(today.year + 1, 1, 1)
-        yearly_timesheets = Timesheet.search(timesheet_domain + [("date", ">=", start_year), ("date", "<", next_year)])
+        start_month, next_month = self._month_bounds(today)
 
+        monthly_attendance_days = {index: set() for index in range(1, 13)}
         monthly_hours = {index: 0.0 for index in range(1, 13)}
-        for timesheet in yearly_timesheets:
-            if timesheet.date:
-                monthly_hours[timesheet.date.month] += timesheet.unit_amount or 0.0
+        month_hours = 0.0
+        worked_days = 0
+        attendance_ratio = 0.0
+
+        if Attendance and selected_employee:
+            yearly_attendances = Attendance.search(
+                [
+                    ("employee_id", "=", selected_employee.id),
+                    ("check_in", "!=", False),
+                    ("check_in", ">=", datetime.combine(start_year, time.min)),
+                    ("check_in", "<", datetime.combine(next_year, time.min)),
+                ],
+                order="check_in asc",
+            )
+
+            for attendance in yearly_attendances:
+                local_attendance_date = self._local_date(attendance.check_in)
+                if local_attendance_date:
+                    monthly_attendance_days[local_attendance_date.month].add(local_attendance_date)
+                    monthly_hours[local_attendance_date.month] += attendance.worked_hours or 0.0
+
+            month_attendances = yearly_attendances.filtered(
+                lambda record: record.check_in and start_month <= self._local_date(record.check_in) < next_month
+            )
+            month_hours = sum(month_attendances.mapped("worked_hours"))
+            worked_days = len({self._local_date(record.check_in) for record in month_attendances if record.check_in})
+            workdays_so_far = max(1, self._count_weekdays(start_month, today))
+            attendance_ratio = worked_days / workdays_so_far * 100.0 if workdays_so_far else 0.0
+        else:
+            workdays_so_far = max(1, self._count_weekdays(start_month, today))
+            attendance_ratio = 0.0
 
         highest_month_hours = max(monthly_hours.values()) if monthly_hours else 0.0
         attendance_chart = []
         for month_index in range(1, 13):
-            hours = monthly_hours[month_index]
-            percent = (hours / highest_month_hours * 100.0) if highest_month_hours else 0.0
+            month_total_hours = monthly_hours[month_index]
+            percent = (month_total_hours / highest_month_hours * 100.0) if highest_month_hours else 0.0
             attendance_chart.append(
                 {
                     "label": month_abbr[month_index],
-                    "hours": self._format_hours(hours),
+                    "hours": self._format_hours(month_total_hours, 1),
                     "percent": self._format_percent(percent),
                 }
             )
 
-        start_month, next_month = self._month_bounds(today)
-        month_timesheets = Timesheet.search(
-            timesheet_domain + [("date", ">=", start_month), ("date", "<", next_month)]
-        )
-        month_hours = sum(month_timesheets.mapped("unit_amount"))
-        worked_days = len(set(month_timesheets.mapped("date")))
-        workdays_so_far = max(1, self._count_weekdays(start_month, today))
-        daily_average_hours = month_hours / worked_days if worked_days else 0.0
-        attendance_ratio = worked_days / workdays_so_far * 100.0 if workdays_so_far else 0.0
-
-        Attendance = self._safe_model("hr.attendance")
+        expected_check_in, expected_check_out = self._get_schedule_window(selected_employee, today)
         check_in_text = "--"
-        check_out_text = "--"
-        today_duration_text = self._format_hours(daily_average_hours, 1)
+        check_out_text = expected_check_out
         check_in_trend = "No data"
-        check_out_trend = "No data"
+        check_out_trend = "Expected today" if expected_check_out != "--" else "No data"
+        daily_average_hours = month_hours / worked_days if worked_days else 0.0
+        today_duration_text = self._format_hours(daily_average_hours, 1)
 
         if Attendance and selected_employee:
-            start_today = datetime.combine(today, time.min)
-            end_today = datetime.combine(today + timedelta(days=1), time.min)
             today_attendances = Attendance.search(
-                [
-                    ("employee_id", "=", selected_employee.id),
-                    ("check_in", ">=", start_today),
-                    ("check_in", "<", end_today),
-                ],
-                order="check_in asc",
-            )
+                [("employee_id", "=", selected_employee.id), ("check_in", "!=", False)],
+                order="check_in desc",
+                limit=200,
+            ).filtered(lambda attendance: self._local_date(attendance.check_in) == today)
             if today_attendances:
+                today_attendances = today_attendances.sorted(key=lambda record: record.check_in)
                 check_in_text = self._format_time(today_attendances[0].check_in)
                 check_in_trend = "Recorded today"
                 checked_out = today_attendances.filtered(lambda attendance: attendance.check_out)
@@ -278,6 +341,8 @@ class XsellencePortal(http.Controller):
                     today_hours = sum(checked_out.mapped("worked_hours"))
                     today_duration_text = self._format_hours(today_hours, 1)
                     check_out_trend = "Updated today"
+                elif expected_check_out != "--":
+                    check_out_trend = "Expected today"
 
         team_member_ids = set()
         for project in selected_projects:
@@ -367,7 +432,7 @@ class XsellencePortal(http.Controller):
             "working_hours_month_label": start_month.strftime("%B"),
             "working_hours_daily_avg": self._format_hours(daily_average_hours, 1),
             "check_in_time": check_in_text,
-            "check_in_expected": "09:00 AM",
+            "check_in_expected": expected_check_in,
             "check_in_trend": check_in_trend,
             "check_out_time": check_out_text,
             "check_out_duration": today_duration_text,

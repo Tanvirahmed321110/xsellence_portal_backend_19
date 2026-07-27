@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_announcement_list" model="ir.ui.view">
+        <field name="name">hr.announcement.list</field>
+        <field name="model">hr.announcement</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="active"/>
+                <field name="is_important"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_announcement_form" model="ir.ui.view">
+        <field name="name">hr.announcement.form</field>
+        <field name="model">hr.announcement</field>
+        <field name="arch" type="xml">
+            <form string="Announcements">
+                <sheet>
+                    <group>
+                        <field name="title"/>
+                        <field name="name"/>
+                        <field name="active"/>
+                        <field name="is_important"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_announcement_search" model="ir.ui.view">
+        <field name="name">hr.announcement.search</field>
+        <field name="model">hr.announcement</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="filter_active" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="filter_inactive" string="Inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_announcement" model="ir.actions.act_window">
+        <field name="name">Announcements</field>
+        <field name="res_model">hr.announcement</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hr_announcement_search"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
+    </record>
+
+    <menuitem
+        id="menu_hr_announcement"
+        name="Announcements"
+        parent="hr.menu_hr_root"
+        action="action_hr_announcement"
+        groups="base.group_system"
+        sequence="98"/>
+</odoo>

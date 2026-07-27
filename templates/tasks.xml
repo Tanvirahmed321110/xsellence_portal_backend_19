@@ -92,7 +92,9 @@
                                             </div>
                                             <!-- Status -->
                                             <div>
-                                                <div class="sts sts-default" t-esc="task.stage_id.name or 'N/A'"></div>
+                                                <div class="sts sts-default"
+                                                     t-att-style="task_stage_styles.get(task.id, '')"
+                                                     t-esc="task.stage_id.name or 'N/A'"></div>
                                             </div>
                                         </div>
                                         <div class="assignee">
@@ -195,7 +197,9 @@
                                         </t>
                                         <t t-else="">
                                             <div class="state-dropdown">
-                                                <div class="filter-select" t-esc="task.stage_id.name or 'N/A'"></div>
+                                                <div class="filter-select"
+                                                     t-att-style="task_stage_styles.get(task.id, '')"
+                                                     t-esc="task.stage_id.name or 'N/A'"></div>
                                             </div>
                                         </t>
 
@@ -299,7 +303,9 @@
                                             <td t-esc="task.name"></td>
                                             <td t-esc="task.project_id.name if task.project_id.name else ''"></td>
                                             <td class="">
-                                                <div class="sts" t-esc="task.stage_id.name or 'N/A'"></div>
+                                                <div class="sts"
+                                                     t-att-style="task_stage_styles.get(task.id, '')"
+                                                     t-esc="task.stage_id.name or 'N/A'"></div>
                                             </td>
                                             <td t-esc="task.date_assign.strftime('%d %b %%y') if task.date_assign else ''"></td>
                                             <td t-esc="task.date_deadline.strftime('%d %b %%y')  if task.date_deadline else ''"></td>

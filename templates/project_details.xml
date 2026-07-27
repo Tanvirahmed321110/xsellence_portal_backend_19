@@ -21,7 +21,9 @@
                                 </div>
                                 <!-- Status -->
                                 <div>
-                                    <div class="sts sts-default" t-esc="project.stage_id.name or 'N/A'"></div>
+                                    <div class="sts sts-default"
+                                         t-att-style="project_stage_style"
+                                         t-esc="project.stage_id.name or 'N/A'"></div>
                                 </div>
                             </div>
                             <div>
@@ -285,7 +287,9 @@
                             </t>
                             <t t-else="">
                                 <div class="state-dropdown">
-                                    <div class="filter-select" t-esc="project.stage_id.name or 'N/A'"></div>
+                                    <div class="filter-select"
+                                         t-att-style="project_stage_style"
+                                         t-esc="project.stage_id.name or 'N/A'"></div>
                                 </div>
                             </t>
 

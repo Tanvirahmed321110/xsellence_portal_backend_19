@@ -54,7 +54,10 @@
                                         </div>
                                         <div class="info-row">
                                             <span class="icon">☎</span>
-                                            <span class="val" t-esc="employee.mobile_phone">_</span>
+                                            <span class="val"
+                                                  t-esc="employee.mobile_phone or employee.work_phone or employee.private_phone or employee.phone or 'N/A'">
+                                                _
+                                            </span>
                                         </div>
                                         <div class="info-row">
                                             <span class="icon">🏢</span>

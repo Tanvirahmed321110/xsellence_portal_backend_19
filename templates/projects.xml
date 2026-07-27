@@ -106,7 +106,9 @@
                                             </div>
                                             <!-- Status -->
                                             <div>
-                                                <div class="sts sts-default" t-esc="project.stage_id.name or 'N/A'"></div>
+                                                <div class="sts sts-default"
+                                                     t-att-style="project_stage_styles.get(project.id, '')"
+                                                     t-esc="project.stage_id.name or 'N/A'"></div>
                                             </div>
                                         </div>
                                         <!-- tags -->
@@ -147,7 +149,7 @@
                                                 <!-- Project Manager -->
                                                 <div class="manager-info">
                                                     <div class="info-label">Project Manager</div>
-                                                    <div class="manager-name" t-esc="project.user_id.name"></div>
+                                                    <div class="manager-name" t-esc="project.user_id.name or ''"></div>
                                                 </div>
                                             </div>
 
@@ -271,9 +273,11 @@
                                     <t t-foreach="projects" t-as="project">
                                         <tr>
                                             <td t-esc="project.name"></td>
-                                            <td t-esc="project.user_id.name"></td>
+                                            <td t-esc="project.user_id.name or ''"></td>
                                             <td>
-                                                <div class="sts sts-default" t-esc="project.stage_id.name or 'N/A'"></div>
+                                                <div class="sts sts-default"
+                                                     t-att-style="project_stage_styles.get(project.id, '')"
+                                                     t-esc="project.stage_id.name or 'N/A'"></div>
                                             </td>
                                             <td t-esc="project.date_start.strftime('%d %b %Y') if project.date_start else ''"></td>
                                             <td t-esc="project.date.strftime('%d %b %Y') if project.date else ''"></td>

@@ -19,7 +19,9 @@
                                 </div>
                                 <!-- Status -->
                                 <div >
-                                    <div class="sts sts-default" t-esc="task.stage_id.name or 'N/A'"></div>
+                                    <div class="sts sts-default"
+                                         t-att-style="task_stage_style"
+                                         t-esc="task.stage_id.name or 'N/A'"></div>
                                 </div>
                             </div>
                             <div class="mt-2">
@@ -151,7 +153,9 @@
                             </t>
                             <t t-else="">
                                 <div class="state-dropdown">
-                                    <div class="filter-select" t-esc="task.stage_id.name or 'N/A'"></div>
+                                    <div class="filter-select"
+                                         t-att-style="task_stage_style"
+                                         t-esc="task.stage_id.name or 'N/A'"></div>
                                 </div>
                             </t>
                             <!-- Actions Buttons -->
