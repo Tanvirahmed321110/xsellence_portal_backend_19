@@ -188,7 +188,7 @@
                             </div>
 
                             <div class="team-leader mt-5">
-                                <div class="fs-lg fw-bold" style="color:#121212;">Useful Links:</div>
+                                <div class="fs-lg fw-bold useful-links-title" style="color:#121212;">Useful Links:</div>
                                 <div class="d-flex align-center mt-4 gap-4">
                                     <span style="min-width:90px;display:inline-block;font-weight:500;color:var(--color-primary)">
                                         Github Repo:

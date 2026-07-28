@@ -2008,7 +2008,9 @@ aside .sidebar-bottom {
     gap: 10px;
     align-items: center;
 }
-
+.task-details .proj-card{
+    overflow:hidden;
+}
 .desc {
     color: var(--color-text-desc);
     font-size: var(--fs-sm);
