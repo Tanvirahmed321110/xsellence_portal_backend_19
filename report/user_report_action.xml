@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_users_list" model="ir.actions.report">
+        <field name="name">User Report</field>
+        <field name="model">res.users</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">xsellence_portal.user_report_template</field>
+        <field name="report_file">xsellence_portal.user_report_template</field>
+        <field name="paperformat_id" ref="xsellence_portal.paperformat_user_report"/>
+        <field name="binding_model_id" ref="base.model_res_users"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'User Report - %s' % (object.name or 'Users')</field>
+    </record>
+</odoo>

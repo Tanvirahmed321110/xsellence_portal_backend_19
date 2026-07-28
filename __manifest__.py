@@ -43,9 +43,16 @@
         "templates/breadcrumb.xml",
         "templates/alert.xml",
         "templates/pagination.xml",
+
+        #==========  Backend View  ==========
         "views/hr_announcement_views.xml",
         "views/project_inherit_view.xml",
         "views/project_task_inherit_view.xml",
+
+        #==========  Backend View  ==========
+        "report/user_report_paperformat.xml",
+        "report/user_report_templates.xml",
+        "report/user_report_action.xml",
     ],
     "assets": {
         "web.assets_backend": [

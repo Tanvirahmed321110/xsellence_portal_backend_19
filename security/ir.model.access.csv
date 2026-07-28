@@ -1,5 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_xsellence_assignment_notification_user,xsellence.assignment.notification.user,model_xsellence_assignment_notification,xsellence_portal.group_general_employee,1,1,1,0
 access_xsellence_assignment_notification_admin,xsellence.assignment.notification.admin,model_xsellence_assignment_notification,xsellence_portal.group_admin,1,1,1,0
-access_hr_announcement_user,hr.announcement.user,model_hr_announcement,hr.group_hr_user,1,1,1,0
-access_hr_announcement_manager,hr.announcement.manager,model_hr_announcement,hr.group_hr_manager,1,1,1,1
+access_hr_announcement_admin,hr.announcement.admin,model_hr_announcement,base.group_system,1,1,1,1

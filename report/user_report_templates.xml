@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="user_report_template">
+        <t t-call="web.html_container">
+            <t t-set="company" t-value="docs and docs[0].company_id.sudo() or env.company"/>
+            <t t-call="web.basic_layout">
+                <div class="page">
+                    <div style="margin-bottom: 24px; width: 100%; overflow: hidden;">
+                        <div style="float: left; width: 50%; text-align: left;">
+                            <img t-att-src="'/logo.png?company=%s' % company.id"
+                                 style="max-height: 50px; width: auto;"/>
+                        </div>
+                        <div style="float: right; width: 50%; text-align: right; font-size: 12px; line-height: 1.8; color: #2c3e50;">
+                            <div>
+                                <strong>Phone:</strong>
+                                <t t-esc="company.phone or '+8801700000000'"/>
+                            </div>
+                            <div>
+                                <strong>Tel:</strong>
+                                <t t-esc="company.phone or '02-12345678'"/>
+                            </div>
+                            <div>
+                                <strong>Email:</strong>
+                                <t t-esc="company.email or 'info@xsellence.com'"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table style="width:100%; border-collapse: collapse; font-size: 13px;" border="1">
+                        <thead style="background:#f3f3f3;">
+                            <tr>
+                                <th style="padding:8px;">SL</th>
+                                <th style="padding:8px;">User Name</th>
+                                <th style="padding:8px;">User ID</th>
+                                <th style="padding:8px;">Post</th>
+                                <th style="padding:8px;">Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="sl" t-value="1"/>
+                            <t t-foreach="docs" t-as="user">
+                                <tr>
+                                    <td style="padding:8px;"><t t-esc="sl"/></td>
+                                    <td style="padding:8px;"><t t-esc="user.name or ''"/></td>
+                                    <td style="padding:8px;"><t t-esc="user.id"/></td>
+                                    <td style="padding:8px;"><t t-esc="user.employee_id.job_title or user.employee_id.job_id.name or ''"/></td>
+                                    <td style="padding:8px;"><t t-esc="user.email or user.login or ''"/></td>
+                                </tr>
+                                <t t-set="sl" t-value="sl + 1"/>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
