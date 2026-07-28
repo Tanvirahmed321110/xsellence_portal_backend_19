@@ -405,13 +405,22 @@ body.dark-theme .table-wrap tbody tr:nth-child(odd) {
 }
 
 body.dark-theme .table-wrap th {
-    background-color: rgba(244, 114, 182, 0.16);
-    color: var(--color-text-header);
+    background-color: #0f172a;
+    color: #f3f4f6;
+    border-bottom-color: #0f172a;
 }
 
 body.dark-theme .table-wrap td {
-    color: var(--color-text-secondary);
+    color:#ddddddcc;;
     border-color: var(--border-secondary);
+}
+
+body.dark-theme .notic-board {
+    background: #1F2937;
+    border-color: var(--border-secondary);
+}
+body.dark-theme .ticker-item p{
+    color:#ddddddcc;
 }
 
 body.dark-theme .timesheets .action-btn.del,
@@ -1484,7 +1493,9 @@ header .date {
     transition: all 0.2s;
     background-color: var(--header-bg);
 }
-
+.dark-theme .notification-wrap{
+    border:1px solid #565656;
+}
 .notification-wrap:hover,
 .theme-toggle:hover,
 .btn-collaps:hover {

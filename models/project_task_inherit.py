@@ -86,7 +86,9 @@ class ProjectTask(models.Model):
         Notification = self.env['xsellence.assignment.notification']
 
         for task in self:
-            recipient_ids = set(task.user_ids.ids + task.assigned_user_ids.ids)
+            # Portal/general users may be allowed to comment without having
+            # direct read access to every task member field.
+            recipient_ids = set(task.sudo().user_ids.ids + task.sudo().assigned_user_ids.ids)
             if self.env.user.id:
                 recipient_ids.discard(self.env.user.id)
 
