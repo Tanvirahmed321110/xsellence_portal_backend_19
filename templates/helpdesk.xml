@@ -148,11 +148,18 @@
                         <div class="h-items grid-4 gap-lg-4 grid-sm-2 gap-5  gap-sm-3">
                             <t t-foreach="tickets" t-as="ticket">
                                 <!-- ==========  Single Helpdesk Item ========== -->
-                                <a href="/helpdesk/ticket_details" class="item">
+                                <a t-attf-href="/helpdesks/ticket_details?ticket_id=#{ticket.id}" class="item">
                                     <div class="ticket-header">
                                         <!-- ticket name -->
-                                        <div class="task-name" t-esc="ticket.name"></div>
-                                        <div class="status status-progress" t-esc="ticket.stage_id.name"></div>
+                                        <div class="task-name" t-esc="ticket.name"> </div>
+                                        <div class="status"
+                                             t-attf-class="status
+                                             {{ 'status-new' if ticket.stage_id.name == 'New' else '' }}
+                                             {{ 'status-progress' if ticket.stage_id.name == 'In Progress' else '' }}
+                                             {{ 'status-solved' if ticket.stage_id.name == 'Solved' else '' }}
+                                             {{ 'status-cancelled' if ticket.stage_id.name == 'Cancelled' else '' }}"
+                                             t-esc="ticket.stage_id.name">
+                                        </div>
                                     </div>
 
                                     <div>

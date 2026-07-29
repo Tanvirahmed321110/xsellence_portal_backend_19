@@ -54,8 +54,14 @@ class XsellencePortalHelpdesk(http.Controller):
     # ========================
     # Helpdesk ticket details
     # ========================
-    @http.route('/helpdesks/ticket_details', type='http', auth='user', website=True)
-    def ticket_details_f(self, **kw):
+    @http.route('/helpdesks/ticket_details/<int:ticket_id>', type='http', auth='user', website=True)
+    def ticket_details_f(self, ticket_id,**kw):
+        
+        ticket = request.env['helpdesk.ticket'].sudo().browse(ticket_id)
+        if not ticket.exists():
+            return request.redirect('/helpdesks')
+
+
         return request.render('xsellence_portal.ticket_details_page', {
             'active_menu': 'helpdesk',
             'breadcrumb': [
