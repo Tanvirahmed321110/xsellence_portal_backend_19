@@ -18,9 +18,13 @@
                        placeholder="Assign employees..."/>
             </xpath>
 
+            <!--  assign and deadline -->
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="assign_date"/>
+                <field name="deadline"/>
+            </xpath>
         </field>
     </record>
-
 
 
     <!--===============================//
@@ -33,7 +37,7 @@
         <field name="arch" type="xml">
 
             <!-- Odoo 19: Use 'list' tag -->
-            <xpath expr="//field[@name='user_id']"  position="after">
+            <xpath expr="//field[@name='user_id']" position="after">
                 <field name="employee_ids"
                        widget="many2many_tags"
                        optional="show"
@@ -44,29 +48,28 @@
     </record>
 
 
-
     <!--===============================//
     //   Helpdesk Ticket Search View  //
     //===============================-->
-<!--    <record id="view_helpdesk_ticket_search_inherit" model="ir.ui.view">-->
-<!--        <field name="name">helpdesk.ticket.search.inherit</field>-->
-<!--        <field name="model">helpdesk.ticket</field>-->
-<!--        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search"/>-->
-<!--        <field name="arch" type="xml">-->
+    <!--    <record id="view_helpdesk_ticket_search_inherit" model="ir.ui.view">-->
+    <!--        <field name="name">helpdesk.ticket.search.inherit</field>-->
+    <!--        <field name="model">helpdesk.ticket</field>-->
+    <!--        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search"/>-->
+    <!--        <field name="arch" type="xml">-->
 
-<!--            &lt;!&ndash; Add employee_ids in search view &ndash;&gt;-->
-<!--            <xpath expr="//search" position="inside">-->
-<!--                <field name="employee_ids"-->
-<!--                       string="Search Employee"-->
-<!--                       placeholder="Search by employee..."/>-->
+    <!--            &lt;!&ndash; Add employee_ids in search view &ndash;&gt;-->
+    <!--            <xpath expr="//search" position="inside">-->
+    <!--                <field name="employee_ids"-->
+    <!--                       string="Search Employee"-->
+    <!--                       placeholder="Search by employee..."/>-->
 
-<!--                &lt;!&ndash; Filter for current user's employees &ndash;&gt;-->
-<!--                <filter name="my_employees"-->
-<!--                        string="My Assigned Employees"-->
-<!--                        domain="[('employee_ids.user_id', '=', uid)]"/>-->
-<!--            </xpath>-->
+    <!--                &lt;!&ndash; Filter for current user's employees &ndash;&gt;-->
+    <!--                <filter name="my_employees"-->
+    <!--                        string="My Assigned Employees"-->
+    <!--                        domain="[('employee_ids.user_id', '=', uid)]"/>-->
+    <!--            </xpath>-->
 
-<!--        </field>-->
-<!--    </record>-->
+    <!--        </field>-->
+    <!--    </record>-->
 
 </odoo>

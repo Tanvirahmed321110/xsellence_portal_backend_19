@@ -26,8 +26,29 @@ class XsellencePortalHelpdesk(http.Controller):
     # ========================
     @http.route('/helpdesks', type='http', auth='user', website=True)
     def helpdesk_f(self, **kw):
+        user = request.env.user
+
+        tickets = request.env['helpdesk.ticket'].sudo().search([
+            ('user_id', '=', user.id)
+        ])
+
+        tickets_new = tickets.filtered(lambda ticket: ticket.stage_id.name == 'new')
+        tickets_in_progress = tickets.filtered(lambda ticket: ticket.stage_id.name == 'in_progress')
+        tickets_solved = tickets.filtered(lambda t: t.stage_id.name == 'Solved')
+        tickets_cancelled = tickets.filtered(lambda t: t.stage_id.name == 'Cancelled')
+
         return request.render('xsellence_portal.helpdesk_page', {
             'active_menu': 'helpdesk',
+            'tickets': tickets,  # All tickets (in case you need them all in the loop)
+            'tickets_new': tickets_new,
+            'tickets_in_progress': tickets_in_progress,
+            'tickets_solved': tickets_solved,
+            'tickets_cancelled': tickets_cancelled,
+
+            'count_new': len(tickets_new),
+            'count_in_progress': len(tickets_in_progress),
+            'count_solved': len(tickets_solved),
+            'count_cancelled': len(tickets_cancelled),
         })
 
     # ========================
