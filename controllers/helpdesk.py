@@ -32,8 +32,8 @@ class XsellencePortalHelpdesk(http.Controller):
             ('user_id', '=', user.id)
         ])
 
-        tickets_new = tickets.filtered(lambda ticket: ticket.stage_id.name == 'new')
-        tickets_in_progress = tickets.filtered(lambda ticket: ticket.stage_id.name == 'in_progress')
+        tickets_new = tickets.filtered(lambda ticket: ticket.stage_id.name == 'New')
+        tickets_in_progress = tickets.filtered(lambda ticket: ticket.stage_id.name == 'In Progress')
         tickets_solved = tickets.filtered(lambda t: t.stage_id.name == 'Solved')
         tickets_cancelled = tickets.filtered(lambda t: t.stage_id.name == 'Cancelled')
 
