@@ -1,11 +1,12 @@
 <odoo>
     <template id="ticket_details_page">
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=1"/>
         <t t-call="xsellence_portal.custom_layout">
 
-             <!-- ====================  Breadcrumb  ==================== -->
+            <!-- ====================  Breadcrumb  ==================== -->
             <t t-call="xsellence_portal.breadcrumb_component"/>
 
-              <section class="helpdesk-details mt-6">
+            <section class="helpdesk-details mt-6">
                 <!-- Page -->
                 <div class="page">
 
@@ -14,15 +15,42 @@
                         <div class="hero-top">
                             <div style="flex:1;min-width:0;">
                                 <div class="ticket-id-badge">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M20 4H4c-1.1 0-2 .9-2 2v16l4-4h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" />
-                                    </svg>
-                                    TKT-00482
+                                    ID:
+                                    #
+                                    <t t-esc="ticket.ticket_ref"></t>
                                 </div>
-                                <div class="ticket-title">Customer Support at 9AM – 10PM</div>
+                                <div class="ticket-title" t-esc="ticket.name"></div>
                                 <div class="hero-badges">
-                                    <span class="badge badge-cancelled"><span class="badge-dot"></span>Cancelled</span>
-                                    <span class="badge badge-high"><span class="badge-dot"></span>High Priority</span>
+                                    <div class="status"
+                                         t-attf-class="status
+                                             {{ 'status-new' if ticket.stage_id.name == 'New' else '' }}
+                                             {{ 'status-progress' if ticket.stage_id.name == 'In Progress' else '' }}
+                                             {{ 'status-solved' if ticket.stage_id.name == 'Solved' else '' }}
+                                             {{ 'status-cancelled' if ticket.stage_id.name == 'Cancelled' else '' }}"
+                                         t-esc="ticket.stage_id.name">
+                                    </div>
+
+                                    <!-- Ticket Priority Here-->
+                                    <t t-if="ticket.priority == '1'">
+                                        <span class="badge badge-normal">
+                                            <span class="badge-dot"></span>Normal Priority
+                                        </span>
+                                    </t>
+                                    <t t-elif="ticket.priority == '2'">
+                                        <span class="badge badge-high">
+                                            <span class="badge-dot"></span>High Priority
+                                        </span>
+                                    </t>
+                                    <t t-elif="ticket.priority == '3'">
+                                        <span class="badge badge-urgent">
+                                            <span class="badge-dot"></span>Urgent Priority
+                                        </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge badge-low">
+                                            <span class="badge-dot"></span>Low Priority
+                                        </span>
+                                    </t>
                                 </div>
                             </div>
 
@@ -31,8 +59,8 @@
                                 <!-- Mark Solved -->
                                 <button class="btn btn-primary">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2.2">
-                                        <polyline points="20 6 9 17 4 12" />
+                                         stroke-width="2.2">
+                                        <polyline points="20 6 9 17 4 12"/>
                                     </svg>
                                     Mark Solved
                                 </button>
@@ -41,48 +69,31 @@
                     </div>
 
                     <!-- Two-column -->
-                    <div class="detail-grid">
+                    <div class="detail-grid" style="align-items:stretch">
 
                         <!-- LEFT -->
                         <div class="col-gap">
 
                             <!-- Description -->
-                            <div class="card">
+                            <div class="card" style="background:#fff;height:100%">
                                 <div class="card-head">
                                     <div class="card-head-title">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                            <polyline points="14 2 14 8 20 8" />
-                                            <line x1="16" y1="13" x2="8" y2="13" />
-                                            <line x1="16" y1="17" x2="8" y2="17" />
+                                             stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                            <polyline points="14 2 14 8 20 8"/>
+                                            <line x1="16" y1="13" x2="8" y2="13"/>
+                                            <line x1="16" y1="17" x2="8" y2="17"/>
                                         </svg>
                                         Description
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="description-text">
-                                        <p>The customer support shift covers the full window from <strong>9:00 AM to
-                                                10:00 PM</strong>. During this period, the assigned team member is
-                                            responsible for handling all incoming tickets via chat, email, and phone
-                                            channels for the Nutrition Depot BD project.</p>
-                                        <p>The ticket has been cancelled due to a scheduling conflict reported by the
-                                            project manager. All pending queries from this shift have been re-assigned
-                                            to the on-call support agent. Please ensure the replacement agent is briefed
-                                            with all open threads before the shift begins.</p>
-                                        <p>If the shift needs to be reinstated, please contact <strong>Shamiul
-                                                Alam</strong> for approval and update the status accordingly.</p>
-                                        <p>The ticket has been cancelled due to a scheduling conflict reported by the
-                                            project manager. All pending queries from this shift have been re-assigned
-                                            to the on-call support agent. Please ensure the replacement agent is briefed
-                                            with all open threads before the shift begins.</p>
-                                        <p>If the shift needs to be reinstated, please contact <strong>Shamiul
-                                                Alam</strong> for approval and update the status accordingly.</p>
+                                    <div class="description-text" t-esc="ticket.description">
+
                                     </div>
                                 </div>
                             </div>
-
-
 
                         </div>
 
@@ -94,36 +105,64 @@
                                 <div class="card-head">
                                     <div class="card-head-title">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2">
-                                            <circle cx="12" cy="12" r="10" />
-                                            <line x1="12" y1="8" x2="12" y2="12" />
-                                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                                             stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <line x1="12" y1="8" x2="12" y2="12"/>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"/>
                                         </svg>
                                         Ticket Details
                                     </div>
                                 </div>
                                 <div class="card-body"
-                                    style="padding-top:var(--space-1);padding-bottom:var(--space-1);">
+                                     style="padding-top:var(--space-1);padding-bottom:var(--space-1);">
                                     <div class="meta-list">
 
                                         <div class="meta-row">
                                             <div class="meta-label">ID</div>
-                                            <div class="meta-val id-val">TKT-00482</div>
+                                            <div class="meta-val id-val">
+                                                #
+                                                <t t-esc="ticket.ticket_ref"></t>
+                                            </div>
                                         </div>
 
                                         <div class="meta-row">
                                             <div class="meta-label">Status</div>
                                             <div class="meta-val">
-                                                <span class="badge badge-cancelled"><span
-                                                        class="badge-dot"></span>Cancelled</span>
+                                                <div class="status"
+                                                     t-attf-class="status
+                                             {{ 'status-new' if ticket.stage_id.name == 'New' else '' }}
+                                             {{ 'status-progress' if ticket.stage_id.name == 'In Progress' else '' }}
+                                             {{ 'status-solved' if ticket.stage_id.name == 'Solved' else '' }}
+                                             {{ 'status-cancelled' if ticket.stage_id.name == 'Cancelled' else '' }}"
+                                                     t-esc="ticket.stage_id.name">
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div class="meta-row">
                                             <div class="meta-label">Priority</div>
                                             <div class="meta-val">
-                                                <span class="badge badge-high"><span
-                                                        class="badge-dot"></span>High</span>
+                                                <!-- Ticket Priority Here-->
+                                                <t t-if="ticket.priority == '1'">
+                                                    <span class="badge badge-normal">
+                                                        <span class="badge-dot"></span>Normal Priority
+                                                    </span>
+                                                </t>
+                                                <t t-elif="ticket.priority == '2'">
+                                                    <span class="badge badge-high">
+                                                        <span class="badge-dot"></span>High Priority
+                                                    </span>
+                                                </t>
+                                                <t t-elif="ticket.priority == '3'">
+                                                    <span class="badge badge-urgent">
+                                                        <span class="badge-dot"></span>Urgent Priority
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="badge badge-low">
+                                                        <span class="badge-dot"></span>Low Priority
+                                                    </span>
+                                                </t>
                                             </div>
                                         </div>
 
@@ -155,7 +194,8 @@
                                         <div class="meta-row">
                                             <div class="meta-label">Created</div>
                                             <div class="person-name">25 Apr
-                                                2026</div>
+                                                2026
+                                            </div>
                                         </div>
 
                                         <div class="meta-row">
@@ -163,11 +203,11 @@
                                             <div class="meta-val">
                                                 <span class="deadline-chip">
                                                     <svg width="9" height="9" viewBox="0 0 24 24" fill="none"
-                                                        stroke="currentColor" stroke-width="2.2">
-                                                        <rect x="3" y="4" width="18" height="18" rx="2" />
-                                                        <line x1="16" y1="2" x2="16" y2="6" />
-                                                        <line x1="8" y1="2" x2="8" y2="6" />
-                                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                                         stroke="currentColor" stroke-width="2.2">
+                                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                                        <line x1="3" y1="10" x2="21" y2="10"/>
                                                     </svg>
                                                     2 May 2026
                                                 </span>
@@ -183,9 +223,9 @@
                                 <div class="card-head">
                                     <div class="card-head-title">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2">
-                                            <polyline points="23 4 23 10 17 10" />
-                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                                             stroke="currentColor" stroke-width="2">
+                                            <polyline points="23 4 23 10 17 10"/>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
                                         </svg>
                                         Update Status
                                     </div>
@@ -200,7 +240,6 @@
                                     </select>
                                 </div>
                             </div>
-
 
                         </div>
                     </div>

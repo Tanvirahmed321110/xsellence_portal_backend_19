@@ -1,6 +1,6 @@
 <odoo>
     <template id="helpdesk_page">
-        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=1"/>
         <t t-call="xsellence_portal.custom_layout">
 
             <section class="helpdesk  mt-sm-0">
@@ -148,7 +148,7 @@
                         <div class="h-items grid-4 gap-lg-4 grid-sm-2 gap-5  gap-sm-3">
                             <t t-foreach="tickets" t-as="ticket">
                                 <!-- ==========  Single Helpdesk Item ========== -->
-                                <a t-attf-href="/helpdesks/ticket_details?ticket_id=#{ticket.id}" class="item">
+                               <a t-attf-href="/helpdesks/ticket_details/#{ticket.id}" class="item">
                                     <div class="ticket-header">
                                         <!-- ticket name -->
                                         <div class="task-name" t-esc="ticket.name"> </div>

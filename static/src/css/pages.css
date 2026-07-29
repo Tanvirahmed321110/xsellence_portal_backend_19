@@ -965,7 +965,7 @@ body.dark-theme .profile .main-info .manager-msg-btn {
 
 
 /* helpdesk-wrap Status */
-.helpdesk-wrap .item .status {
+.helpdesk-wrap .item .status ,.page .status{
     background-color: var(--color-primary);
     color: var(--color-white);
     top: 2px;
@@ -977,15 +977,15 @@ body.dark-theme .profile .main-info .manager-msg-btn {
     font-weight: 500;
 }
 
-.helpdesk-wrap .item .status.status-cancelled {
+.helpdesk-wrap .item .status.status-cancelled,.page .status.status-cancelled {
     background-color: var(--color-danger);
 }
 
-.helpdesk-wrap .item .status.status-new {
+.helpdesk-wrap .item .status.status-new,.page .status.status-new {
     background-color: var(--header-bg);
 }
 
-.helpdesk-wrap .item .status.status-progress {
+.helpdesk-wrap .item .status.status-progress ,.page .status-progress{
     background-color: var(--color-warning);
 }
 
@@ -1056,16 +1056,70 @@ body.dark-theme .profile .main-info .manager-msg-btn {
 
 /*==============  Helpdesk Details Page  ==============*/
 .page {
-    max-width: 980px;
-    margin: var(--space-1) auto;
+    max-width: 100%;
+    margin: var(--space-2) auto;
     padding: 20px;
 }
+.page .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    border:1px solid #ededed;
+}
 
+.page .badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Low Priority - Gray/Blue */
+.page .badge-low {
+    background: rgba(108, 117, 125, 0.15);
+    color: #adb5bd;
+}
+.page .badge-low .badge-dot {
+    background: #6c757d;
+}
+
+/* Normal Priority - Blue */
+.page .badge-normal {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+.page .badge-normal .badge-dot {
+    background: #3b82f6;
+}
+
+/* High Priority - Orange/Amber */
+.page .badge-high {
+    background: rgba(249, 177, 44, 0.15);
+    color: #F9B12C;
+}
+.page .badge-high .badge-dot {
+    background: #F9B12C;
+}
+
+/* Urgent Priority - Red */
+.page .badge-urgent {
+    background: rgba(220, 53, 69, 0.15);
+    color: #ff6b7a;
+}
+.page .badge-urgent .badge-dot {
+    background: #dc3545;
+}
 /* ── Hero ── */
 .ticket-hero {
     background: var(--color-bg-primary);
     border: 1px solid var(--border-primary);
-    border-top: 3px solid var(--color-primary);
+    border-top: 4px solid var(--color-secondary);
+    border-bottom: 4px solid var(--color-secondary);
     border-radius: var(--radius-xl);
     padding: var(--space-7) var(--space-7) var(--space-6);
     margin-bottom: var(--space-5);
@@ -1193,9 +1247,9 @@ body.dark-theme .profile .main-info .manager-msg-btn {
 /* ── Grid ── */
 .detail-grid {
     display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: var(--space-5);
-    align-items: start;
+    grid-template-columns: 1fr .5fr;
+    gap: var(--space-6);
+    align-items: stretch;
 }
 
 .helpdesk-details .col-gap {
@@ -1222,7 +1276,7 @@ body.dark-theme .profile .main-info .manager-msg-btn {
 }
 
 .helpdesk-details .card-head {
-    padding: var(--space-3) var(--space-5);
+    padding: var(--space-4) var(--space-5);
     border-bottom: 1px solid var(--border-primary);
     display: flex;
     align-items: center;
@@ -1231,7 +1285,7 @@ body.dark-theme .profile .main-info .manager-msg-btn {
 }
 
 .helpdesk-details .card-head-title {
-    font-size: var(--fs-xs);
+    font-size: var(--fs-sm);
     font-weight: var(--fw-700);
     color: var(--color-primary);
     text-transform: uppercase;
