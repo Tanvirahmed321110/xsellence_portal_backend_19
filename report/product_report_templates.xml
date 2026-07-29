@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!--    <record id="action_product_report_window" model="ir.actions.act_window">-->
+<!--        <field name="name">Product Report</field>-->
+<!--        <field name="res_model">product.template</field>-->
+<!--        <field name="view_mode">list,form</field>-->
+<!--    </record>-->
+
+    <!--==========================//
+             Paper Format
+     //=========================-->
+    <record id="paperformat_product_report" model="report.paperformat">
+        <field name="name">Product Report A4</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+        <field name="css_margins" eval="True"/>
+    </record>
+
+
+    <!--========================//
+         Report Action
+      //====================== -->
+    <record id="action_report_product" model="ir.actions.report">
+        <field name="name">Product Report</field>
+        <field name="model">product.template</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">xsellence_portal.product_report_template</field>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_type">report</field>
+        <field name="binding_view_types">list,form</field>
+        <field name="paperformat_id" ref="xsellence_portal.paperformat_product_report"/>
+    </record>
+
+
+    <!--========================//
+        Qweb Template
+      //====================== -->
+    <template id="product_report_template">
+        <t t-call="web.html_container">
+          <div class="page">
+            <table style="width: 100%; border-collapse: collapse;" border="1">
+                <thead>
+                    <tr>
+                        <th style="padding: 10px; width: 30%;">Image</th>
+                        <th style="padding: 10px; width: 70%;">Product Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="docs" t-as="product">
+                        <td style="padding: 10px; vertical-align: top;">
+                            <img t-att-src="image_data_uri(product.image_1024)"
+                                 style="max-width: 150px; max-height: 150px;"/>
+                        </td>
+                        <td style="padding: 10px; vertical-align: top;">
+                            <h2 style="margin: 0 0 10px 0;">
+                                <span t-field="product.name"/>
+                            </h2>
+                            <p style="margin: 0;">
+                                <strong>Price:</strong>
+                                <span t-field="product.list_price"/>
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        </t>
+    </template>
+
+</odoo>

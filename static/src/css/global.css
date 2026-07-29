@@ -277,7 +277,7 @@ body.dark-theme .search-wrap .search-input {
     color: var(--color-text-secondary);
 }
 body.dark-theme .search-wrap .search-input {
-    color:#ababab;
+    color: #000000;
 }
 
 body.dark-theme input[type="date"]::-webkit-calendar-picker-indicator {
@@ -364,10 +364,14 @@ body.dark-theme .employees .emp-role {
 
 body.dark-theme .timesheets .filter-head,
 body.dark-theme .helpdesk .filter-head,
-body.dark-theme .timesheets .table-wrap,
 body.dark-theme .helpdesk .helpdesk-wrap {
     background-color: #1f2937;
     border: 1px solid var(--border-secondary);
+}
+
+body.dark-theme .timesheets .table-wrap {
+    background-color: #1f2937;
+    border: none;
 }
 
 body.dark-theme .helpdesk .helpdesk-card {
@@ -398,6 +402,10 @@ body.dark-theme .table-wrap tbody tr,
 body.dark-theme .table-wrap tbody tr:nth-child(even) {
     background-color: #111827;
     color: var(--color-text-secondary);
+}
+
+body.dark-theme .table-wrap {
+    border: 0;
 }
 
 body.dark-theme .table-wrap tbody tr:nth-child(odd) {
