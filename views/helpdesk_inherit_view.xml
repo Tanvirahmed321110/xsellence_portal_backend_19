@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--===============================//
+    //   Helpdesk Ticket Form View    //
+    //===============================-->
+    <record id="view_helpdesk_ticket_form_inherit" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add employee_ids field before user_id -->
+            <xpath expr="//field[@name='user_id']" position="before">
+                <field name="employee_ids"
+                       widget="many2many_tags"
+                       options="{'no_create': True}"
+                       placeholder="Assign employees..."/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+
+    <!--===============================//
+    //   Helpdesk Ticket List View    //
+    //===============================-->
+    <record id="view_helpdesk_ticket_tree_inherit" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.list.inherit</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- Odoo 19: Use 'list' tag -->
+            <xpath expr="//field[@name='user_id']"  position="after">
+                <field name="employee_ids"
+                       widget="many2many_tags"
+                       optional="show"
+                       string="Employees"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+
+    <!--===============================//
+    //   Helpdesk Ticket Search View  //
+    //===============================-->
+<!--    <record id="view_helpdesk_ticket_search_inherit" model="ir.ui.view">-->
+<!--        <field name="name">helpdesk.ticket.search.inherit</field>-->
+<!--        <field name="model">helpdesk.ticket</field>-->
+<!--        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search"/>-->
+<!--        <field name="arch" type="xml">-->
+
+<!--            &lt;!&ndash; Add employee_ids in search view &ndash;&gt;-->
+<!--            <xpath expr="//search" position="inside">-->
+<!--                <field name="employee_ids"-->
+<!--                       string="Search Employee"-->
+<!--                       placeholder="Search by employee..."/>-->
+
+<!--                &lt;!&ndash; Filter for current user's employees &ndash;&gt;-->
+<!--                <filter name="my_employees"-->
+<!--                        string="My Assigned Employees"-->
+<!--                        domain="[('employee_ids.user_id', '=', uid)]"/>-->
+<!--            </xpath>-->
+
+<!--        </field>-->
+<!--    </record>-->
+
+</odoo>

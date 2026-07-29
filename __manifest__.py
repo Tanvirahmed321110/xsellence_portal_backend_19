@@ -49,8 +49,9 @@
         "views/hr_announcement_views.xml",
         "views/project_inherit_view.xml",
         "views/project_task_inherit_view.xml",
+        "views/helpdesk_inherit_view.xml",
 
-        #==========  Backend View  ==========
+        #==========  Backend Report  ==========
         "report/user_report_paperformat.xml",
         "report/user_report_templates.xml",
         "report/user_report_action.xml",
