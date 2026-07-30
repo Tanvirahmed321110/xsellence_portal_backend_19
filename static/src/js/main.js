@@ -548,6 +548,10 @@ openSidebarDesktop();
             return '&#128451;&#65039;';
         }
 
+        if (model === 'helpdesk.ticket' || title.indexOf('ticket') !== -1 || title.indexOf('support') !== -1) {
+            return '&#127911;';
+        }
+
         return '&#128276;';
     }
 
@@ -606,6 +610,18 @@ openSidebarDesktop();
             match = description.match(/^(.+) commented on (.+) task: (.+)$/);
             if (match) {
                 return match[1] + ' commented on <span class="s3-name">' + match[2] + '</span> task: ' + match[3];
+            }
+        }
+
+        if (notification.res_model === 'helpdesk.ticket') {
+            match = description.match(/^(.+) assigned you to (.+) ticket\.$/);
+            if (match) {
+                return match[1] + ' assigned you to <span class="s3-name">' + match[2] + '</span> ticket.';
+            }
+
+            match = description.match(/^Support ticket (.+) was created successfully\.$/);
+            if (match) {
+                return 'Support ticket <span class="s3-name">' + match[1] + '</span> was created successfully.';
             }
         }
 
