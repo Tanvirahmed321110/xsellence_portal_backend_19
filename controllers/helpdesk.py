@@ -30,6 +30,13 @@ class XsellencePortalHelpdesk(http.Controller):
         user = request.env.user
         Ticket = request.env['helpdesk.ticket'].sudo()
         domain = [('user_id', '=', user.id)]
+        selected_project_id = int(kw.get('project_id') or 0)
+        selected_stage_id = int(kw.get('stage_id') or 0)
+
+        if selected_project_id and 'project_id' in Ticket._fields:
+            domain.append(('project_id', '=', selected_project_id))
+        if selected_stage_id:
+            domain.append(('stage_id', '=', selected_stage_id))
 
         # ===== Pagination Setup =====
         per_page = int(kw.get('per_page', 16))
@@ -39,7 +46,10 @@ class XsellencePortalHelpdesk(http.Controller):
             total=total,
             page=kw.get('page', 1),
             per_page=per_page,
-            url_args={},
+            url_args={
+                'project_id': selected_project_id if selected_project_id else '',
+                'stage_id': selected_stage_id if selected_stage_id else '',
+            },
         )
 
         all_tickets = Ticket.search(domain, order='create_date desc')
@@ -75,6 +85,8 @@ class XsellencePortalHelpdesk(http.Controller):
             'pager': pager,
             'projects': projects,
             'stages': stages,
+            'selected_project_id': selected_project_id,
+            'selected_stage_id': selected_stage_id,
         })
 
     # ========================
@@ -93,10 +105,25 @@ class XsellencePortalHelpdesk(http.Controller):
             'ticket': ticket,
             'breadcrumb': [
                 {'name': 'Dashboard', 'url': '/dashboard'},
-                {'name': 'Helpdesk', 'url': '/helpdesks'},
+                {'name': 'Helpdesks', 'url': '/helpdesks'},
                 {'name': 'Ticket Details', 'url': False},
             ],
         })
+
+    # ========================
+    # Ticket Stage Update
+    # ========================
+    @http.route('/helpdesks/update_stage', type='http', auth='user', website=True, methods=['POST'], csrf=True)
+    def update_helpdesk_stage(self, **post):
+        ticket_id = int(post.get('ticket_id') or 0)
+        stage_id = int(post.get('stage_id') or 0)
+
+        ticket = request.env['helpdesk.ticket'].sudo().browse(ticket_id)
+        if ticket.exists() and stage_id:
+            ticket.write({'stage_id': stage_id})
+
+        return request.redirect(f'/helpdesks/ticket_details/{ticket_id}')
+
 
     # ========================
     # Create ticket page

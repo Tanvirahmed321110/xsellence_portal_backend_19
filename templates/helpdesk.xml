@@ -26,13 +26,17 @@
                         <select class="filter-select" id="filter-project" onchange="applyFilters()">
                             <option value="">All Projects</option>
                             <t t-foreach="projects" t-as="project">
-                                <option t-att-value="project.id" t-esc="project.name"/>
+                                <option t-att-value="project.id"
+                                        t-att-selected="'selected' if selected_project_id == project.id else None"
+                                        t-esc="project.name"/>
                             </t>
                         </select>
                         <select class="filter-select" id="filter-month" onchange="applyFilters()">
                             <option value="">All Status</option>
                             <t t-foreach="stages" t-as="stage">
-                                <option t-att-value="stage.id" t-esc="stage.name"/>
+                                <option t-att-value="stage.id"
+                                        t-att-selected="'selected' if selected_stage_id == stage.id else None"
+                                        t-esc="stage.name"/>
                             </t>
                         </select>
 
@@ -190,13 +194,18 @@
                                     </div>
 
                                     <div class="footer-meta flex-between gap-2 px-3 pb-3 mt-2">
-                                        <select class="filter-select">
-                                            <option value="cancelled">Cancelled</option>
-                                            <option value="active">Active</option>
-                                            <option value="onhold">On Hold</option>
-                                            <option value="blocked">Blocked</option>
-                                            <option value="completed">Completed</option>
-                                        </select>
+                                        <form action="/helpdesks/update_stage" method="post" onclick="event.stopPropagation()">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="ticket_id" t-att-value="ticket.id"/>
+
+                                            <select class="filter-select" name="stage_id" onchange="this.form.submit()">
+                                                <t t-foreach="(ticket.team_id.stage_ids or stages)" t-as="stage">
+                                                    <option t-att-value="stage.id"
+                                                            t-att-selected="'selected' if ticket.stage_id.id == stage.id else None"
+                                                            t-esc="stage.name"/>
+                                                </t>
+                                            </select>
+                                        </form>
                                         <!-- Assign By  -->
                                         <div class="info-item">
                                             <div class="info-label">Assigned By</div>
@@ -213,7 +222,7 @@
                                         </div>
 
                                         <!-- For Hidden Item -->
-                                    <input type="hidden" class="ticket-id" t-att-value="ticket.ticket_ref or ''"/>
+                                        <input type="hidden" class="ticket-id" t-att-value="ticket.ticket_ref or ''"/>
                                     </div>
                                 </a>
                             </t>
@@ -315,6 +324,24 @@
             </section>
 
             <script>
+                function applyFilters() {
+                const project = document.getElementById("filter-project")?.value || "";
+                const stage = document.getElementById("filter-month")?.value || "";
+                const params = new URLSearchParams();
+
+                if (project) {
+                params.set("project_id", project);
+                }
+                if (stage) {
+                params.set("stage_id", stage);
+                }
+
+                const queryString = params.toString();
+                window.location.href = queryString
+                ? "/helpdesks?" + queryString
+                : "/helpdesks";
+                }
+
                 document.addEventListener("DOMContentLoaded", function () {
                 searchF('.helpdesk-wrap .item', '.task-name', '.ticket-id');
                 });
