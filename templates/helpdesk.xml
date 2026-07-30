@@ -16,7 +16,7 @@
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
-                            <input class="search-input" type="text" placeholder="Search name or id..."
+                            <input class="search-input"  type="text" placeholder="Search name or id..."
                             />
                         </div>
                     </div>
@@ -58,7 +58,7 @@
 
 
                 <!--==============|| Helpdesk Overview Cards Here  ||================-->
-                <div class="card-items grid-4 grid-sm-2 gap-4 gap-sm-3 mt-6 mt-sm-5">
+                <div class="card-items grid-4 grid-sm-2 gap-4 gap-sm-3 mt-6 mt-sm-5" id="panel-grid">
 
                     <!-- For New card: with SVG icon and count 12 -->
                     <div class="helpdesk-card new">
@@ -309,6 +309,12 @@
 
                 </div>
             </section>
+
+            <script>
+               document.addEventListener("DOMContentLoaded", function () {
+                    searchF('.helpdesk-wrap .item', '.task-name', '.btn.btn-primary');
+                });
+            </script>
         </t>
     </template>
 </odoo>

@@ -168,7 +168,7 @@
 
                                         <div class="meta-row">
                                             <div class="meta-label">Project</div>
-                                            <div class="meta-val" style="font-size:var(--fs-xs);" t-esc="ticket.partner_id.name">Nutrition Depot BD
+                                            <div class="meta-val" style="font-size:var(--fs-xs);" t-esc="ticket.project_id.name">Nutrition Depot BD
                                             </div>
                                         </div>
 

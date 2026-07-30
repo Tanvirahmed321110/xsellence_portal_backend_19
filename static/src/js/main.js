@@ -140,7 +140,9 @@ function searchF(cardSelector, nameSelector, idSelector) {
 
         // ✅ Insert after the cards container
         const panel = document.getElementById('panel-grid')
-        panel.parentNode.insertBefore(errorContainer, panel.nextSibling)
+        if (panel) {
+            panel.parentNode.insertBefore(errorContainer, panel.nextSibling)
+        }
     }
 
     // validation
