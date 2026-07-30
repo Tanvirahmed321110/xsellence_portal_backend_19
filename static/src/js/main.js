@@ -163,7 +163,7 @@ function searchF(cardSelector, nameSelector, idSelector) {
             return
         }
 
-       cards.forEach(card => {
+   cards.forEach(card => {
     const nameEl = card.querySelector(nameSelector)
     const idEl = card.querySelector(idSelector)
 
@@ -172,21 +172,21 @@ function searchF(cardSelector, nameSelector, idSelector) {
     const cardName = nameEl.innerText.toLowerCase()
 
     let cardId = ''
-    if (idEl) {
-        if (idEl.getAttribute('href')) {
-            cardId = idEl.getAttribute('href').split('/').pop().toLowerCase()
-        } else {
-            cardId = String(idEl.value || idEl.textContent || '').toLowerCase()
+        if (idEl) {
+            if (idEl.getAttribute('href')) {
+                cardId = idEl.getAttribute('href').split('/').pop().toLowerCase()
+            } else {
+                cardId = String(idEl.value || idEl.textContent || '').toLowerCase()
+            }
         }
-    }
 
-    if (cardName.includes(value) || cardId.includes(value)) {
-        card.style.display = 'block'
-        found = true
-    } else {
-        card.style.display = 'none'
-    }
-})
+        if (cardName.includes(value) || cardId.includes(value)) {
+            card.style.display = 'block'
+            found = true
+        } else {
+            card.style.display = 'none'
+        }
+    })
 
         listRows.forEach(row => {
             const name = row.children[0].innerText.toLowerCase()

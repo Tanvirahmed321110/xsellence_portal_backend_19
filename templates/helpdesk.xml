@@ -16,7 +16,7 @@
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
-                            <input class="search-input" type="text" placeholder="Search name or id..."
+                            <input class="search-input" type="text" placeholder="Search name / Ref without #"
                             />
                         </div>
                     </div>
@@ -213,7 +213,7 @@
                                         </div>
 
                                         <!-- For Hidden Item -->
-                                    <input type="hidden" class="ticket-id" t-att-value="ticket.id"/>
+                                    <input type="hidden" class="ticket-id" t-att-value="ticket.ticket_ref or ''"/>
                                     </div>
                                 </a>
                             </t>
