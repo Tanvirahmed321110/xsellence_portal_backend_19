@@ -144,7 +144,7 @@
                         <div class="h-items grid-4 gap-lg-4 grid-sm-2 gap-5  gap-sm-3">
                             <t t-foreach="tickets" t-as="ticket">
                                 <!-- ==========  Single Helpdesk Item ========== -->
-                                <a t-attf-href="/helpdesks/ticket_details/#{ticket.id}" class="item">
+                                <div  class="item">
 
                                     <div class="ticket-header">
                                         <!-- ticket name -->
@@ -194,18 +194,9 @@
                                     </div>
 
                                     <div class="footer-meta flex-between gap-2 px-3 pb-3 mt-2">
-                                        <form action="/helpdesks/update_stage" method="post" onclick="event.stopPropagation()">
-                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                            <input type="hidden" name="ticket_id" t-att-value="ticket.id"/>
-
-                                            <select class="filter-select" name="stage_id" onchange="this.form.submit()">
-                                                <t t-foreach="(ticket.team_id.stage_ids or stages)" t-as="stage">
-                                                    <option t-att-value="stage.id"
-                                                            t-att-selected="'selected' if ticket.stage_id.id == stage.id else None"
-                                                            t-esc="stage.name"/>
-                                                </t>
-                                            </select>
-                                        </form>
+                                        <a class="btn btn-primary" t-attf-href="/helpdesks/ticket_details/#{ticket.id}">
+                                            View Details
+                                        </a>
                                         <!-- Assign By  -->
                                         <div class="info-item">
                                             <div class="info-label">Assigned By</div>
@@ -224,7 +215,7 @@
                                         <!-- For Hidden Item -->
                                         <input type="hidden" class="ticket-id" t-att-value="ticket.ticket_ref or ''"/>
                                     </div>
-                                </a>
+                                </div>
                             </t>
                             <!-- ==========  Single Helpdesk Item ========== -->
                             <!--                            <a href="/helpdesk/ticket_details" class="item">-->
