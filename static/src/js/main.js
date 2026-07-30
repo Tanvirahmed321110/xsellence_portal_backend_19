@@ -163,22 +163,30 @@ function searchF(cardSelector, nameSelector, idSelector) {
             return
         }
 
-        cards.forEach(card => {
-            const nameEl = card.querySelector(nameSelector)
-            const idEl = card.querySelector(idSelector)
+       cards.forEach(card => {
+    const nameEl = card.querySelector(nameSelector)
+    const idEl = card.querySelector(idSelector)
 
-            if (!nameEl || !idEl) return
+    if (!nameEl) return
 
-            const cardName = nameEl.innerText.toLowerCase()
-            const cardId = idEl.getAttribute('href').split('/').pop()
+    const cardName = nameEl.innerText.toLowerCase()
 
-            if (cardName.includes(value) || cardId.includes(value)) {
-                card.style.display = 'block'
-                found = true
-            } else {
-                card.style.display = 'none'
-            }
-        })
+    let cardId = ''
+    if (idEl) {
+        if (idEl.getAttribute('href')) {
+            cardId = idEl.getAttribute('href').split('/').pop().toLowerCase()
+        } else {
+            cardId = String(idEl.value || idEl.textContent || '').toLowerCase()
+        }
+    }
+
+    if (cardName.includes(value) || cardId.includes(value)) {
+        card.style.display = 'block'
+        found = true
+    } else {
+        card.style.display = 'none'
+    }
+})
 
         listRows.forEach(row => {
             const name = row.children[0].innerText.toLowerCase()

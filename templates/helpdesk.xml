@@ -16,7 +16,7 @@
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
-                            <input class="search-input"  type="text" placeholder="Search name or id..."
+                            <input class="search-input" type="text" placeholder="Search name or id..."
                             />
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                         <select class="filter-select" id="filter-project" onchange="applyFilters()">
                             <option value="">All Projects</option>
                             <t t-foreach="projects" t-as="project">
-                                 <option t-att-value="project.id" t-esc="project.name"/>
+                                <option t-att-value="project.id" t-esc="project.name"/>
                             </t>
                         </select>
                         <select class="filter-select" id="filter-month" onchange="applyFilters()">
@@ -141,6 +141,7 @@
                             <t t-foreach="tickets" t-as="ticket">
                                 <!-- ==========  Single Helpdesk Item ========== -->
                                 <a t-attf-href="/helpdesks/ticket_details/#{ticket.id}" class="item">
+
                                     <div class="ticket-header">
                                         <!-- ticket name -->
                                         <div class="task-name" t-esc="ticket.name"></div>
@@ -210,6 +211,9 @@
 
                                             </div>
                                         </div>
+
+                                        <!-- For Hidden Item -->
+                                    <input type="hidden" class="ticket-id" t-att-value="ticket.id"/>
                                     </div>
                                 </a>
                             </t>
@@ -311,8 +315,8 @@
             </section>
 
             <script>
-               document.addEventListener("DOMContentLoaded", function () {
-                    searchF('.helpdesk-wrap .item', '.task-name', '.btn.btn-primary');
+                document.addEventListener("DOMContentLoaded", function () {
+                searchF('.helpdesk-wrap .item', '.task-name', '.ticket-id');
                 });
             </script>
         </t>
