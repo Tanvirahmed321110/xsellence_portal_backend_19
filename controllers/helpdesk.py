@@ -37,7 +37,7 @@ class XsellencePortalHelpdesk(http.Controller):
         pager = get_pager(
             url='/helpdesks',
             total=total,
-            page=kw.get('page', 16),
+            page=kw.get('page', 1),
             per_page=per_page,
             url_args={},
         )
@@ -49,6 +49,13 @@ class XsellencePortalHelpdesk(http.Controller):
             offset=pager['offset'],
             limit=pager['per_page'],
         )
+
+        projects = request.env['project.project'].sudo().browse()
+        if 'project_id' in Ticket._fields:
+            projects = all_tickets.mapped('project_id')
+
+        stages = request.env['helpdesk.stage'].sudo().search([], order='name asc')
+
         tickets_new = all_tickets.filtered(lambda ticket: ticket.stage_id.name == 'New')
         tickets_in_progress = all_tickets.filtered(lambda ticket: ticket.stage_id.name == 'In Progress')
         tickets_solved = all_tickets.filtered(lambda t: t.stage_id.name == 'Solved')
@@ -66,6 +73,8 @@ class XsellencePortalHelpdesk(http.Controller):
             'count_solved': len(tickets_solved),
             'count_cancelled': len(tickets_cancelled),
             'pager': pager,
+            'projects': projects,
+            'stages': stages,
         })
 
     # ========================

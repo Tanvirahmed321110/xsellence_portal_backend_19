@@ -25,23 +25,15 @@
                     <div class="right d-flex gap-4 align-center">
                         <select class="filter-select" id="filter-project" onchange="applyFilters()">
                             <option value="">All Projects</option>
-                            <option>MIT</option>
-                            <option>Dashboard Project</option>
-                            <option>NADIA FURNITURE</option>
-                            <option>Ultimate Organic Life Ltd</option>
-                            <option>MIT</option>
-                            <option>Dashboard Project</option>
-                            <option>NADIA FURNITURE</option>
-                            <option>Ultimate Organic Life Ltd</option>
-                            <option>Dashboard Project</option>
+                            <t t-foreach="projects" t-as="project">
+                                 <option t-att-value="project.id" t-esc="project.name"/>
+                            </t>
                         </select>
                         <select class="filter-select" id="filter-month" onchange="applyFilters()">
                             <option value="">All Status</option>
-                            <option value="2025-04">New</option>
-                            <option value="2025-04">In Progress</option>
-                            <option value="2025-04">Sloved</option>
-                            <option value="2025-04">Canceled</option>
-                            <option value="2025-04">All</option>
+                            <t t-foreach="stages" t-as="stage">
+                                <option t-att-value="stage.id" t-esc="stage.name"/>
+                            </t>
                         </select>
 
                         <a href="/helpdesk/create_ticket" class="btn btn-primary">Create Ticket
@@ -175,7 +167,7 @@
                                                     <path d="M3 10h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8z"></path>
                                                 </svg>
                                             </div>
-                                            <div class="info-val mt-1" t-esc="ticket.partner_id.name">
+                                            <div class="info-val mt-1" t-esc="ticket.project_id.name">
                                             </div>
                                         </div>
                                         <!-- For Assigned date -->

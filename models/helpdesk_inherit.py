@@ -4,6 +4,12 @@ class Helpdesk(models.Model):
     _inherit = 'helpdesk.ticket'
     _order = 'create_date desc'
 
+    project_id = fields.Many2one(
+        'project.project',
+        string='Project',
+        help='Project related to this ticket'
+    )
+
     employee_ids = fields.Many2many(
         'hr.employee',
         string = 'Employees',
@@ -19,6 +25,11 @@ class Helpdesk(models.Model):
         string='Deadline',
         help='Expected date to resolve/solve this ticket'
     )
+
+    @api.onchange('project_id')
+    def _onchange_project_id_set_customer(self):
+        for rec in self:
+            rec.partner_id = rec.project_id.partner_id if rec.project_id and rec.project_id.partner_id else False
 
     # is_overdue = fields.Boolean(
     #     string='Is Overdue',
