@@ -163,7 +163,7 @@
 
                                     </div>
 
-                                    <div class="card-info-grid grid-2 p-3 gap-2">
+                                    <div class="card-info-grid grid-2 p-3 px-4 gap-2">
                                         <!-- Project Name -->
                                         <div class="info-item">
                                             <div class="info-label d-flex gap-1 align-center">Project
@@ -175,6 +175,7 @@
                                             <div class="info-val mt-1" t-esc="ticket.project_id.name">
                                             </div>
                                         </div>
+
                                         <!-- For Assigned date -->
                                         <div class="info-item ">
                                             <div class="info-label">Deadline</div>

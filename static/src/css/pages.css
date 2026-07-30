@@ -932,13 +932,17 @@ body.dark-theme .profile .main-info .manager-msg-btn {
     border-radius: 12px;
     transition: var(--transition-base);
 }
-
+.helpdesk .helpdesk-wrap .item .btn{
+    padding:12px 20px;
+    font-size:13px;
+    font-weight:400;
+}
 .helpdesk .helpdesk-wrap .item::after {
     content: '';
     position: absolute;
     left: -16px;
     top: 50%;
-    width: 24px;
+    width: 26px;
     height: 24px;
     background-color: var(--color-white);
     border-radius: 50%;
@@ -950,7 +954,7 @@ body.dark-theme .profile .main-info .manager-msg-btn {
     position: absolute;
     right: -16px;
     top: 50%;
-    width: 24px;
+    width: 26px;
     height: 24px;
     background-color: var(--color-white);
     border-radius: 50%;
