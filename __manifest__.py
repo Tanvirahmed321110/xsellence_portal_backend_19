@@ -2,7 +2,7 @@
 {
     "name": "Xsellence Portal",
     "version": "0.1",
-    "summary": "Project, task, timesheet, employee, and support portal",
+    "summary": "Project, task, timesheet, employee, helpdes and support portal",
     "description": """
         Xsellence Portal provides a custom website dashboard for project,
         task, timesheet, employee, notification, and support workflows.
@@ -18,7 +18,8 @@
         "hr_timesheet",
         "portal",
         "website",
-        "product"
+        "product",
+        "helpdesk",
     ],
     "data": [
         "security/security_group.xml",

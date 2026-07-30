@@ -11,7 +11,7 @@
                 </div>
 
                 <div class="d-flex flex-1 flex-center mt-6">
-                    <form action="/helpdesk/create_ticket/submit"
+                    <form action="/helpdesks/create_ticket/submit"
                           method="post"
                           class="submit-form flex-column gap-5">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>

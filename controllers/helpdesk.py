@@ -4,23 +4,13 @@ from ..utilitis.pagination import get_pager
 
 
 class XsellencePortalHelpdesk(http.Controller):
-
     @staticmethod
-    def _safe_model(model_name):
-        try:
-            return request.env[model_name].sudo()
-        except KeyError:
-            return False
-
-    @staticmethod
-    def _selection_values(model, field_name):
-        field = model._fields.get(field_name)
+    def _ticket_priorities(ticket_model):
+        field = ticket_model._fields.get('priority')
         if not field or not field.selection:
             return []
         selection = field.selection
-        if isinstance(selection, str):
-            return getattr(model, selection)()
-        return selection(model) if callable(selection) else selection
+        return selection(ticket_model) if callable(selection) else selection
 
     # ========================
     # Helpdesk page
@@ -130,17 +120,9 @@ class XsellencePortalHelpdesk(http.Controller):
     # ========================
     @http.route('/helpdesks/create_ticket', type='http', auth='user', website=True, methods=['GET'])
     def create_ticket_page(self, **kw):
-        Ticket = self._safe_model('helpdesk.ticket')
-        if not Ticket:
-            return request.render('xsellence_portal.error_page', {
-                'error_title': 'Helpdesk App Not Installed',
-                'error_desc': 'Install the Odoo Helpdesk app to create support tickets from this portal.',
-                'error_btn_label': 'Back to Helpdesk',
-                'error_btn_url': '/helpdesk',
-            })
-
-        Team = self._safe_model('helpdesk.team')
-        teams = Team.search([], order='name asc') if Team else request.env['res.users'].browse()
+        Ticket = request.env['helpdesk.ticket'].sudo()
+        Team = request.env['helpdesk.team'].sudo()
+        teams = Team.search([], order='name asc')
 
         return request.render('xsellence_portal.create_ticket_page', {
             'active_menu': 'helpdesk',
@@ -158,11 +140,11 @@ class XsellencePortalHelpdesk(http.Controller):
                 [('active', '=', True)],
                 order='name asc',
             ),
-            'priorities': self._selection_values(Ticket, 'priority'),
+            'priorities': self._ticket_priorities(Ticket),
             'has_project_field': 'project_id' in Ticket._fields,
             'breadcrumb': [
                 {'name': 'Dashboard', 'url': '/dashboard'},
-                {'name': 'Helpdesk', 'url': '/helpdesk'},
+                {'name': 'Helpdesk', 'url': '/helpdesks'},
                 {'name': 'Create Ticket', 'url': False},
             ],
         })
@@ -171,7 +153,7 @@ class XsellencePortalHelpdesk(http.Controller):
     # Submit ticket
     # ========================
     @http.route(
-        '/helpdesk/create_ticket/submit',
+        '/helpdesks/create_ticket/submit',
         type='http',
         auth='user',
         website=True,
@@ -179,14 +161,7 @@ class XsellencePortalHelpdesk(http.Controller):
         csrf=True,
     )
     def submit_ticket(self, **post):
-        Ticket = self._safe_model('helpdesk.ticket')
-        if not Ticket:
-            return request.render('xsellence_portal.error_page', {
-                'error_title': 'Helpdesk App Not Installed',
-                'error_desc': 'The support ticket could not be created because the Odoo Helpdesk app is unavailable.',
-                'error_btn_label': 'Back to Helpdesk',
-                'error_btn_url': '/helpdesk',
-            })
+        Ticket = request.env['helpdesk.ticket'].sudo()
 
         subject = (post.get('name') or '').strip()
         if not subject:
@@ -194,7 +169,7 @@ class XsellencePortalHelpdesk(http.Controller):
                 'error_title': 'Ticket Subject Required',
                 'error_desc': 'Enter a subject before submitting the support ticket.',
                 'error_btn_label': 'Go Back',
-                'error_btn_url': '/helpdesk/create_ticket',
+                'error_btn_url': '/helpdesks/create_ticket',
             })
 
         vals = {'name': subject}
@@ -214,8 +189,8 @@ class XsellencePortalHelpdesk(http.Controller):
         # Some Helpdesk configurations require a team. Use the first available
         # team only when no team was explicitly submitted.
         if 'team_id' in Ticket._fields and not vals.get('team_id'):
-            Team = self._safe_model('helpdesk.team')
-            default_team = Team.search([], limit=1) if Team else False
+            Team = request.env['helpdesk.team'].sudo()
+            default_team = Team.search([], limit=1)
             if default_team:
                 vals['team_id'] = default_team.id
 
@@ -226,12 +201,12 @@ class XsellencePortalHelpdesk(http.Controller):
                 'error_title': 'Ticket Creation Failed',
                 'error_desc': str(error),
                 'error_btn_label': 'Try Again',
-                'error_btn_url': '/helpdesk/create_ticket',
+                'error_btn_url': '/helpdesks/create_ticket',
             })
 
         return request.render('xsellence_portal.success_page', {
             'success_title': 'Ticket Created',
             'success_desc': 'Support ticket %s was created successfully.' % ticket.display_name,
             'success_btn_label': 'Back to Helpdesk',
-            'success_btn_url': '/helpdesk',
+            'success_btn_url': '/helpdesks',
         })
