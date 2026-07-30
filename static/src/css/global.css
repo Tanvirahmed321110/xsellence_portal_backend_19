@@ -1092,7 +1092,7 @@ body {
 .timesheets .date-search {
     position: relative;
     overflow: hidden;
-    width: 368px;
+    width: 376px;
 }
 
 .timesheets .date-filter-control:first-child {
@@ -3784,6 +3784,10 @@ aside .sidebar-bottom {
         text-align: center;
         min-width: 290px;
     }
+
+    .timesheets .table-wrap {
+    overflow: auto;
+}
 
     .powered-logo {
         padding-top: 0px;
