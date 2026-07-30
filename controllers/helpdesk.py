@@ -128,7 +128,7 @@ class XsellencePortalHelpdesk(http.Controller):
     # ========================
     # Create ticket page
     # ========================
-    @http.route('/helpdesk/create_ticket', type='http', auth='user', website=True, methods=['GET'])
+    @http.route('/helpdesks/create_ticket', type='http', auth='user', website=True, methods=['GET'])
     def create_ticket_page(self, **kw):
         Ticket = self._safe_model('helpdesk.ticket')
         if not Ticket:

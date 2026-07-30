@@ -40,7 +40,7 @@
                             </t>
                         </select>
 
-                        <a href="/helpdesk/create_ticket" class="btn btn-primary">Create Ticket
+                        <a href="/helpdesks/create_ticket" class="btn btn-primary">Create Ticket
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  width="16"
                                  height="14"

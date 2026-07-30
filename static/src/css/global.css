@@ -1257,13 +1257,13 @@ body {
     align-items: center;
     justify-content: center;
     line-height: 1;
-    padding: 6px 13px;
-    border-radius: var(--radius-pill);
+    padding: 6px 14px;
     color: var(--color-white);
     font-size: var(--fs-xs);
     font-weight: 600;
     text-transform: capitalize;
     white-space: nowrap;
+    border-radius: 20px 4px 20px 4px;
 }
 
 .sts-planning {
@@ -3267,12 +3267,12 @@ aside .sidebar-bottom {
         justify-content: center;
         line-height: 1;
         padding: 4px 8px;
-        border-radius: var(--radius-pill);
         color: var(--color-white);
         font-size: var(--fs-low);
         font-weight: 600;
         text-transform: capitalize;
         white-space: nowrap;
+        border-radius: 20px 4px 20px 4px;
     }
 
     aside {
@@ -3471,7 +3471,7 @@ aside .sidebar-bottom {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: var(--radius-pill);
+        border-radius: 20px 4px 20px 4px;
         color: var(--color-white);
         font-size: var(--fs-low);
         font-weight: 600;
