@@ -12,7 +12,7 @@
                 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
                 <link rel="stylesheet" href="/xsellence_portal/static/src/css/custom_class.css?v=4"/>
                 <link rel="stylesheet" href="/xsellence_portal/static/src/css/my_component.css?v=8"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=41"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=42"/>
                 <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=32"/>
                 <t t-raw="header"/>
             </head>
@@ -165,6 +165,13 @@
                 ========================================= -->
                 <aside class="" id="sidebar">
                     <t t-set="selected_employee_param" t-value="request.params.get('employee_id')"/>
+                    <t t-set="notification_model" t-value="request.env['xsellence.assignment.notification'].sudo()"/>
+                    <t t-set="sidebar_project_count"
+                       t-value="notification_model.search_count([('user_id', '=', request.env.user.id), ('is_read', '=', False), ('res_model', '=', 'project.project')])"/>
+                    <t t-set="sidebar_task_count"
+                       t-value="notification_model.search_count([('user_id', '=', request.env.user.id), ('is_read', '=', False), ('res_model', '=', 'project.task')])"/>
+                    <t t-set="sidebar_helpdesk_count"
+                       t-value="notification_model.search_count([('user_id', '=', request.env.user.id), ('is_read', '=', False), ('res_model', '=', 'helpdesk.ticket')])"/>
                     <t t-set="employee_query_suffix"
                        t-value="'?employee_id=%s' % selected_employee_param if selected_employee_param else ''"/>
                     <div class="sidebar-wrap flex-column justify-between">
@@ -207,7 +214,9 @@
                                         </div>
 
                                         <span class="text">Projects</span>
-                                        <div class="batch">2</div>
+                                        <t t-if="sidebar_project_count">
+                                            <div class="batch" t-esc="sidebar_project_count"/>
+                                        </t>
                                     </a>
                                 </li>
 
@@ -225,6 +234,9 @@
                                             </svg>
                                         </div>
                                         <span class="text">My Tasks</span>
+                                        <t t-if="sidebar_task_count">
+                                            <div class="batch" t-esc="sidebar_task_count"/>
+                                        </t>
                                     </a>
                                 </li>
 
@@ -261,7 +273,9 @@
                                             </svg>
                                         </div>
                                         <span class="text">Helpdesk</span>
-                                        <div class="batch">1</div>
+                                        <t t-if="sidebar_helpdesk_count">
+                                            <div class="batch" t-esc="sidebar_helpdesk_count"/>
+                                        </t>
                                     </a>
                                 </li>
 
@@ -608,7 +622,7 @@
 
 
                 <!--    Javascript Links Here     -->
-                <script src="/xsellence_portal/static/src/js/main.js?v=12"></script>
+                <script src="/xsellence_portal/static/src/js/main.js?v=13"></script>
                 <script src="/xsellence_portal/static/src/js/notice_board.js?v=3"></script>
                 <script>
                     if (localStorage.getItem('sidebarCollapsed') === 'true') {
