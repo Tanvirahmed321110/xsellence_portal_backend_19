@@ -535,15 +535,69 @@
                                 <div class="notice-icon">
                                     <div class="ring"></div>
                                     <div class="glow"></div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                         fill="none" stroke="#f0a500" stroke-width="1.8" stroke-linecap="round"
-                                         stroke-linejoin="round">
-                                        <path d="M3 11v2"/>
-                                        <path d="M5 9v6"/>
-                                        <path d="M19 3v18"/>
-                                        <path d="M5 9c7-2 9-2 14-6v14c-5-4-7-4-14-6"/>
-                                        <path d="M9 15.3V19a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2.7"/>
-                                    </svg>
+                                    <div class="notice-cube">
+                                        <div class="face face-front">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24" fill="none" stroke="#f0a500"
+                                                 stroke-width="1.8" stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path d="M3 11v2"/>
+                                                <path d="M5 9v6"/>
+                                                <path d="M19 3v18"/>
+                                                <path d="M5 9c7-2 9-2 14-6v14c-5-4-7-4-14-6"/>
+                                                <path d="M9 15.3V19a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2.7"/>
+                                            </svg>
+                                        </div>
+                                        <div class="face face-back">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24" fill="none" stroke="#f0a500"
+                                                 stroke-width="1.8" stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path d="M3 11v2"/>
+                                                <path d="M5 9v6"/>
+                                                <path d="M19 3v18"/>
+                                                <path d="M5 9c7-2 9-2 14-6v14c-5-4-7-4-14-6"/>
+                                                <path d="M9 15.3V19a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2.7"/>
+                                            </svg>
+                                        </div>
+                                        <div class="face face-right">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24" fill="none" stroke="#f0a500"
+                                                 stroke-width="1.8" stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path d="M3 11v2"/>
+                                                <path d="M5 9v6"/>
+                                                <path d="M19 3v18"/>
+                                                <path d="M5 9c7-2 9-2 14-6v14c-5-4-7-4-14-6"/>
+                                                <path d="M9 15.3V19a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2.7"/>
+                                            </svg>
+                                        </div>
+                                        <div class="face face-left">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24" fill="none" stroke="#f0a500"
+                                                 stroke-width="1.8" stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path d="M3 11v2"/>
+                                                <path d="M5 9v6"/>
+                                                <path d="M19 3v18"/>
+                                                <path d="M5 9c7-2 9-2 14-6v14c-5-4-7-4-14-6"/>
+                                                <path d="M9 15.3V19a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2.7"/>
+                                            </svg>
+                                        </div>
+                                        <div class="face face-top"></div>
+                                        <div class="face face-bottom">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                 viewBox="0 0 24 24" fill="none" stroke="#f0a500"
+                                                 stroke-width="1.8" stroke-linecap="round"
+                                                 stroke-linejoin="round">
+                                                <path d="M3 11v2"/>
+                                                <path d="M5 9v6"/>
+                                                <path d="M19 3v18"/>
+                                                <path d="M5 9c7-2 9-2 14-6v14c-5-4-7-4-14-6"/>
+                                                <path d="M9 15.3V19a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2.7"/>
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

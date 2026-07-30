@@ -1816,16 +1816,18 @@ aside .sidebar-bottom {
 
 .notice-icon {
     position: relative;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--color-secondary);
-    border-radius: var(--radius-sm);
+    background: transparent;
+    border-radius: 0;
     z-index: 2;
     margin-left: 90px;
     transition: var(--transition-slow);
+    perspective: 700px;
+    transform-style: preserve-3d;
 }
 
 .notic-board.big .notice-icon {
@@ -1835,30 +1837,92 @@ aside .sidebar-bottom {
 /* Rotating dashed ring */
 .notice-icon .ring {
     position: absolute;
+    inset: -12px;
     border-radius: 50%;
-    background-color: var(--color-secondary);
+    border: 1.5px dashed rgba(255, 255, 255, 0.24);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--color-secondary) 20%, transparent);
+    animation: spin-ring 6.5s linear infinite;
 }
 
 /* Glow pulse behind icon */
 .notice-icon .glow {
     position: absolute;
-    inset: 6px;
+    inset: -4px;
     border-radius: 50%;
-    animation: glow-pulse 2s ease-in-out infinite;
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-secondary) 50%, white 12%) 0%, color-mix(in srgb, var(--color-secondary) 28%, transparent) 42%, transparent 76%);
+    filter: blur(2px);
+    animation: glow-pulse 1.7s ease-in-out infinite;
 }
 
+.notice-cube {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    transform-style: preserve-3d;
+    animation: notice-cube-spin 5.8s linear infinite;
+}
 
+.notice-cube .face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 7px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-secondary) 88%, #14082f 12%), color-mix(in srgb, var(--color-secondary) 28%, transparent));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        0 0 14px color-mix(in srgb, var(--color-secondary) 24%, transparent);
+    backdrop-filter: blur(4px);
+}
 
-/* The SVG megaphone */
-.notice-icon svg {
+.notice-cube .face-front {
+    transform: translateZ(14px);
+}
+
+.notice-cube .face-back {
+    transform: rotateY(180deg) translateZ(14px);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-secondary) 36%, #0f1028 64%), color-mix(in srgb, var(--color-secondary) 24%, transparent));
+}
+
+.notice-cube .face-right {
+    transform: rotateY(90deg) translateZ(14px);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-secondary) 62%, white 8%), color-mix(in srgb, var(--color-secondary) 82%, #16072e 18%));
+}
+
+.notice-cube .face-left {
+    transform: rotateY(-90deg) translateZ(14px);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-secondary) 54%, #1c3f80 46%), color-mix(in srgb, var(--color-secondary) 84%, #120627 16%));
+}
+
+.notice-cube .face-top {
+    transform: rotateX(90deg) translateZ(14px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), color-mix(in srgb, var(--color-secondary) 40%, transparent));
+}
+
+.notice-cube .face-bottom {
+    transform: rotateX(-90deg) translateZ(14px);
+    background: linear-gradient(135deg, #0c0e24, color-mix(in srgb, var(--color-secondary) 74%, #120627 26%));
+}
+
+.notice-cube .face svg {
     position: relative;
     z-index: 2;
-    animation: icon-shake 3s ease-in-out infinite;
     color: var(--color-white);
 }
 
-.notice-icon svg path {
+.notice-cube .face svg path {
     stroke: var(--color-white);
+}
+
+@keyframes notice-cube-spin {
+    0% {
+        transform: rotateX(-20deg) rotateY(0deg);
+    }
+    100% {
+        transform: rotateX(-20deg) rotateY(360deg);
+    }
 }
 
 @keyframes icon-shake {
@@ -3463,17 +3527,18 @@ aside .sidebar-bottom {
 
     .notice-icon {
         position: relative;
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--color-secondary);
-        border-radius: var(--radius-sm);
+        background: transparent;
+        border-radius: 0;
         z-index: 2;
         margin-left: 0px;
         transition: var(--transition-slow);
         padding-left: 0px;
+        perspective: 700px;
     }
 
     header {
