@@ -1,5 +1,6 @@
 from odoo import http
 from odoo.http import request
+from ..utilitis.pagination import get_pager
 
 
 class XsellencePortalHelpdesk(http.Controller):
@@ -27,28 +28,44 @@ class XsellencePortalHelpdesk(http.Controller):
     @http.route('/helpdesks', type='http', auth='user', website=True)
     def helpdesk_f(self, **kw):
         user = request.env.user
+        Ticket = request.env['helpdesk.ticket'].sudo()
+        domain = [('user_id', '=', user.id)]
 
-        tickets = request.env['helpdesk.ticket'].sudo().search([
-            ('user_id', '=', user.id)
-        ])
+        # ===== Pagination Setup =====
+        per_page = int(kw.get('per_page', 16))
+        total = Ticket.search_count(domain)
+        pager = get_pager(
+            url='/helpdesks',
+            total=total,
+            page=kw.get('page', 16),
+            per_page=per_page,
+            url_args={},
+        )
 
-        tickets_new = tickets.filtered(lambda ticket: ticket.stage_id.name == 'New')
-        tickets_in_progress = tickets.filtered(lambda ticket: ticket.stage_id.name == 'In Progress')
-        tickets_solved = tickets.filtered(lambda t: t.stage_id.name == 'Solved')
-        tickets_cancelled = tickets.filtered(lambda t: t.stage_id.name == 'Cancelled')
+        all_tickets = Ticket.search(domain, order='create_date desc')
+        tickets = Ticket.search(
+            domain,
+            order='create_date desc',
+            offset=pager['offset'],
+            limit=pager['per_page'],
+        )
+        tickets_new = all_tickets.filtered(lambda ticket: ticket.stage_id.name == 'New')
+        tickets_in_progress = all_tickets.filtered(lambda ticket: ticket.stage_id.name == 'In Progress')
+        tickets_solved = all_tickets.filtered(lambda t: t.stage_id.name == 'Solved')
+        tickets_cancelled = all_tickets.filtered(lambda t: t.stage_id.name == 'Cancelled')
 
         return request.render('xsellence_portal.helpdesk_page', {
             'active_menu': 'helpdesk',
-            'tickets': tickets,  # All tickets (in case you need them all in the loop)
+            'tickets': tickets,
             'tickets_new': tickets_new,
             'tickets_in_progress': tickets_in_progress,
             'tickets_solved': tickets_solved,
             'tickets_cancelled': tickets_cancelled,
-
             'count_new': len(tickets_new),
             'count_in_progress': len(tickets_in_progress),
             'count_solved': len(tickets_solved),
             'count_cancelled': len(tickets_cancelled),
+            'pager': pager,
         })
 
     # ========================
@@ -67,7 +84,7 @@ class XsellencePortalHelpdesk(http.Controller):
             'ticket': ticket,
             'breadcrumb': [
                 {'name': 'Dashboard', 'url': '/dashboard'},
-                {'name': 'Helpdesk', 'url': '/helpdesk'},
+                {'name': 'Helpdesk', 'url': '/helpdesks'},
                 {'name': 'Ticket Details', 'url': False},
             ],
         })

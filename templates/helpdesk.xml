@@ -148,10 +148,10 @@
                         <div class="h-items grid-4 gap-lg-4 grid-sm-2 gap-5  gap-sm-3">
                             <t t-foreach="tickets" t-as="ticket">
                                 <!-- ==========  Single Helpdesk Item ========== -->
-                               <a t-attf-href="/helpdesks/ticket_details/#{ticket.id}" class="item">
+                                <a t-attf-href="/helpdesks/ticket_details/#{ticket.id}" class="item">
                                     <div class="ticket-header">
                                         <!-- ticket name -->
-                                        <div class="task-name" t-esc="ticket.name"> </div>
+                                        <div class="task-name" t-esc="ticket.name"></div>
                                         <div class="status"
                                              t-attf-class="status
                                              {{ 'status-new' if ticket.stage_id.name == 'New' else '' }}
@@ -284,55 +284,36 @@
 
                         </div>
 
-                        <div class="pagination border-top-primary ">
-                            <span class="page-info">Showing 1–6 of 24 projects</span>
-                            <div class="page-btns mt-4">
-                                <button class="page-btn">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                         stroke-linejoin="round">
-                                        <polyline points="15 18 9 12 15 6"></polyline>
-                                    </svg>
-                                </button>
-                                <button class="page-btn active">1</button>
-                                <button class="page-btn">2</button>
-                                <button class="page-btn">3</button>
-                                <button class="page-btn">4</button>
-                                <button class="page-btn">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                         stroke-linejoin="round">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
+                        <!-- Pagination -->
+                        <t t-call="xsellence_portal.reusable_pagination"/>
                     </div>
 
                     <!--==================|| When Data Not Found  ||=================-->
-                    <div class="design-wrapper mt-2">
-                        <div class="empty-4">
-                            <div class="e4-glass">
-                                <div class="e4-ring">
-                                    <span class="e4-icon-center">
-                                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="11" cy="11" r="7"/>
-                                            <path d="M16.5 16.5L21 21"/>
-                                            <line x1="8" y1="11" x2="14" y2="11"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <h2 class="e4-title">Data <strong style="color: red;">'NOT'</strong> Found
-                                </h2>
-                                <p class="e4-sub">No records matched your current search or filter criteria.</p>
-                                <div class="e4-pills">
-                                    <span class="e4-pill">0 results</span>
-                                    <span class="e4-pill">try new filter</span>
-                                    <span class="e4-pill">clear search</span>
+                    <t t-if="not tickets">
+                        <div class="design-wrapper mt-2">
+                            <div class="empty-4">
+                                <div class="e4-glass">
+                                    <div class="e4-ring">
+                                        <span class="e4-icon-center">
+                                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <circle cx="11" cy="11" r="7"/>
+                                                <path d="M16.5 16.5L21 21"/>
+                                                <line x1="8" y1="11" x2="14" y2="11"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <h2 class="e4-title">Data <strong style="color: red;">'NOT'</strong> Found
+                                    </h2>
+                                    <p class="e4-sub">No records matched your current search or filter criteria.</p>
+                                    <div class="e4-pills">
+                                        <span class="e4-pill">0 results</span>
+                                        <span class="e4-pill">try new filter</span>
+                                        <span class="e4-pill">clear search</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </t>
 
                 </div>
             </section>

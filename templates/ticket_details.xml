@@ -168,7 +168,7 @@
 
                                         <div class="meta-row">
                                             <div class="meta-label">Project</div>
-                                            <div class="meta-val" style="font-size:var(--fs-xs);">Nutrition Depot BD
+                                            <div class="meta-val" style="font-size:var(--fs-xs);" t-esc="ticket.partner_id.name">Nutrition Depot BD
                                             </div>
                                         </div>
 
@@ -176,8 +176,10 @@
                                         <div class="meta-row">
                                             <div class="meta-label">Assignee</div>
                                             <div class="meta-val">
-                                                <div class="person-chip">
-                                                    <span class="person-name">Rafiq Hossain</span>
+                                                <div class="person-chip d-flex gap-1 flex-wrap">
+                                                    <t t-foreach="ticket.employee_ids" t-as="employee">
+                                                         <span class="person-name" t-esc="employee.name"/>,
+                                                    </t>
                                                 </div>
                                             </div>
                                         </div>
@@ -186,15 +188,14 @@
                                             <div class="meta-label">Assigned By</div>
                                             <div class="meta-val">
                                                 <div class="person-chip">
-                                                    <span class="person-name">Shamiul Alam</span>
+                                                         <span class="person-name" t-esc="ticket.user_id.name"/>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="meta-row">
                                             <div class="meta-label">Created</div>
-                                            <div class="person-name">25 Apr
-                                                2026
+                                            <div class="person-name" t-esc="ticket.assign_date">
                                             </div>
                                         </div>
 
@@ -209,7 +210,7 @@
                                                         <line x1="8" y1="2" x2="8" y2="6"/>
                                                         <line x1="3" y1="10" x2="21" y2="10"/>
                                                     </svg>
-                                                    2 May 2026
+                                                    <t t-esc="ticket.deadline"> </t>
                                                 </span>
                                             </div>
                                         </div>

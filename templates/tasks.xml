@@ -362,11 +362,8 @@
                 </t>
 
 
-
                 <!-- Pagination -->
                 <t t-call="xsellence_portal.reusable_pagination"/>
-
-
             </section>
         </t>
 

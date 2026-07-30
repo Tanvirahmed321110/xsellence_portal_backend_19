@@ -1058,7 +1058,7 @@ body.dark-theme .profile .main-info .manager-msg-btn {
 .page {
     max-width: 100%;
     margin: var(--space-2) auto;
-    padding: 20px;
+    padding: 0px;
 }
 .page .badge {
     display: inline-flex;
