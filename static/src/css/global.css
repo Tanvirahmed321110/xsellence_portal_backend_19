@@ -3215,6 +3215,63 @@ aside .sidebar-bottom {
     border-radius: 10px;
 }
 
+.projects-toolbar {
+    flex-wrap: wrap;
+    align-items: center;
+    overflow-x: visible;
+}
+
+.projects-search {
+    flex: 1 1 320px;
+    min-width: 220px;
+    max-width: 100%;
+}
+
+.projects-search .search-wrap {
+    min-width: 0;
+}
+
+.projects-toolbar-actions {
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
+.projects-toolbar-actions .filter-select {
+    flex: 0 1 180px;
+    width: 100%;
+    max-width: 180px;
+}
+
+@media (max-width: 1400px) {
+    .projects-toolbar {
+        align-items: stretch;
+    }
+
+    .projects-search {
+        order: 3;
+        flex-basis: 100%;
+    }
+
+    .projects-toolbar-actions {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 900px) {
+    .projects-toolbar-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .projects-toolbar-actions .filter-select {
+        max-width: none;
+        width: auto;
+    }
+}
+
 .timesheets .search-wrap svg,
 .search-wrap svg {
     position: absolute;
@@ -3498,7 +3555,9 @@ aside .sidebar-bottom {
         flex: 1;
     }
 
-
+    .task-card .card-footer .filter-select{
+        min-width:100px;
+    }
 
     /* Mobile Menu Button */
     .mobile-menu-btn {

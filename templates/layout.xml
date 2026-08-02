@@ -10,10 +10,10 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                 <!-- Ts Control Library CDN -->
                 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/custom_class.css?v=4"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/my_component.css?v=8"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=43"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=33"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/custom_class.css?v=1"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/my_component.css?v=1"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=1"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=1"/>
                 <t t-raw="header"/>
             </head>
 
@@ -622,8 +622,8 @@
 
 
                 <!--    Javascript Links Here     -->
-                <script src="/xsellence_portal/static/src/js/main.js?v=13"></script>
-                <script src="/xsellence_portal/static/src/js/notice_board.js?v=3"></script>
+        <script src="/xsellence_portal/static/src/js/main.js?v=1"></script>
+        <script src="/xsellence_portal/static/src/js/notice_board.js?v=1"></script>
                 <script>
                     if (localStorage.getItem('sidebarCollapsed') === 'true') {
                     document.documentElement.classList.add('sidebar-collapsed');

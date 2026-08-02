@@ -6,7 +6,7 @@
             <t t-set="employee_status_suffix"
                t-value="'?employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
             <t t-set="task_filter_onchange"
-               t-value='("if (this.value) { window.location = \"/tasks?status=\" + this.value + \"%s\"; } else { window.location = \"/tasks%s\"; }" % (employee_query_suffix, employee_status_suffix))'/>
+               t-value='("const params=new URLSearchParams(window.location.search); if(this.value){params.set(\"status\", this.value);} else {params.delete(\"status\");} const searchValue=document.getElementById(\"task-search\")?.value||\"\"; if(searchValue){params.set(\"search\", searchValue);} else {params.delete(\"search\");} if(\"%s\"){params.set(\"employee_id\", \"%s\");} else {params.delete(\"employee_id\");} if(\"%s\"){params.set(\"project_id\", \"%s\");} else {params.delete(\"project_id\");} const queryString=params.toString(); window.location=queryString ? \"/tasks?\" + queryString : \"/tasks\";" % (selected_employee_id, selected_employee_id, request.params.get('project_id') or '', request.params.get('project_id') or ''))'/>
 
             <!-- ====================  Breadcrumb  ==================== -->
             <div class="flex-between align-center gap-1 flex-wrap n-btn-wrap">
@@ -25,16 +25,31 @@
                         </span>
                     </div>
 
-                    <div class="search task-search">
+                    <form class="search task-search" action="/tasks" method="get">
+                        <t t-if="selected_employee_id">
+                            <input type="hidden" name="employee_id" t-att-value="selected_employee_id"/>
+                        </t>
+                        <t t-if="selected_status">
+                            <input type="hidden" name="status" t-att-value="selected_status"/>
+                        </t>
+                        <t t-if="request.params.get('project_id')">
+                            <input type="hidden" name="project_id" t-att-value="request.params.get('project_id')"/>
+                        </t>
                         <div class="search-wrap  input-control shadow-md">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
-                            <input class="search-input" type="text" placeholder="Search task name or id..."/>
+                            <input class="search-input"
+                                   id="task-search"
+                                   name="search"
+                                   t-att-value="search"
+                                   type="text"
+                                   placeholder="Search task name or id..."/>
+                            <button type="submit" style="display:none;"></button>
                         </div>
-                    </div>
+                    </form>
 
 
                     <div class="flex-1 d-flex gap-4 justify-end">
@@ -368,6 +383,6 @@
         </t>
 
 
-        <script src="/xsellence_portal/static/src/js/task.js?v=2"></script>
+        <script src="/xsellence_portal/static/src/js/task.js?v=1"></script>
     </template>
 </odoo>

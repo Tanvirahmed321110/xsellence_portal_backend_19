@@ -44,6 +44,7 @@ class XsellencePortalHelpdesk(http.Controller):
         user = request.env.user
         Ticket = request.env['helpdesk.ticket'].sudo()
         domain = self._get_visible_ticket_domain(user)
+        search = (kw.get('search') or '').strip()
         selected_project_id = int(kw.get('project_id') or 0)
         selected_stage_id = int(kw.get('stage_id') or 0)
 
@@ -51,6 +52,11 @@ class XsellencePortalHelpdesk(http.Controller):
             domain.append(('project_id', '=', selected_project_id))
         if selected_stage_id:
             domain.append(('stage_id', '=', selected_stage_id))
+        if search:
+            if search.isdigit():
+                domain += ['|', '|', ('name', 'ilike', search), ('ticket_ref', 'ilike', search), ('id', '=', int(search))]
+            else:
+                domain += ['|', ('name', 'ilike', search), ('ticket_ref', 'ilike', search)]
 
         # ===== Pagination Setup =====
         per_page = int(kw.get('per_page', 16))
@@ -61,6 +67,7 @@ class XsellencePortalHelpdesk(http.Controller):
             page=kw.get('page', 1),
             per_page=per_page,
             url_args={
+                'search': search,
                 'project_id': selected_project_id if selected_project_id else '',
                 'stage_id': selected_stage_id if selected_stage_id else '',
             },
@@ -99,6 +106,7 @@ class XsellencePortalHelpdesk(http.Controller):
             'pager': pager,
             'projects': projects,
             'stages': stages,
+            'search': search,
             'selected_project_id': selected_project_id,
             'selected_stage_id': selected_stage_id,
         })

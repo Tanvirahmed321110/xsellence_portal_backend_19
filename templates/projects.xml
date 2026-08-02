@@ -6,7 +6,7 @@
             <t t-set="employee_status_suffix"
                t-value="'?employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
             <t t-set="project_filter_onchange"
-               t-value='("if (this.value) { window.location = \"/projects?status=\" + this.value + \"%s\"; } else { window.location = \"/projects%s\"; }" % (employee_query_suffix, employee_status_suffix))'/>
+               t-value='("const params=new URLSearchParams(window.location.search); if(this.value){params.set(\"status\", this.value);} else {params.delete(\"status\");} const searchValue=document.getElementById(\"project-search\")?.value||\"\"; if(searchValue){params.set(\"search\", searchValue);} else {params.delete(\"search\");} if(\"%s\"){params.set(\"employee_id\", \"%s\");} else {params.delete(\"employee_id\");} const queryString=params.toString(); window.location=queryString ? \"/projects?\" + queryString : \"/projects\";" % (selected_employee_id, selected_employee_id))'/>
 
             <!-- ====================  Breadcrumb  ==================== -->
             <div class="flex-between align-center gap-1 flex-wrap n-btn-wrap">
@@ -20,7 +20,7 @@
             <section class="projects-wrap mt-4">
 
                 <!--================||   Filter Header ||===============-->
-                <div class="flex-between py-3 gap-5 row-gap-2" style="overflow-x: auto;">
+                <div class="flex-between py-3 gap-5 row-gap-2 projects-toolbar">
                     <div class="sec-title d-flex gap-2 align-center flex-1 text-nowrap">Projects
                         <span class="count fs-xs flex-center">
                             <t t-esc="total"/>
@@ -28,7 +28,13 @@
                     </div>
 
                     <!-- Search Product -->
-                    <div class="search task-search">
+                    <form class="search task-search projects-search" action="/projects" method="get">
+                        <t t-if="selected_employee_id">
+                            <input type="hidden" name="employee_id" t-att-value="selected_employee_id"/>
+                        </t>
+                        <t t-if="status">
+                            <input type="hidden" name="status" t-att-value="status"/>
+                        </t>
                         <div class="search-wrap  input-control shadow-md">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round">
@@ -36,14 +42,16 @@
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
                             <input class="search-input"
+                                   id="project-search"
+                                   name="search"
                                    t-att-value="search"
                                    type="text"
                                    placeholder="Search Project name or id..."/>
                             <button type="submit" style="display:none;"></button>
                         </div>
-                    </div>
+                    </form>
 
-                    <div class="flex-1 d-flex gap-4 justify-end">
+                    <div class="flex-1 d-flex gap-4 justify-end projects-toolbar-actions">
                         <!--  Filter Projects  -->
                         <select class="filter-select bg-white"
                                 id="filter-status"
@@ -342,7 +350,7 @@
             </section>
 
             <!--    Javascript Links Here     -->
-            <script src="/xsellence_portal/static/src/js/project.js?v=2"></script>
+            <script src="/xsellence_portal/static/src/js/project.js?v=1"></script>
 
 
         </t>

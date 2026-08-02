@@ -9,17 +9,28 @@
                 <!--==============|| Filter Header Here  ||================-->
                 <div class="filter-head flex-between gap-5">
                     <!-- For Search -->
-                    <div class="search">
+                    <form class="search" action="/helpdesks" method="get">
+                        <t t-if="selected_project_id">
+                            <input type="hidden" name="project_id" t-att-value="selected_project_id"/>
+                        </t>
+                        <t t-if="selected_stage_id">
+                            <input type="hidden" name="stage_id" t-att-value="selected_stage_id"/>
+                        </t>
                         <div class="search-wrap input-control">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8"></circle>
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
-                            <input class="search-input" type="text" placeholder="Search name / Ref without #"
-                            />
+                            <input class="search-input"
+                                   id="helpdesk-search"
+                                   name="search"
+                                   t-att-value="search"
+                                   type="text"
+                                   placeholder="Search name / Ref without #"/>
+                            <button type="submit" style="display:none;"></button>
                         </div>
-                    </div>
+                    </form>
 
                     <!-- right -->
                     <div class="right d-flex gap-4 align-center">
@@ -319,6 +330,7 @@
                 function applyFilters() {
                 const project = document.getElementById("filter-project")?.value || "";
                 const stage = document.getElementById("filter-month")?.value || "";
+                const search = document.getElementById("helpdesk-search")?.value || "";
                 const params = new URLSearchParams();
 
                 if (project) {
@@ -327,6 +339,9 @@
                 if (stage) {
                 params.set("stage_id", stage);
                 }
+                if (search) {
+                params.set("search", search);
+                }
 
                 const queryString = params.toString();
                 window.location.href = queryString
@@ -334,8 +349,94 @@
                 : "/helpdesks";
                 }
 
+                function initHelpdeskSearch() {
+                const searchInput = document.getElementById("helpdesk-search");
+                const searchForm = searchInput ? searchInput.closest("form") : null;
+
+                if (!searchInput || !searchForm || searchForm.dataset.searchBound === "1") {
+                return;
+                }
+
+                searchForm.dataset.searchBound = "1";
+                let submitTimer = null;
+                let requestController = null;
+
+                function fetchHelpdesks() {
+                const formData = new FormData(searchForm);
+                const params = new URLSearchParams();
+                const shouldRestoreFocus = document.activeElement === searchInput;
+                const selectionStart = shouldRestoreFocus ? searchInput.selectionStart : null;
+                const selectionEnd = shouldRestoreFocus ? searchInput.selectionEnd : null;
+
+                for (const [key, value] of formData.entries()) {
+                if (value !== null && String(value).trim() !== "") {
+                params.set(key, value);
+                }
+                }
+
+                const url = params.toString() ? searchForm.action + "?" + params.toString() : searchForm.action;
+                if (requestController) {
+                requestController.abort();
+                }
+                requestController = new AbortController();
+
+                fetch(url, {method: "GET", headers: {"X-Requested-With": "XMLHttpRequest"}, signal: requestController.signal})
+                .then(response => response.text())
+                .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                const nextSection = doc.querySelector(".helpdesk");
+                const currentSection = document.querySelector(".helpdesk");
+
+                if (!nextSection || !currentSection) {
+                window.location.href = url;
+                return;
+                }
+
+                currentSection.replaceWith(nextSection);
+                window.history.replaceState({}, "", url);
+                initHelpdeskSearch();
+
+                if (shouldRestoreFocus) {
+                const nextInput = document.getElementById("helpdesk-search");
+                if (nextInput) {
+                nextInput.focus();
+                if (selectionStart !== null && selectionEnd !== null) {
+                nextInput.setSelectionRange(selectionStart, selectionEnd);
+                }
+                }
+                }
+                });
+                }
+
+                searchForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                if (submitTimer) {
+                clearTimeout(submitTimer);
+                }
+                fetchHelpdesks();
+                });
+
+                searchInput.addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                event.preventDefault();
+                if (submitTimer) {
+                clearTimeout(submitTimer);
+                }
+                fetchHelpdesks();
+                }
+                });
+
+                searchInput.addEventListener("input", function () {
+                if (submitTimer) {
+                clearTimeout(submitTimer);
+                }
+                submitTimer = setTimeout(fetchHelpdesks, 300);
+                });
+                }
+
                 document.addEventListener("DOMContentLoaded", function () {
-                searchF('.helpdesk-wrap .item', '.task-name', '.ticket-id');
+                initHelpdeskSearch();
                 });
             </script>
         </t>

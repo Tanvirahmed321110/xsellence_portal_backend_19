@@ -99,6 +99,7 @@ class XsellencePortal(http.Controller):
     @http.route('/projects', type='http', auth='user', website=True)
     def projects_f(self, **kw):
         selected_employee_id = int(kw.get('employee_id') or 0)
+        search = (kw.get('search') or '').strip()
         selected_employee = request.env['hr.employee'].sudo().browse(selected_employee_id) if selected_employee_id else False
         selected_user = selected_employee.user_id if selected_employee and selected_employee.exists() and selected_employee.user_id else False
 
@@ -118,6 +119,11 @@ class XsellencePortal(http.Controller):
 
         # ===== Final Domain Merge =====
         domain = base_domain + status_domain
+        if search:
+            if search.isdigit():
+                domain += ['|', ('name', 'ilike', search), ('id', '=', int(search))]
+            else:
+                domain.append(('name', 'ilike', search))
 
         Project = request.env['project.project'].sudo()
         total = Project.search_count(domain)
@@ -132,6 +138,7 @@ class XsellencePortal(http.Controller):
             page=kw.get('page', 1),
             per_page=per_page,
             url_args={
+                'search': search,
                 'status': status or '',
                 'employee_id': selected_employee_id or '',
             }
@@ -152,6 +159,7 @@ class XsellencePortal(http.Controller):
             'statuses': statuses,
             'project_stage_styles': {project.id: self._stage_badge_style(project.stage_id.name) for project in projects},
             'can_manage_projects': self._can_manage_projects(),
+            'search': search,
             'status': status or '',
             'selected_employee_id': selected_employee_id,
             'pager': pager,

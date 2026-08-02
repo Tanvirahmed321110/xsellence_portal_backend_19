@@ -1,6 +1,6 @@
 <odoo>
     <template id="timesheet_page">
-        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=4"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=1"/>
         <t t-call="xsellence_portal.custom_layout">
             <t t-set="selected_employee_param" t-value="str(selected_employee_id) if selected_employee_id else ''"/>
             <t t-set="timesheet_filter_onchange"
@@ -211,6 +211,6 @@
             <t t-call="xsellence_portal.reusable_pagination"/>
         </t>
 
-        <script src="/xsellence_portal/static/src/js/timesheet.js?v=2"></script>
+        <script src="/xsellence_portal/static/src/js/timesheet.js?v=1"></script>
     </template>
 </odoo>

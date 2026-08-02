@@ -120,6 +120,7 @@ class XsellencePortal(http.Controller):
 
         user = request.env.user
         status = kw.get('status')
+        search = (kw.get('search') or '').strip()
         selected_employee_id = int(kw.get('employee_id') or 0)
         selected_employee = request.env['hr.employee'].sudo().browse(selected_employee_id) if selected_employee_id else False
         selected_user = selected_employee.user_id if selected_employee and selected_employee.exists() and selected_employee.user_id else False
@@ -131,6 +132,11 @@ class XsellencePortal(http.Controller):
 
         if status and str(status).isdigit():
             domain.append(('stage_id', '=', int(status)))
+        if search:
+            if search.isdigit():
+                domain += ['|', ('name', 'ilike', search), ('id', '=', int(search))]
+            else:
+                domain.append(('name', 'ilike', search))
 
         # ===== Pagination Setup =====
         per_page = int(kw.get('per_page', 20))
@@ -145,6 +151,7 @@ class XsellencePortal(http.Controller):
             page=kw.get('page', 1),
             per_page=per_page,
             url_args={
+                'search': search,
                 'status': status or '',
                 'employee_id': selected_employee_id or '',
                 'project_id': int(project_id) if project_id and str(project_id).isdigit() else '',
@@ -170,6 +177,7 @@ class XsellencePortal(http.Controller):
             'statuses': statuses,
             'task_stage_styles': {task.id: self._stage_badge_style(task.stage_id.name) for task in tasks},
             'can_manage_tasks': self._can_manage_tasks(),
+            'search': search,
             'selected_status': status,
             'selected_employee_id': selected_employee_id,
             'pager': pager,
