@@ -86,7 +86,7 @@
                     <!--==============================|| Grid View All Projects Here ||============================-->
                     <div class="view-panel visible" id="panel-grid">
                         <div
-                                class="grid-5 grid-lg-4 grid-md-2 grid-lg-4 gap-lg-4 row-gap-lg-5 gap-5 grid-sm-2 row-gap-sm-4 grid-md-2 projects mt-6 mt-lg-7 mt-sm-5 gap-sm-2">
+                                class="grid-5 grid-lg-4 grid-md-2 grid-lg-4 gap-lg-4 row-gap-lg-5 gap-5 grid-sm-2 row-gap-sm-5 grid-md-2 projects mt-6 mt-lg-7 mt-sm-5 gap-sm-2">
 
                             <!--================||   Single Project Card here ||===============-->
                             <t t-foreach="projects" t-as="project">

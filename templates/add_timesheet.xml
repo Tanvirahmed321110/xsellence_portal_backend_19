@@ -73,7 +73,10 @@
                                 <select name="task_id" id="task_select" required="required">
                                     <option value="">Select Task</option>
                                     <t t-foreach="tasks" t-as="task">
-                                        <option t-esc="task.name" t-att-value="task.id" id="tasks"
+                                        <option t-esc="task.name"
+                                                t-att-value="task.id"
+                                                t-att-data-project-id="task.project_id.id or ''"
+                                                id="tasks"
                                                 t-att-selected="selected_task and selected_task.id == task.id">
                                         </option>
                                     </t>
@@ -149,6 +152,49 @@
                     </form>
                 </div>
             </section>
+
+            <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function () {
+                    const projectSelect = document.getElementById('project_select');
+                    const taskSelect = document.getElementById('task_select');
+
+                    if (!projectSelect || !taskSelect) {
+                        return;
+                    }
+
+                    const taskOptions = Array.from(taskSelect.querySelectorAll('option'));
+
+                    const filterTaskOptions = function () {
+                        const selectedProjectId = projectSelect.value;
+                        const currentTaskValue = taskSelect.value;
+                        let hasSelectedTask = false;
+
+                        taskOptions.forEach(function (option, index) {
+                            if (index === 0) {
+                                option.hidden = false;
+                                return;
+                            }
+
+                            const optionProjectId = option.dataset.projectId || '';
+                            const isVisible = !selectedProjectId || optionProjectId === selectedProjectId;
+
+                            option.hidden = !isVisible;
+                            option.disabled = !isVisible;
+
+                            if (isVisible &amp;&amp; option.value === currentTaskValue) {
+                                hasSelectedTask = true;
+                            }
+                        });
+
+                        if (!hasSelectedTask) {
+                            taskSelect.value = '';
+                        }
+                    };
+
+                    projectSelect.addEventListener('change', filterTaskOptions);
+                    filterTaskOptions();
+                });
+            </script>
         </t>
     </template>
 </odoo>

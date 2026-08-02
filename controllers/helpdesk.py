@@ -1,5 +1,6 @@
 from odoo import http
 from odoo.http import request
+from datetime import date
 from ..utilitis.pagination import get_pager
 
 
@@ -12,6 +13,29 @@ class XsellencePortalHelpdesk(http.Controller):
         selection = field.selection
         return selection(ticket_model) if callable(selection) else selection
 
+    @staticmethod
+    def _parse_portal_date(raw_value):
+        if not raw_value:
+            return False
+        try:
+            return date.fromisoformat(str(raw_value).strip())
+        except (TypeError, ValueError):
+            return False
+
+    @staticmethod
+    def _default_low_priority(priorities):
+        priority_keys = [key for key, _label in priorities]
+        if '0' in priority_keys:
+            return '0'
+        for key, label in priorities:
+            if (label or '').strip().casefold() == 'low':
+                return key
+        return priority_keys[0] if priority_keys else False
+
+    @staticmethod
+    def _get_visible_ticket_domain(user):
+        return ['|', ('user_id', '=', user.id), ('assigned_user_ids', 'in', [user.id])]
+
     # ========================
     # Helpdesk page
     # ========================
@@ -19,7 +43,7 @@ class XsellencePortalHelpdesk(http.Controller):
     def helpdesk_f(self, **kw):
         user = request.env.user
         Ticket = request.env['helpdesk.ticket'].sudo()
-        domain = [('user_id', '=', user.id)]
+        domain = self._get_visible_ticket_domain(user)
         selected_project_id = int(kw.get('project_id') or 0)
         selected_stage_id = int(kw.get('stage_id') or 0)
 
@@ -84,8 +108,10 @@ class XsellencePortalHelpdesk(http.Controller):
     # ========================
     @http.route('/helpdesks/ticket_details/<int:ticket_id>', type='http', auth='user', website=True)
     def ticket_details_f(self, ticket_id,**kw):
-
-        ticket = request.env['helpdesk.ticket'].sudo().browse(ticket_id)
+        ticket = request.env['helpdesk.ticket'].sudo().search(
+            [('id', '=', ticket_id)] + self._get_visible_ticket_domain(request.env.user),
+            limit=1,
+        )
         if not ticket.exists():
             return request.redirect('/helpdesks')
 
@@ -108,7 +134,10 @@ class XsellencePortalHelpdesk(http.Controller):
         ticket_id = int(post.get('ticket_id') or 0)
         stage_id = int(post.get('stage_id') or 0)
 
-        ticket = request.env['helpdesk.ticket'].sudo().browse(ticket_id)
+        ticket = request.env['helpdesk.ticket'].sudo().search(
+            [('id', '=', ticket_id)] + self._get_visible_ticket_domain(request.env.user),
+            limit=1,
+        )
         if ticket.exists() and stage_id:
             ticket.write({'stage_id': stage_id})
 
@@ -141,6 +170,7 @@ class XsellencePortalHelpdesk(http.Controller):
                 order='name asc',
             ),
             'priorities': self._ticket_priorities(Ticket),
+            'today': date.today().strftime('%Y-%m-%d'),
             'has_project_field': 'project_id' in Ticket._fields,
             'breadcrumb': [
                 {'name': 'Dashboard', 'url': '/dashboard'},
@@ -162,6 +192,8 @@ class XsellencePortalHelpdesk(http.Controller):
     )
     def submit_ticket(self, **post):
         Ticket = request.env['helpdesk.ticket'].sudo()
+        priorities = self._ticket_priorities(Ticket)
+        default_priority = self._default_low_priority(priorities)
 
         subject = (post.get('name') or '').strip()
         if not subject:
@@ -172,8 +204,56 @@ class XsellencePortalHelpdesk(http.Controller):
                 'error_btn_url': '/helpdesks/create_ticket',
             })
 
-        vals = {'name': subject}
-        integer_fields = ('partner_id', 'user_id', 'team_id', 'project_id')
+        project_id = int(post.get('project_id') or 0)
+        if not project_id:
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Project Required',
+                'error_desc': 'Select a project before submitting the support ticket.',
+                'error_btn_label': 'Go Back',
+                'error_btn_url': '/helpdesks/create_ticket',
+            })
+
+        assignee_ids = [int(user_id) for user_id in request.httprequest.form.getlist('assigned_user_ids') if str(user_id).isdigit()]
+        if not assignee_ids:
+            fallback_user_id = post.get('user_id')
+            if fallback_user_id and str(fallback_user_id).isdigit():
+                assignee_ids = [int(fallback_user_id)]
+        if not assignee_ids:
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Assignee Required',
+                'error_desc': 'Select at least one assignee before submitting the support ticket.',
+                'error_btn_label': 'Go Back',
+                'error_btn_url': '/helpdesks/create_ticket',
+            })
+
+        ticket_deadline = self._parse_portal_date(post.get('deadline'))
+        if not ticket_deadline:
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Deadline Required',
+                'error_desc': 'Enter a valid deadline before submitting the support ticket.',
+                'error_btn_label': 'Go Back',
+                'error_btn_url': '/helpdesks/create_ticket',
+            })
+        if ticket_deadline < date.today():
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Invalid Deadline',
+                'error_desc': 'Deadline cannot be earlier than today.',
+                'error_btn_label': 'Go Back',
+                'error_btn_url': '/helpdesks/create_ticket',
+            })
+
+        project = request.env['project.project'].sudo().browse(project_id).exists()
+        vals = {
+            'name': subject,
+            'project_id': project.id,
+            'partner_id': project.partner_id.id if project.partner_id else False,
+            'deadline': ticket_deadline,
+            'assign_date': post.get('assign_date') or date.today().isoformat(),
+            'assigned_user_ids': [(6, 0, assignee_ids)],
+            'user_id': assignee_ids[0],
+            'priority': post.get('priority') or default_priority,
+        }
+        integer_fields = ('team_id',)
         for field_name in integer_fields:
             value = post.get(field_name)
             if field_name in Ticket._fields and value and str(value).isdigit():
@@ -181,10 +261,6 @@ class XsellencePortalHelpdesk(http.Controller):
 
         if 'description' in Ticket._fields:
             vals['description'] = post.get('description') or ''
-
-        priority = post.get('priority')
-        if 'priority' in Ticket._fields and priority:
-            vals['priority'] = priority
 
         # Some Helpdesk configurations require a team. Use the first available
         # team only when no team was explicitly submitted.

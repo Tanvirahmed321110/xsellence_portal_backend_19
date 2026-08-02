@@ -35,65 +35,61 @@
 
                         <div class="grid-2 gap-5 grid-sm-1">
                             <div class="input-control">
-                                <label for="name">Subject <span class="required">*</span></label>
+                                <label for="name">Name <span class="required">*</span></label>
                                 <input type="text" required="required" name="name" id="name"
                                        placeholder="Ticket subject"/>
                             </div>
 
                             <div class="input-control">
-                                <label for="partner_id">Customer</label>
-                                <select name="partner_id" id="partner_id">
-                                    <option value="">Select Customer</option>
-                                    <t t-foreach="customers" t-as="customer">
-                                        <option t-att-value="customer.id"><t t-esc="customer.name"/></option>
-                                    </t>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid-2 gap-5 grid-sm-1">
-                            <div class="input-control">
-                                <label for="team_id">Helpdesk Team</label>
-                                <select name="team_id" id="team_id">
-                                    <option value="">Select Team</option>
-                                    <t t-foreach="teams" t-as="team">
-                                        <option t-att-value="team.id"><t t-esc="team.name"/></option>
-                                    </t>
-                                </select>
-                            </div>
-
-                            <div class="input-control">
-                                <label for="user_id">Assignee</label>
-                                <select name="user_id" id="user_id">
-                                    <option value="">Select Assignee</option>
-                                    <t t-foreach="users" t-as="user">
-                                        <option t-att-value="user.id"><t t-esc="user.name"/></option>
-                                    </t>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid-2 gap-5 grid-sm-1">
-                            <div class="input-control" t-if="has_project_field">
-                                <label for="project_id">Project</label>
-                                <select name="project_id" id="project_id">
+                                <label for="project_id">Project <span class="required">*</span></label>
+                                <select name="project_id" id="project_id" required="required">
                                     <option value="">Select Project</option>
                                     <t t-foreach="projects" t-as="project">
                                         <option t-att-value="project.id"><t t-esc="project.name"/></option>
                                     </t>
                                 </select>
                             </div>
+                        </div>
 
-                            <div class="input-control" t-if="priorities">
+                        <div class="grid-2 gap-5 grid-sm-1">
+                            <div class="input-control">
+                                <label for="assigned_user_ids">Assignee <span class="required">*</span></label>
+                                <select name="assigned_user_ids" id="assigned_user_ids" multiple="multiple" required="required">
+                                    <t t-foreach="users" t-as="user">
+                                        <option t-att-value="user.id"><t t-esc="user.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                             <div class="input-control" t-if="priorities">
                                 <label for="priority">Priority</label>
                                 <select name="priority" id="priority">
                                     <option value="">Select Priority</option>
                                     <t t-foreach="priorities" t-as="priority">
-                                        <option t-att-value="priority[0]"><t t-esc="priority[1]"/></option>
+                                        <option t-att-value="priority[0]"
+                                                t-att-selected="'selected' if priority[0] == '0' or (priority[1] or '').strip().lower() == 'low' else None">
+                                            <t t-esc="priority[1]"/>
+                                        </option>
                                     </t>
                                 </select>
                             </div>
                         </div>
+
+
+                          <div class="grid-2 gap-5 grid-sm-1">
+                           <!-- Deadline  -->
+                            <div class="input-control">
+                                <label for="assign_date">Assign Date <span class="required">*</span></label>
+                                <input type="date" required="required" name="assign_date" id="assign_date"
+                                       t-att-value="today"/>
+                            </div>
+
+                            <!-- Deadline  -->
+                              <div class="input-control">
+                                <label for="deadline">Deadline <span class="required">*</span></label>
+                                <input type="date" required="required" name="deadline" id="deadline"
+                                       t-att-min="today"/>
+                            </div>
+                          </div>
 
                         <div class="grid-1 gap-5 grid-sm-1">
                             <div class="input-control">
@@ -110,6 +106,20 @@
                     </form>
                 </div>
             </section>
+             <!-- Ts Control Library CDN -->
+            <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+            <script>
+                // <!-- Ts Control Library Code -->
+                new TomSelect("#assigned_user_ids", {
+                create: true, // allow new names
+                persist: false
+                });
+
+                new TomSelect("#stage_id", {
+                create: true,
+                persist: false
+                });
+            </script>
         </t>
     </template>
 </odoo>

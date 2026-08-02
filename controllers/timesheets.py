@@ -9,6 +9,15 @@ class XsellencePortal(http.Controller):
     def _get_visible_task_domain(self):
         return [('create_uid.login', '!=', '__system__')]
 
+    def _get_visible_projects(self):
+        return request.env['project.project'].sudo().search([])
+
+    def _get_visible_tasks(self, project_id=False):
+        domain = list(self._get_visible_task_domain())
+        if project_id:
+            domain.append(('project_id', '=', project_id))
+        return request.env['project.task'].sudo().search(domain)
+
     def _get_visible_task(self, task_id):
         return request.env['project.task'].sudo().search(
             [('id', '=', task_id)] + self._get_visible_task_domain(),
@@ -151,9 +160,13 @@ class XsellencePortal(http.Controller):
     def add_timesheet_f(self, **kw):
         source = kw.get('source')
         today = date.today()
+        selected_project_id = int(kw.get('project_id') or 0)
+        selected_task_id = int(kw.get('task_id') or 0)
 
-        projects = request.env['project.project'].sudo().search([])
-        tasks = request.env['project.task'].sudo().search(self._get_visible_task_domain())
+        projects = self._get_visible_projects()
+        selected_project = projects.filtered(lambda project: project.id == selected_project_id)[:1]
+        tasks = self._get_visible_tasks(selected_project.id if selected_project else False)
+        selected_task = tasks.filtered(lambda task: task.id == selected_task_id)[:1]
 
         if source == 'timesheets':
             breadcrumb_data = [
@@ -174,6 +187,8 @@ class XsellencePortal(http.Controller):
             'today': today,
             'projects': projects,
             'tasks': tasks,
+            'selected_project': selected_project,
+            'selected_task': selected_task,
         })
 
     # ========================
@@ -185,12 +200,14 @@ class XsellencePortal(http.Controller):
         project_id = int(kw.get('project_id', 0))
 
         selected_task = self._get_visible_task(task_id)
-        selected_project = request.env['project.project'].sudo().browse(project_id)
+        selected_project = request.env['project.project'].sudo().browse(project_id).exists()
         if task_id and not selected_task:
             return request.redirect('/tasks')
+        if selected_task and selected_task.project_id:
+            selected_project = selected_task.project_id
 
-        projects = request.env['project.project'].sudo().search([])
-        tasks = request.env['project.task'].sudo().search(self._get_visible_task_domain())
+        projects = self._get_visible_projects()
+        tasks = self._get_visible_tasks(selected_project.id if selected_project else False)
 
         return request.render('xsellence_portal.add_timesheet_page', {
             'active_menu': 'add_timesheet',
@@ -231,6 +248,27 @@ class XsellencePortal(http.Controller):
                 'error_desc': 'This task is not available for timesheet entry.',
                 'error_btn_label': 'Show Tasks',
                 'error_btn_url': '/tasks',
+            })
+        if not project_id:
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Project Required',
+                'error_desc': 'Please select a project before submitting the timesheet.',
+                'error_btn_label': 'Go Back',
+                'error_btn_url': f'/tasks/add_timesheet?task_id={task_id}&project_id={project_id}',
+            })
+        if not task_id:
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Task Required',
+                'error_desc': 'Please select a task before submitting the timesheet.',
+                'error_btn_label': 'Go Back',
+                'error_btn_url': f'/tasks/add_timesheet?task_id={task_id}&project_id={project_id}',
+            })
+        if task.project_id.id != project_id:
+            return request.render('xsellence_portal.error_page', {
+                'error_title': 'Task Mismatch',
+                'error_desc': 'The selected task does not belong to the selected project.',
+                'error_btn_label': 'Go Back',
+                'error_btn_url': f'/tasks/add_timesheet?task_id={task_id}&project_id={project_id}',
             })
 
         date_str = kw.get('date')
@@ -312,4 +350,3 @@ class XsellencePortal(http.Controller):
             'success_btn_label': 'View Timesheets',
             'success_btn_url': '/timesheets',
         })
-
