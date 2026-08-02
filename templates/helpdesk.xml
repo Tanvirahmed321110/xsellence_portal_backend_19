@@ -369,7 +369,7 @@
                 const selectionEnd = shouldRestoreFocus ? searchInput.selectionEnd : null;
 
                 for (const [key, value] of formData.entries()) {
-                if (value !== null && String(value).trim() !== "") {
+                if (value !== null &amp;&amp; String(value).trim() !== "") {
                 params.set(key, value);
                 }
                 }
@@ -401,7 +401,7 @@
                 const nextInput = document.getElementById("helpdesk-search");
                 if (nextInput) {
                 nextInput.focus();
-                if (selectionStart !== null && selectionEnd !== null) {
+                if (selectionStart !== null &amp;&amp; selectionEnd !== null) {
                 nextInput.setSelectionRange(selectionStart, selectionEnd);
                 }
                 }
