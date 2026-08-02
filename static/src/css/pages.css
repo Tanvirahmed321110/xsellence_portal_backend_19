@@ -12,13 +12,16 @@
     position: relative;
     z-index: 2;
     transition: var(--transition-base);
-}
 
-/* When load then load animation */
-.submit-form {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeUp 1.4s ease forwards;
+    transform: rotateX(9deg) translateZ(40px) !important;
+    margin-bottom:40px;
+}
+.submit-form:hover {
+    transform: rotateY(4deg) translateZ(40px) !important;
+}
+.submit-form .btn-primary:hover{
+    transform: scale(1.03) translateY(-2px);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
 }
 
 .team-leader {

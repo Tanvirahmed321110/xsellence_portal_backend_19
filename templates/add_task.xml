@@ -7,7 +7,7 @@
             <t t-call="xsellence_portal.breadcrumb_component"/>
 
             <!--========================|| Projects Here ||=========================-->
-            <section class="projects-wrap mt-4 flex-column">
+            <section class="projects-wrap mt-4 flex-column" style="perspective: 1200px;">
                 <div class="sec-title d-flex gap-2 align-center">Add New Task
                     <span
                             class="count fs-xs flex-center">+
@@ -15,7 +15,7 @@
                 </div>
 
 
-                <div class="d-flex flex-1 flex-center mt-6">
+                <div class="d-flex flex-1 flex-center mt-6" style="transform-style: preserve-3d;">
                     <form action="/add_task/submit" method="post" class="submit-form flex-column gap-5">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
