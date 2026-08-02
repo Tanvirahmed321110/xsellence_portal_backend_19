@@ -3,10 +3,6 @@
         <t t-call="xsellence_portal.custom_layout">
             <t t-set="employee_query_suffix"
                t-value="'&amp;employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
-            <t t-set="employee_status_suffix"
-               t-value="'?employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
-            <t t-set="task_filter_onchange"
-               t-value='("const params=new URLSearchParams(window.location.search); if(this.value){params.set(\"status\", this.value);} else {params.delete(\"status\");} const searchValue=document.getElementById(\"task-search\")?.value||\"\"; if(searchValue){params.set(\"search\", searchValue);} else {params.delete(\"search\");} if(\"%s\"){params.set(\"employee_id\", \"%s\");} else {params.delete(\"employee_id\");} if(\"%s\"){params.set(\"project_id\", \"%s\");} else {params.delete(\"project_id\");} const queryString=params.toString(); window.location=queryString ? \"/tasks?\" + queryString : \"/tasks\";" % (selected_employee_id, selected_employee_id, request.params.get('project_id') or '', request.params.get('project_id') or ''))'/>
 
             <!-- ====================  Breadcrumb  ==================== -->
             <div class="flex-between align-center gap-1 flex-wrap n-btn-wrap">
@@ -17,7 +13,9 @@
             </div>
 
             <!--========================|| Tasks Here ||=========================-->
-            <section class="projects-wrap mt-4">
+            <section class="projects-wrap mt-4"
+                     t-att-data-employee-id="selected_employee_id or ''"
+                     t-att-data-project-id="request.params.get('project_id') or ''">
                 <div class="flex-between py-3 gap-5 row-gap-2" style="overflow-x: auto;">
                     <div class="sec-title d-flex gap-2 align-center flex-1 text-nowrap">My Tasks
                         <span
@@ -56,7 +54,7 @@
                         <!-- Filter by Status-->
                         <select class="filter-select bg-white  "
                                 id="filter-status"
-                                t-att-onchange="task_filter_onchange">
+                                onchange="applyTaskFilters()">
                             <option value="">All Status</option>
                             <t t-foreach="statuses" t-as="status">
                                 <option t-att-value="status.id"
@@ -380,6 +378,43 @@
                 <!-- Pagination -->
                 <t t-call="xsellence_portal.reusable_pagination"/>
             </section>
+            <script type="text/javascript">
+                function applyTaskFilters() {
+                    const wrapper = document.querySelector(".projects-wrap");
+                    const status = document.getElementById("filter-status") ? document.getElementById("filter-status").value : "";
+                    const search = document.getElementById("task-search") ? document.getElementById("task-search").value : "";
+                    const params = new URLSearchParams(window.location.search);
+                    const employeeId = wrapper ? (wrapper.dataset.employeeId || "") : "";
+                    const projectId = wrapper ? (wrapper.dataset.projectId || "") : "";
+
+                    if (status) {
+                        params.set("status", status);
+                    } else {
+                        params.delete("status");
+                    }
+
+                    if (search) {
+                        params.set("search", search);
+                    } else {
+                        params.delete("search");
+                    }
+
+                    if (employeeId) {
+                        params.set("employee_id", employeeId);
+                    } else {
+                        params.delete("employee_id");
+                    }
+
+                    if (projectId) {
+                        params.set("project_id", projectId);
+                    } else {
+                        params.delete("project_id");
+                    }
+
+                    const queryString = params.toString();
+                    window.location.href = queryString ? "/tasks?" + queryString : "/tasks";
+                }
+            </script>
         </t>
 
 
