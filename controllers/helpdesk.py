@@ -155,13 +155,8 @@ class XsellencePortalHelpdesk(http.Controller):
 
         return request.render('xsellence_portal.create_ticket_page', {
             'active_menu': 'helpdesk',
-            'customers': request.env['res.partner'].sudo().search(
+            'employees': request.env['hr.employee'].sudo().search(
                 [('active', '=', True)],
-                order='name asc',
-                limit=500,
-            ),
-            'users': request.env['res.users'].sudo().search(
-                [('active', '=', True), ('share', '=', False)],
                 order='name asc',
             ),
             'teams': teams,
@@ -213,18 +208,16 @@ class XsellencePortalHelpdesk(http.Controller):
                 'error_btn_url': '/helpdesks/create_ticket',
             })
 
-        assignee_ids = [int(user_id) for user_id in request.httprequest.form.getlist('assigned_user_ids') if str(user_id).isdigit()]
-        if not assignee_ids:
-            fallback_user_id = post.get('user_id')
-            if fallback_user_id and str(fallback_user_id).isdigit():
-                assignee_ids = [int(fallback_user_id)]
-        if not assignee_ids:
+        employee_ids = [int(employee_id) for employee_id in request.httprequest.form.getlist('employee_ids') if str(employee_id).isdigit()]
+        if not employee_ids:
             return request.render('xsellence_portal.error_page', {
                 'error_title': 'Assignee Required',
                 'error_desc': 'Select at least one assignee before submitting the support ticket.',
                 'error_btn_label': 'Go Back',
                 'error_btn_url': '/helpdesks/create_ticket',
             })
+        employees = request.env['hr.employee'].sudo().browse(employee_ids).exists()
+        assignee_ids = employees.mapped('user_id').ids
 
         ticket_deadline = self._parse_portal_date(post.get('deadline'))
         if not ticket_deadline:
@@ -249,8 +242,9 @@ class XsellencePortalHelpdesk(http.Controller):
             'partner_id': project.partner_id.id if project.partner_id else False,
             'deadline': ticket_deadline,
             'assign_date': post.get('assign_date') or date.today().isoformat(),
+            'employee_ids': [(6, 0, employees.ids)],
             'assigned_user_ids': [(6, 0, assignee_ids)],
-            'user_id': assignee_ids[0],
+            'user_id': assignee_ids[0] if assignee_ids else False,
             'priority': post.get('priority') or default_priority,
         }
         integer_fields = ('team_id',)

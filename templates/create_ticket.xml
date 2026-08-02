@@ -53,10 +53,10 @@
 
                         <div class="grid-2 gap-5 grid-sm-1">
                             <div class="input-control">
-                                <label for="assigned_user_ids">Assignee <span class="required">*</span></label>
-                                <select name="assigned_user_ids" id="assigned_user_ids" multiple="multiple" required="required">
-                                    <t t-foreach="users" t-as="user">
-                                        <option t-att-value="user.id"><t t-esc="user.name"/></option>
+                                <label for="employee_ids">Assignee <span class="required">*</span></label>
+                                <select name="employee_ids" id="employee_ids" multiple="multiple" required="required">
+                                    <t t-foreach="employees" t-as="employee">
+                                        <option t-att-value="employee.id"><t t-esc="employee.name"/></option>
                                     </t>
                                 </select>
                             </div>
@@ -110,7 +110,7 @@
             <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
             <script>
                 // <!-- Ts Control Library Code -->
-                new TomSelect("#assigned_user_ids", {
+                new TomSelect("#employee_ids", {
                 create: true, // allow new names
                 persist: false
                 });

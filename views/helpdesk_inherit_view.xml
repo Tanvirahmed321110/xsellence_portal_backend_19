@@ -10,13 +10,13 @@
         <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
         <field name="arch" type="xml">
 
-            <!-- Add assigned users field before user_id -->
+            <!-- Add employees field before user_id -->
             <xpath expr="//field[@name='user_id']" position="before">
-                <field name="assigned_user_ids"
+                <field name="employee_ids"
                        widget="many2many_tags"
                        options="{'no_create': True}"
                        required="1"
-                       placeholder="Assign users..."/>
+                       placeholder="Assign employees..."/>
             </xpath>
 
             <xpath expr="//field[@name='user_id']" position="attributes">
@@ -55,10 +55,10 @@
             </xpath>
 
             <xpath expr="//field[@name='user_id']" position="after">
-                <field name="assigned_user_ids"
+                <field name="employee_ids"
                        widget="many2many_tags"
                        optional="show"
-                       string="Assigned Users"/>
+                       string="Employees"/>
             </xpath>
 
         </field>

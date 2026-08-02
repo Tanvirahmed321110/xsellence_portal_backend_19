@@ -38,7 +38,7 @@
                             <input class="search-input"
                                    t-att-value="search"
                                    type="text"
-                                   placeholder="Search task name or id..."/>
+                                   placeholder="Search Project name or id..."/>
                             <button type="submit" style="display:none;"></button>
                         </div>
                     </div>

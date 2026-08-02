@@ -46,6 +46,13 @@ class Helpdesk(models.Model):
         for rec in self:
             rec.user_id = rec.assigned_user_ids[:1].id if rec.assigned_user_ids else False
 
+    @api.onchange('employee_ids')
+    def _onchange_employee_ids_set_users(self):
+        for rec in self:
+            linked_users = rec.employee_ids.mapped('user_id')
+            rec.assigned_user_ids = [(6, 0, linked_users.ids)]
+            rec.user_id = linked_users[:1].id if linked_users else False
+
     def _default_low_priority_value(self):
         priority_field = self._fields.get('priority')
         selection = []
@@ -124,6 +131,14 @@ class Helpdesk(models.Model):
             if low_priority is not False:
                 updated_vals['priority'] = low_priority
 
+        employee_commands = updated_vals.get('employee_ids')
+        if employee_commands is not None:
+            employee_ids = self._resolve_m2m_commands(employee_commands)
+            employees = self.env['hr.employee'].browse(employee_ids)
+            linked_user_ids = employees.mapped('user_id').ids
+            updated_vals['assigned_user_ids'] = [(6, 0, linked_user_ids)]
+            updated_vals['user_id'] = linked_user_ids[0] if linked_user_ids else False
+
         assigned_user_commands = updated_vals.get('assigned_user_ids')
         if assigned_user_commands is not None:
             assigned_user_ids = self._resolve_m2m_commands(assigned_user_commands)
@@ -133,6 +148,9 @@ class Helpdesk(models.Model):
                 updated_vals['user_id'] = False
         elif updated_vals.get('user_id'):
             updated_vals['assigned_user_ids'] = [(4, updated_vals['user_id'])]
+            if 'employee_ids' not in updated_vals:
+                employee_ids = self.env['hr.employee'].search([('user_id', '=', updated_vals['user_id'])]).ids
+                updated_vals['employee_ids'] = [(6, 0, employee_ids)]
 
         return updated_vals
 
