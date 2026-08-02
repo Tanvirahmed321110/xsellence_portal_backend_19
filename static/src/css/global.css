@@ -3211,7 +3211,7 @@ aside .sidebar-bottom {
 .search-wrap {
     position: relative;
     flex: 1;
-    min-width: 250px;
+    min-width: 280px;
     border-radius: 10px;
 }
 
@@ -3221,23 +3221,9 @@ aside .sidebar-bottom {
     overflow-x: visible;
 }
 
-.projects-search {
-    flex: 1 1 320px;
-    min-width: 220px;
-    max-width: 100%;
-}
 
-.projects-search .search-wrap {
-    min-width: 0;
-}
 
-.projects-toolbar-actions {
-    flex: 0 1 auto;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 0;
-}
+
 
 .projects-toolbar-actions .filter-select {
     flex: 0 1 180px;
