@@ -189,32 +189,23 @@
                                         </div>
                                     </div>
                                     <div class="card-footer">
-                                        <t t-if="can_manage_tasks">
-                                            <div class="state-dropdown ">
-                                                <form action="task/update_status" method="post">
-                                                    <input type="hidden" name="csrf_token"
-                                                           t-att-value="request.csrf_token()"/>
-                                                    <input type="hidden" name="task_id" t-att-value="task.id"/>
-                                                    <input type="hidden" name="redirect_url"
-                                                           t-att-value="request.httprequest.referrer"/>
+                                        <div class="state-dropdown ">
+                                            <form action="/task/update_status" method="post">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                                <input type="hidden" name="redirect_url"
+                                                       t-att-value="request.httprequest.referrer"/>
 
-                                                    <select class="filter-select" name="status"
-                                                            onchange="this.form.submit()">
-                                                        <t t-foreach="statuses" t-as="status">
-                                                            <option t-att-value="status.id" t-esc="status.name"
-                                                                    t-att-selected="task.stage_id.id == status.id"></option>
-                                                        </t>
-                                                    </select>
-                                                </form>
-                                            </div>
-                                        </t>
-                                        <t t-else="">
-                                            <div class="state-dropdown">
-                                                <div class="filter-select"
-                                                     t-att-style="task_stage_styles.get(task.id, '')"
-                                                     t-esc="task.stage_id.name or 'N/A'"></div>
-                                            </div>
-                                        </t>
+                                                <select class="filter-select" name="status"
+                                                        onchange="this.form.submit()">
+                                                    <t t-foreach="statuses" t-as="status">
+                                                        <option t-att-value="status.id" t-esc="status.name"
+                                                                t-att-selected="task.stage_id.id == status.id"></option>
+                                                    </t>
+                                                </select>
+                                            </form>
+                                        </div>
 
                                         <!-- Actions Buttons -->
                                         <div class="action-btns">
@@ -316,9 +307,21 @@
                                             <td t-esc="task.name"></td>
                                             <td t-esc="task.project_id.name if task.project_id.name else ''"></td>
                                             <td class="">
-                                                <div class="sts"
-                                                     t-att-style="task_stage_styles.get(task.id, '')"
-                                                     t-esc="task.stage_id.name or 'N/A'"></div>
+                                                <form action="/task/update_status" method="post" class="d-inline-block">
+                                                    <input type="hidden" name="csrf_token"
+                                                           t-att-value="request.csrf_token()"/>
+                                                    <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                                    <input type="hidden" name="redirect_url"
+                                                           t-att-value="request.httprequest.referrer"/>
+                                                    <select class="filter-select" name="status" onchange="this.form.submit()">
+                                                        <t t-foreach="statuses" t-as="status">
+                                                            <option t-att-value="status.id"
+                                                                    t-att-selected="task.stage_id.id == status.id">
+                                                                <t t-esc="status.name"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </form>
                                             </td>
                                             <td t-esc="task.date_assign.strftime('%d %b %%y') if task.date_assign else ''"></td>
                                             <td t-esc="task.date_deadline.strftime('%d %b %%y')  if task.date_deadline else ''"></td>

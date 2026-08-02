@@ -50,6 +50,14 @@ class XsellencePortal(http.Controller):
             'error_btn_url': back_url,
         })
 
+    def _task_status_update_log_html(self, actor_name, old_stage_name, new_stage_name):
+        actor = escape(actor_name or 'A user')
+        old_stage = escape(old_stage_name or 'No Status')
+        new_stage = escape(new_stage_name or 'No Status')
+        return Markup(
+            "<b>Task Status Changed</b><br/>%s changed task status from <b>%s</b> to <b>%s</b>."
+        ) % (actor, old_stage, new_stage)
+
     def _dedupe_stage_records(self, stages):
         unique_stages = request.env['project.task.type'].sudo().browse()
         seen_names = set()
@@ -257,16 +265,26 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/task/update_status', type='http', auth='user', methods=['POST'], csrf=True)
     def update_project_status(self, task_id=None, status=None, redirect_url=None, **kw):
-        if not self._can_manage_tasks():
-            back_url = f"/tasks/task_details/{task_id}" if task_id else '/tasks'
-            return self._task_manager_only_response(back_url)
-
         task = False
         if task_id:
             task = self._get_visible_task(int(task_id))
+        if not task.exists():
+            return request.redirect('/tasks')
+
         stage_id = self._resolve_task_stage_id(status, project_id=task.project_id.id if task else False)
-        if task and stage_id:
-            task.write({'stage_id': stage_id})
+        if task and stage_id and task.stage_id.id != stage_id:
+            previous_stage_name = task.stage_id.name
+            task.sudo().with_context(tracking_disable=True).write({'stage_id': stage_id})
+            task.sudo().message_post(
+                author_id=request.env.user.partner_id.id,
+                body=self._task_status_update_log_html(
+                    request.env.user.name,
+                    previous_stage_name,
+                    task.stage_id.name,
+                ),
+                message_type='comment',
+                subtype_xmlid='mail.mt_note',
+            )
 
         if not redirect_url:
             return request.redirect(f"/tasks/task_details/{task_id}")
