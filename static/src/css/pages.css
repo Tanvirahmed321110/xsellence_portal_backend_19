@@ -1738,6 +1738,9 @@ body.dark-theme .profile .main-info .manager-msg-btn {
 
 /* Mobile Responsive Code */
 @media (max-width: 767px) {
+    .timesheets .table-wrap {
+      overflow: auto;
+    }
     .task-details .task-card {
         min-width: 100%;
     }
@@ -1790,6 +1793,15 @@ body.dark-theme .profile .main-info .manager-msg-btn {
 
     .helpdesk .item .footer-meta {
         flex-wrap: wrap;
+        flex-direction: column-reverse;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap:16px;
+}
+    .helpdesk .helpdesk-wrap .item .btn {
+        padding: 10px 12px;
+        font-weight: 400;
+        font-size:12px;
     }
 
     .helpdesk-wrap .item .ticket-header .task-name {

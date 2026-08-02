@@ -1,6 +1,6 @@
 <odoo>
     <template id="dashboard_page">
-        <link rel="stylesheet" href="/xsellence_portal/static/src/css/dashboard.css?v=17"/>
+        <link rel="stylesheet" href="/xsellence_portal/static/src/css/dashboard.css?v=18"/>
 
         <t t-call="xsellence_portal.custom_layout">
             <section class="" style="position:relative">

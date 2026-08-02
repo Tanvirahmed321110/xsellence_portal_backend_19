@@ -224,7 +224,7 @@ body {
     font-family: var(--font-inter);
     font-weight: var(--fw-400);
     color: var(--color-text-secondary);
-    min-width: 400px;
+    min-width: 370px;
     background-color: var(--color-bg-body);
     min-height: 100%;
     display: flex;

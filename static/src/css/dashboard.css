@@ -1118,6 +1118,12 @@
 /*==================||  Mobile Responsive Start Here  ||====================*/
 @media(max-width:767px) {
 
+.user-btns .user-btn {
+    padding: 5px 6px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
 
     .leave-attendance {
         grid-auto-rows: max-content;
