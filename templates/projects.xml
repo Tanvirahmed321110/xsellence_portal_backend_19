@@ -98,8 +98,8 @@
 
                             <!--================||   Single Project Card here ||===============-->
                             <t t-foreach="projects" t-as="project">
-                                <div class="proj-card overdue">
-                                    <div class="overdue-batch">Overdue</div>
+                                 <div class="proj-card">
+
                                     <div class="card-banner"> </div>
                                     <div class="card-body">
                                         <div class="card-top">
