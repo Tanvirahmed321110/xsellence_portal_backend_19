@@ -3,7 +3,6 @@ from odoo.http import request
 from datetime import date
 from ..utilitis.pagination import get_pager
 
-
 class XsellencePortalHelpdesk(http.Controller):
     @staticmethod
     def _ticket_priorities(ticket_model):
@@ -34,11 +33,17 @@ class XsellencePortalHelpdesk(http.Controller):
 
     @staticmethod
     def _get_visible_ticket_domain(user):
-        return ['|', ('user_id', '=', user.id), ('assigned_user_ids', 'in', [user.id])]
+        employee = request.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)],
+            limit=1,
+        )
 
-    # ========================
-    # Helpdesk page
-    # ========================
+        domain = ['|', ('user_id', '=', user.id), ('assigned_user_ids', 'in', [user.id])]
+        if employee:
+            domain = ['|'] + domain + [('employee_ids', 'in', [employee.id])]
+
+        return domain
+
     @http.route('/helpdesks', type='http', auth='user', website=True)
     def helpdesk_f(self, **kw):
         user = request.env.user
@@ -58,7 +63,6 @@ class XsellencePortalHelpdesk(http.Controller):
             else:
                 domain += ['|', ('name', 'ilike', search), ('ticket_ref', 'ilike', search)]
 
-        # ===== Pagination Setup =====
         per_page = int(kw.get('per_page', 16))
         total = Ticket.search_count(domain)
         pager = get_pager(

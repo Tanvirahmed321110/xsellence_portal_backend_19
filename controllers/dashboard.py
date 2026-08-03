@@ -72,25 +72,7 @@ class XsellencePortal(http.Controller):
 
         return current_employee, selected_employee
 
-    def _get_helpdesk_counts(self, selected_user):
-        ticket_model = self._safe_model("helpdesk.ticket")
-        if not ticket_model or not selected_user:
-            return 0, 0
 
-        base_domain = []
-        if "user_id" in ticket_model._fields:
-            base_domain = [("user_id", "=", selected_user.id)]
-        elif "partner_id" in ticket_model._fields:
-            base_domain = [("partner_id", "=", selected_user.partner_id.id)]
-
-        if not base_domain or "stage_id" not in ticket_model._fields:
-            return 0, 0
-
-        helpdesk_new = ticket_model.search_count(base_domain + [("stage_id.name", "ilike", "new")])
-        helpdesk_solved = ticket_model.search_count(
-            base_domain + ["|", ("stage_id.name", "ilike", "solved"), ("stage_id.name", "ilike", "done")]
-        )
-        return helpdesk_new, helpdesk_solved
 
     def _get_leave_stats(self, selected_employee):
         leave_type_model = self._safe_model("hr.leave.type")
@@ -270,6 +252,24 @@ class XsellencePortal(http.Controller):
         next_year = date(today.year + 1, 1, 1)
         start_month, next_month = self._month_bounds(today)
 
+
+        # helpdesk
+        HelpdeskTicket = request.env["helpdesk.ticket"].sudo()
+
+        ticket_new = 0
+        ticket_solve = 0
+
+        if current_employee:
+            ticket_new = HelpdeskTicket.search_count([
+                ("employee_ids", "in", [current_employee.id]),
+                ("stage_id.name", "=", "New"),
+            ])
+
+            ticket_solve = HelpdeskTicket.search_count([
+                ("employee_ids", "in", [current_employee.id]),
+                ("stage_id.name", "=", "Solved"),
+            ])
+
         monthly_attendance_days = {index: set() for index in range(1, 13)}
         monthly_hours = {index: 0.0 for index in range(1, 13)}
         month_hours = 0.0
@@ -412,7 +412,6 @@ class XsellencePortal(http.Controller):
             {"label": "Overdue Tasks", "value": str(overdue_tasks)},
         ]
 
-        helpdesk_new, helpdesk_solved = self._get_helpdesk_counts(selected_user)
         leave_stats = self._get_leave_stats(selected_employee)
 
         dashboard_context = {
@@ -420,8 +419,6 @@ class XsellencePortal(http.Controller):
             "selected_employee_id": selected_employee.id if selected_employee else False,
             "total_tasks": total_tasks,
             "completed_tasks": completed_tasks,
-            "helpdesk_new": helpdesk_new,
-            "helpdesk_solved": helpdesk_solved,
             "attendance_chart": attendance_chart,
             "overall_score": overall_score,
             "performance_label": performance_label,
@@ -438,6 +435,9 @@ class XsellencePortal(http.Controller):
             "check_out_duration": today_duration_text,
             "check_out_trend": check_out_trend,
             "leave_stats": leave_stats,
+
+            "ticket_new": ticket_new,
+            "ticket_solve": ticket_solve,
         }
 
         return request.render(
