@@ -151,7 +151,7 @@
 
                     <!-- Project Progress -->
                     <div class="project-progress p-4 radius-xl  ">
-                        <div class="section-title  ">Project Progress</div>
+                        <div class="section-title  ">Task Progress</div>
                         <div class="proj-list mt-4 flex-column gap-5">
                             <t t-if="project_progress">
                                 <t t-foreach="project_progress" t-as="project">

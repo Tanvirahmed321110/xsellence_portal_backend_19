@@ -362,6 +362,40 @@ class XsellencePortal(http.Controller):
                 team_member_ids.add(project.user_id.id)
             team_member_ids.update(project.assigned_user_ids.ids)
 
+        def _to_date(value):
+            if not value:
+                return False
+            if isinstance(value, datetime):
+                return value.date()
+            return value
+
+        def _task_progress_percent(task):
+            if task.custom_status in ("completed", "cancelled"):
+                return 100 if task.custom_status == "completed" else 0
+
+            start_date = _to_date(task.date_assign) or _to_date(task.create_date) or today
+            end_date = _to_date(task.date_deadline)
+
+            if not end_date:
+                return 0
+            if today <= start_date:
+                return 0
+            if today >= end_date:
+                return 100
+
+            total_days = (end_date - start_date).days
+            if total_days <= 0:
+                return 100 if today >= end_date else 0
+
+            elapsed_days = (today - start_date).days
+            return self._format_percent(elapsed_days / total_days * 100.0)
+
+        task_progress = Task.search(
+            task_domain + [("custom_status", "not in", ["completed", "cancelled"])],
+            order="date_deadline asc, date_assign asc, create_date desc",
+            limit=5,
+        )
+
         project_progress = []
         status_class_map = {
             "planning": "tag-blue",
@@ -370,21 +404,16 @@ class XsellencePortal(http.Controller):
             "completed": "tag-purple",
             "cancelled": "tag-red",
         }
-        status_label_map = dict(Project._fields["custom_status"].selection)
-        for project in selected_projects:
-            project_task_domain = [("project_id", "=", project.id)]
-            project_task_total = Task.search_count(project_task_domain)
-            project_task_done = Task.search_count(project_task_domain + [("custom_status", "=", "completed")])
-            progress_percent = (
-                self._format_percent(project_task_done / project_task_total * 100.0) if project_task_total else 0
-            )
+        status_label_map = dict(Task._fields["custom_status"].selection)
+        for task in task_progress:
+            member_count = len(set(task.user_ids.ids + task.assigned_user_ids.ids))
             project_progress.append(
                 {
-                    "name": project.name,
-                    "percent": progress_percent,
-                    "status_label": status_label_map.get(project.custom_status, "No Status"),
-                    "status_class": status_class_map.get(project.custom_status, "tag-blue"),
-                    "member_count": len(project.assigned_user_ids.ids),
+                    "name": task.name,
+                    "percent": _task_progress_percent(task),
+                    "status_label": status_label_map.get(task.custom_status, "No Status"),
+                    "status_class": status_class_map.get(task.custom_status, "tag-blue"),
+                    "member_count": member_count,
                 }
             )
 
