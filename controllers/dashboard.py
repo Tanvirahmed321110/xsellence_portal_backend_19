@@ -230,9 +230,21 @@ class XsellencePortal(http.Controller):
         else:
             timesheet_domain = [("id", "=", 0)]
 
-        Task = request.env["project.task"].sudo().with_context(active_test=False)
+        Task = request.env["project.task"].sudo()
         Project = request.env["project.project"].sudo().with_context(active_test=False)
         Timesheet = request.env["account.analytic.line"].sudo()
+
+        login_user_task_domain = [
+            ("create_uid.login", "!=", "__system__"),
+            "|",
+            ("user_ids", "in", [user.id]),
+            ("assigned_user_ids", "in", [user.id]),
+        ]
+
+        login_user_total_tasks = Task.search_count(login_user_task_domain)
+        login_user_completed_tasks = Task.search_count(
+            login_user_task_domain + [("custom_status", "=", "completed")]
+        )
 
         total_tasks = Task.search_count(task_domain)
         completed_tasks = Task.search_count(task_domain + [("custom_status", "=", "completed")])
@@ -419,6 +431,8 @@ class XsellencePortal(http.Controller):
             "selected_employee_id": selected_employee.id if selected_employee else False,
             "total_tasks": total_tasks,
             "completed_tasks": completed_tasks,
+            "login_user_total_tasks": login_user_total_tasks,
+            "login_user_completed_tasks": login_user_completed_tasks,
             "attendance_chart": attendance_chart,
             "overall_score": overall_score,
             "performance_label": performance_label,
