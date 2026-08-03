@@ -2609,7 +2609,6 @@ aside .sidebar-bottom {
 /* ══════════════════════════════
        CARD GRID
     ══════════════════════════════ */
-
 /* Individual project card */
 .proj-card {
     background: var(--color-bg-primary);
@@ -2620,6 +2619,27 @@ aside .sidebar-bottom {
     display: flex;
     flex-direction: column;
     max-width: 700px;
+    overflow:hidden;
+}
+
+.proj-card.overdue {
+    background: linear-gradient(180deg, #fff 0%, #fff 89%, #fb2a2aa8 100%);
+    border: 1px solid #fb2a2a;
+}
+
+.proj-card.overdue .overdue-batch {
+    position: absolute;
+    top: 14px;
+    right: -41px;
+    width: 140px;
+    text-align: center;
+    transform: rotate(42deg);
+    background: linear-gradient(90deg, #ff6b6b, #b91d1d);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 4px 0;
+    z-index: 3;
 }
 
 .proj-card:hover {
