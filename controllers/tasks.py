@@ -81,10 +81,7 @@ class XsellencePortal(http.Controller):
         return request.env['project.task.type'].sudo()
 
     def _get_task_stages(self, project_id=False):
-        domain = [('user_id', '=', False)]
-        if project_id:
-            domain += ['|', ('project_ids', '=', False), ('project_ids', 'in', [project_id])]
-        stages = self._task_stage_model().search(domain, order='sequence, id')
+        stages = self._task_stage_model().search([], order='sequence, id')
         return self._dedupe_stage_records(stages)
 
     def _resolve_task_stage_id(self, raw_stage_value, project_id=False):
