@@ -277,7 +277,23 @@ body.dark-theme .search-wrap .search-input {
     color: var(--color-text-secondary);
 }
 body.dark-theme .search-wrap .search-input {
-    color: #000000;
+    color: var(--color-text-secondary);
+}
+
+body.dark-theme .search-wrap .search-input::placeholder {
+    color: var(--color-text-muted);
+}
+
+body.dark-theme .search-wrap svg,
+body.dark-theme .filter-select,
+body.dark-theme .filter-select option {
+    color: var(--color-text-secondary);
+}
+
+body.dark-theme .dashboard-items h2,
+body.dark-theme .dashboard-items .card-value,
+body.dark-theme .dashboard-items .card-value svg {
+    color: var(--color-text-header);
 }
 
 body.dark-theme input[type="date"]::-webkit-calendar-picker-indicator {
@@ -2627,6 +2643,12 @@ aside .sidebar-bottom {
     border: 1px solid #fb2a2a;
 }
 
+body.dark-theme .proj-card.overdue {
+    background: linear-gradient(180deg, #182235 0%, #182235 84%, rgba(185, 29, 29, 0.42) 100%);
+    border: 1px solid rgba(248, 113, 113, 0.8);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+}
+
 .proj-card.overdue .overdue-batch {
     position: absolute;
     top: 24px;
@@ -2642,6 +2664,11 @@ aside .sidebar-bottom {
     z-index: 3;
     text-transform: uppercase;
     letter-spacing:.8px;
+}
+
+body.dark-theme .proj-card.overdue .card-footer {
+    background-color: rgba(127, 29, 29, 0.14);
+    border-top-color: rgba(248, 113, 113, 0.28);
 }
 
 .proj-card:hover {
