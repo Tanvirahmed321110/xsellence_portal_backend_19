@@ -1,6 +1,8 @@
 <odoo>
     <template id="task_details_page">
         <t t-call="xsellence_portal.custom_layout">
+            <t t-set="employee_query_suffix"
+               t-value="'?employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
 
             <!-- ====================  Breadcrumb  ==================== -->
             <t t-call="xsellence_portal.breadcrumb_component"/>
@@ -138,6 +140,7 @@
                                 <form action="/task/update_status" method="post">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                    <input type="hidden" name="employee_id" t-att-value="selected_employee_id or ''"/>
 
                                     <select class="filter-select" name="status" onchange="this.form.submit()">
                                         <t t-foreach="status_selection" t-as="status">
@@ -154,7 +157,7 @@
                                 <div class="action-btns">
 
                                 <!-- Edit button -->
-                                <a t-att-href="'/task/edit/%s' % task.id" class="action-btn edit">
+                                <a t-att-href="'/task/edit/%s%s' % (task.id, employee_query_suffix)" class="action-btn edit">
                                     Edit
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -168,6 +171,7 @@
                                     <input type="hidden" name="csrf_token"
                                            t-att-value="request.csrf_token()"/>
                                     <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                    <input type="hidden" name="employee_id" t-att-value="selected_employee_id or ''"/>
                                     <button type="button" class="action-btn del"
                                             onclick="return openDeleteModal(this)">
                                         <svg width="12" height="12" viewBox="0 0 24 24"
@@ -202,6 +206,7 @@
                                   class="history-comment-form">
 
                                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="employee_id" t-att-value="selected_employee_id or ''"/>
                                 <textarea name="comment"
                                           placeholder="Log a note or update..."
                                           required="required"></textarea>

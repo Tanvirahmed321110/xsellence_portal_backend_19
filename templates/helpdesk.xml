@@ -209,7 +209,7 @@
                                     </div>
 
                                     <div class="footer-meta flex-between gap-2 px-3 pb-3 mt-2">
-                                        <a class="btn btn-primary" t-attf-href="/helpdesks/ticket_details/#{ticket.id}">
+                                        <a class="btn btn-primary" t-attf-href="/helpdesks/ticket_details/#{ticket.id}#{'?employee_id=%s' % selected_employee_id if selected_employee_id else ''}">
                                             View Details
                                         </a>
                                         <!-- Assign By  -->
@@ -345,7 +345,7 @@
                 if (search) {
                 params.set("search", search);
                 }
-                const employeeId = "<t t-esc=\"selected_employee_id or ''\"/>";
+                const employeeId = "<t t-esc="selected_employee_id or ''"/>";
                 if (employeeId) {
                 params.set("employee_id", employeeId);
                 }

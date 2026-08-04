@@ -214,7 +214,7 @@
                                         <!-- Actions Buttons -->
                                         <div class="action-btns">
                                             <!-- View Button Here -->
-                                            <a t-att-href="'/tasks/task_details/%s' % task.id"
+                                            <a t-att-href="'/tasks/task_details/%s?employee_id=%s' % (task.id, selected_employee_id) if selected_employee_id else '/tasks/task_details/%s' % task.id"
                                                class="action-btn view-btn">
                                                 <svg width="14" height="14"
                                                      viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -312,7 +312,7 @@
                                             <td>
                                                 <div class="d-inline-block">
                                                     <!-- View Project -->
-                                                    <a t-att-href=" '/tasks/task_details/%s' % task.id "
+                                                    <a t-att-href="'/tasks/task_details/%s?employee_id=%s' % (task.id, selected_employee_id) if selected_employee_id else '/tasks/task_details/%s' % task.id"
                                                        class="action-btn btn-primary tooltip">View
                                                         <svg width="14" height="14" viewBox="0 0 24 24"
                                                              fill="none" stroke="currentColor" stroke-width="2"

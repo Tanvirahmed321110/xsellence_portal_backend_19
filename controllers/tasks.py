@@ -7,6 +7,8 @@ from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
 
 
 class XsellencePortal(http.Controller):
+    def _employee_query(self, employee_id):
+        return f'?employee_id={employee_id}' if employee_id else ''
     def _stage_badge_style(self, stage_name):
         normalized = (stage_name or '').strip().casefold()
         keyword_palette = [
@@ -235,6 +237,8 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/tasks/task_details/<int:task_id>', type='http', auth='user', website=True)
     def task_details_f(self, task_id, **kw):
+        selected_employee_id = int(kw.get('employee_id') or 0)
+        employee_query = self._employee_query(selected_employee_id)
 
         task = self._get_visible_task(task_id)
         if not task.exists():
@@ -250,13 +254,14 @@ class XsellencePortal(http.Controller):
         return request.render('xsellence_portal.task_details_page', {
             'active_menu': 'tasks',
             'task': task,
+            'selected_employee_id': selected_employee_id,
             'can_manage_tasks': self._can_manage_tasks(),
             'task_stage_style': self._stage_badge_style(task.stage_id.name),
             'status_selection': status_selection,
             'messages': messages,
             'breadcrumb': [
-                {'name': 'Dashboard', 'url': '/dashboard'},
-                {'name': 'Tasks', 'url': '/tasks'},
+                {'name': 'Dashboard', 'url': f'/dashboard{employee_query}' if employee_query else '/dashboard'},
+                {'name': 'Tasks', 'url': f'/tasks{employee_query}' if employee_query else '/tasks'},
                 {'name': 'Task Details', 'url': False},
             ]
         })
@@ -267,6 +272,8 @@ class XsellencePortal(http.Controller):
     @http.route('/task/comment/<int:task_id>', type='http', auth='user', website=True, methods=['POST'],
                 csrf=True)
     def project_comment(self, task_id, **post):
+        selected_employee_id = int(post.get('employee_id') or 0)
+        employee_query = self._employee_query(selected_employee_id)
         task = self._get_visible_task(task_id)
 
         if not task.exists():
@@ -292,13 +299,15 @@ class XsellencePortal(http.Controller):
                 comment,
             )
 
-        return request.redirect('/tasks/task_details/%s' % task.id)
+        return request.redirect(f'/tasks/task_details/{task.id}{employee_query}')
 
     # ========================
     # For Task Update Status
     # ========================
     @http.route('/task/update_status', type='http', auth='user', methods=['POST'], csrf=True)
     def update_project_status(self, task_id=None, status=None, redirect_url=None, **kw):
+        selected_employee_id = int(kw.get('employee_id') or 0)
+        employee_query = self._employee_query(selected_employee_id)
         task = False
         if task_id:
             task = self._get_visible_task(int(task_id))
@@ -321,7 +330,7 @@ class XsellencePortal(http.Controller):
             )
 
         if not redirect_url:
-            return request.redirect(f"/tasks/task_details/{task_id}")
+            return request.redirect(f"/tasks/task_details/{task_id}{employee_query}")
         return request.redirect(f"/tasks")
 
     # ========================

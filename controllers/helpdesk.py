@@ -18,6 +18,16 @@ class XsellencePortalHelpdesk(http.Controller):
             limit=1,
         )
 
+    def _selected_employee_scope(self, selected_employee):
+        if not selected_employee:
+            return request.env['hr.employee'].sudo().browse()
+        if selected_employee.user_id:
+            return request.env['hr.employee'].sudo().search(
+                [('user_id', '=', selected_employee.user_id.id), ('active', '=', True)],
+                order='id asc',
+            )
+        return selected_employee
+
     def _resolve_selected_employee(self, raw_employee_id):
         user = request.env.user
         current_employee = self._current_employee(user)
@@ -61,15 +71,15 @@ class XsellencePortalHelpdesk(http.Controller):
         return priority_keys[0] if priority_keys else False
 
     @staticmethod
-    def _get_visible_ticket_domain(user, employee=False):
-        employee = employee or request.env['hr.employee'].sudo().search(
+    def _get_visible_ticket_domain(user, employees=False, target_user=False):
+        employees = employees or request.env['hr.employee'].sudo().search(
             [('user_id', '=', user.id)],
-            limit=1,
         )
+        target_user = target_user or user
 
-        domain = ['|', ('user_id', '=', user.id), ('assigned_user_ids', 'in', [user.id])]
-        if employee:
-            domain = ['|'] + domain + [('employee_ids', 'in', [employee.id])]
+        domain = ['|', ('user_id', '=', target_user.id), ('assigned_user_ids', 'in', [target_user.id])]
+        if employees:
+            domain = ['|'] + domain + [('employee_ids', 'in', employees.ids)]
 
         return domain
 
@@ -78,7 +88,9 @@ class XsellencePortalHelpdesk(http.Controller):
         user = request.env.user
         Ticket = request.env['helpdesk.ticket'].sudo()
         selected_employee, selected_employee_id = self._resolve_selected_employee(kw.get('employee_id'))
-        domain = self._get_visible_ticket_domain(user, selected_employee)
+        selected_employee_scope = self._selected_employee_scope(selected_employee)
+        target_user = selected_employee.user_id if selected_employee and selected_employee.user_id else user
+        domain = self._get_visible_ticket_domain(user, selected_employee_scope, target_user)
         search = (kw.get('search') or '').strip()
         selected_project_id = int(kw.get('project_id') or 0)
         selected_stage_id = int(kw.get('stage_id') or 0)
@@ -152,8 +164,13 @@ class XsellencePortalHelpdesk(http.Controller):
     # ========================
     @http.route('/helpdesks/ticket_details/<int:ticket_id>', type='http', auth='user', website=True)
     def ticket_details_f(self, ticket_id,**kw):
+        selected_employee_id = int(kw.get('employee_id') or 0)
+        employee_query = f'?employee_id={selected_employee_id}' if selected_employee_id else ''
+        selected_employee, _selected_employee_id = self._resolve_selected_employee(selected_employee_id)
+        selected_employee_scope = self._selected_employee_scope(selected_employee)
+        target_user = selected_employee.user_id if selected_employee and selected_employee.user_id else request.env.user
         ticket = request.env['helpdesk.ticket'].sudo().search(
-            [('id', '=', ticket_id)] + self._get_visible_ticket_domain(request.env.user),
+            [('id', '=', ticket_id)] + self._get_visible_ticket_domain(request.env.user, selected_employee_scope, target_user),
             limit=1,
         )
         if not ticket.exists():
@@ -163,9 +180,10 @@ class XsellencePortalHelpdesk(http.Controller):
         return request.render('xsellence_portal.ticket_details_page', {
             'active_menu': 'helpdesk',
             'ticket': ticket,
+            'selected_employee_id': selected_employee_id,
             'breadcrumb': [
-                {'name': 'Dashboard', 'url': '/dashboard'},
-                {'name': 'Helpdesks', 'url': '/helpdesks'},
+                {'name': 'Dashboard', 'url': f'/dashboard{employee_query}' if employee_query else '/dashboard'},
+                {'name': 'Helpdesks', 'url': f'/helpdesks{employee_query}' if employee_query else '/helpdesks'},
                 {'name': 'Ticket Details', 'url': False},
             ],
         })
@@ -177,15 +195,20 @@ class XsellencePortalHelpdesk(http.Controller):
     def update_helpdesk_stage(self, **post):
         ticket_id = int(post.get('ticket_id') or 0)
         stage_id = int(post.get('stage_id') or 0)
+        selected_employee_id = int(post.get('employee_id') or 0)
+        employee_query = f'?employee_id={selected_employee_id}' if selected_employee_id else ''
+        selected_employee, _selected_employee_id = self._resolve_selected_employee(selected_employee_id)
+        selected_employee_scope = self._selected_employee_scope(selected_employee)
+        target_user = selected_employee.user_id if selected_employee and selected_employee.user_id else request.env.user
 
         ticket = request.env['helpdesk.ticket'].sudo().search(
-            [('id', '=', ticket_id)] + self._get_visible_ticket_domain(request.env.user),
+            [('id', '=', ticket_id)] + self._get_visible_ticket_domain(request.env.user, selected_employee_scope, target_user),
             limit=1,
         )
         if ticket.exists() and stage_id:
             ticket.write({'stage_id': stage_id})
 
-        return request.redirect(f'/helpdesks/ticket_details/{ticket_id}')
+        return request.redirect(f'/helpdesks/ticket_details/{ticket_id}{employee_query}')
 
 
     # ========================

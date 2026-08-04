@@ -20,6 +20,16 @@ class XsellencePortal(http.Controller):
             limit=1,
         )
 
+    def _selected_employee_scope(self, selected_employee):
+        if not selected_employee:
+            return request.env['hr.employee'].sudo().browse()
+        if selected_employee.user_id:
+            return request.env['hr.employee'].sudo().search(
+                [('user_id', '=', selected_employee.user_id.id), ('active', '=', True)],
+                order='id asc',
+            )
+        return selected_employee
+
     def _resolve_selected_employee(self, raw_employee_id):
         user = request.env.user
         current_employee = self._current_employee(user)
@@ -89,11 +99,12 @@ class XsellencePortal(http.Controller):
         selected_end_date = kw.get('end_date', '')
 
         selected_user = selected_employee.user_id if selected_employee and selected_employee.exists() and selected_employee.user_id else False
+        selected_employee_scope = self._selected_employee_scope(selected_employee)
 
-        if selected_employee and selected_user:
-            base_domain = ['|', ('user_id', '=', selected_user.id), ('employee_id', '=', selected_employee.id)]
-        elif selected_employee:
-            base_domain = [('employee_id', '=', selected_employee.id)]
+        if selected_employee_scope and selected_user:
+            base_domain = ['|', ('user_id', '=', selected_user.id), ('employee_id', 'in', selected_employee_scope.ids)]
+        elif selected_employee_scope:
+            base_domain = [('employee_id', 'in', selected_employee_scope.ids)]
         else:
             employees = request.env['hr.employee'].sudo().search([
                 ('user_id', '=', user.id)

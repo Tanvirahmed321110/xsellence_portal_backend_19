@@ -2,6 +2,8 @@
     <template id="ticket_details_page">
         <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=1"/>
         <t t-call="xsellence_portal.custom_layout">
+            <t t-set="employee_query_suffix"
+               t-value="'?employee_id=%s' % selected_employee_id if selected_employee_id else ''"/>
 
             <!-- ====================  Breadcrumb  ==================== -->
             <t t-call="xsellence_portal.breadcrumb_component"/>
@@ -60,6 +62,7 @@
                                 <form action="/helpdesks/update_stage" method="post">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                     <input type="hidden" name="ticket_id" t-att-value="ticket.id"/>
+                                    <input type="hidden" name="employee_id" t-att-value="selected_employee_id or ''"/>
 
                                     <select class="filter-select" name="stage_id" onchange="this.form.submit()"
                                             style="width:100%;max-width:100%">
@@ -242,6 +245,7 @@
                                     <form action="/helpdesks/update_stage" method="post">
                                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                                         <input type="hidden" name="ticket_id" t-att-value="ticket.id"/>
+                                        <input type="hidden" name="employee_id" t-att-value="selected_employee_id or ''"/>
 
                                         <select class="filter-select" name="stage_id" onchange="this.form.submit()"
                                                 style="width:100%;max-width:100%">

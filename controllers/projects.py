@@ -8,6 +8,8 @@ from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
 
 # ========== For Projects Page  ============
 class XsellencePortal(http.Controller):
+    def _employee_query(self, employee_id):
+        return f'?employee_id={employee_id}' if employee_id else ''
     def _stage_badge_style(self, stage_name):
         normalized = (stage_name or '').strip().casefold()
         keyword_palette = [
@@ -322,6 +324,8 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/projects/details/<int:project_id>', type='http', auth='user', website=True)
     def project_details_f(self, project_id, **kw):
+        selected_employee_id = int(kw.get('employee_id') or 0)
+        employee_query = self._employee_query(selected_employee_id)
 
         request.session['last_project_id'] = project_id
 
@@ -337,13 +341,14 @@ class XsellencePortal(http.Controller):
         return request.render('xsellence_portal.project_details_page', {
             'active_menu': 'projects',
             'project': project,
+            'selected_employee_id': selected_employee_id,
             'can_manage_projects': self._can_manage_projects(),
             'project_stage_style': self._stage_badge_style(project.stage_id.name),
             'status_selection': status_selection,
             'messages': messages,
             'breadcrumb': [
-                {'name': 'Dashboard', 'url': '/dashboard'},
-                {'name': 'Projects', 'url': '/projects'},
+                {'name': 'Dashboard', 'url': f'/dashboard{employee_query}' if employee_query else '/dashboard'},
+                {'name': 'Projects', 'url': f'/projects{employee_query}' if employee_query else '/projects'},
                 {'name': 'Project Details', 'url': False}
             ]
         })
@@ -354,6 +359,8 @@ class XsellencePortal(http.Controller):
     @http.route('/project/comment/<int:project_id>', type='http', auth='user', website=True, methods=['POST'],
                 csrf=True)
     def project_comment(self, project_id, **post):
+        selected_employee_id = int(post.get('employee_id') or 0)
+        employee_query = self._employee_query(selected_employee_id)
         project = request.env['project.project'].sudo().browse(project_id)
 
         if not project.exists():
@@ -379,7 +386,7 @@ class XsellencePortal(http.Controller):
                 comment,
             )
 
-        return request.redirect('/projects/details/%s' % project.id)
+        return request.redirect(f'/projects/details/{project.id}{employee_query}')
 
 
     # ========================
@@ -387,8 +394,10 @@ class XsellencePortal(http.Controller):
     # ========================
     @http.route('/project/update_status', type='http', auth='user', csrf=True)
     def update_project_status(self, project_id=None, status=None, **kw):
+        selected_employee_id = int(kw.get('employee_id') or 0)
+        employee_query = self._employee_query(selected_employee_id)
         if not self._can_manage_projects():
-            back_url = f"/projects/details/{project_id}" if project_id else '/projects'
+            back_url = f"/projects/details/{project_id}{employee_query}" if project_id else f'/projects{employee_query}'
             return self._project_manager_only_response(back_url)
 
         project = False
@@ -398,7 +407,7 @@ class XsellencePortal(http.Controller):
         if project and stage_id:
             project.write({'stage_id': stage_id})
 
-        return request.redirect(f"/projects/details/{project_id}")
+        return request.redirect(f"/projects/details/{project_id}{employee_query}")
 
 
     # ========================

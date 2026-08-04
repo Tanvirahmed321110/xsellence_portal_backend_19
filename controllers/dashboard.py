@@ -22,6 +22,31 @@ class XsellencePortal(http.Controller):
             limit=1,
         )
 
+    def _dedupe_employees_by_user(self, employees):
+        unique_employees = request.env["hr.employee"].sudo().browse()
+        seen_user_ids = set()
+        seen_employee_ids = set()
+        for employee in employees:
+            if employee.user_id:
+                if employee.user_id.id in seen_user_ids:
+                    continue
+                seen_user_ids.add(employee.user_id.id)
+            elif employee.id in seen_employee_ids:
+                continue
+            seen_employee_ids.add(employee.id)
+            unique_employees |= employee
+        return unique_employees
+
+    def _selected_employee_scope(self, selected_employee):
+        if not selected_employee:
+            return request.env["hr.employee"].sudo().browse()
+        if selected_employee.user_id:
+            return request.env["hr.employee"].sudo().search(
+                [("user_id", "=", selected_employee.user_id.id), ("active", "=", True)],
+                order="id asc",
+            )
+        return selected_employee
+
     def _safe_model(self, model_name):
         try:
             return request.env[model_name].sudo()
@@ -186,9 +211,11 @@ class XsellencePortal(http.Controller):
         can_manage_employee_filter = self._can_manage_employee_filter(user)
         current_employee = self._current_employee(user)
         if can_manage_employee_filter:
-            active_employees = request.env["hr.employee"].sudo().search(
-                [("active", "=", True)],
-                order="name asc",
+            active_employees = self._dedupe_employees_by_user(
+                request.env["hr.employee"].sudo().search(
+                    [("active", "=", True), ("user_id", "!=", False)],
+                    order="name asc",
+                )
             )
         else:
             active_employees = current_employee
@@ -199,6 +226,7 @@ class XsellencePortal(http.Controller):
             can_manage_employee_filter,
         )
         selected_user = selected_employee.user_id if selected_employee and selected_employee.user_id else False
+        selected_employee_scope = self._selected_employee_scope(selected_employee)
 
         is_admin = user.has_group("xsellence_portal.group_admin")
         is_project_manager = user.has_group("xsellence_portal.group_project_manager")
@@ -237,10 +265,10 @@ class XsellencePortal(http.Controller):
             task_domain = [("id", "=", 0), ("create_uid.login", "!=", "__system__")]
             project_domain = [("id", "=", 0)]
 
-        if selected_employee and selected_user:
-            timesheet_domain = ["|", ("employee_id", "=", selected_employee.id), ("user_id", "=", selected_user.id)]
-        elif selected_employee:
-            timesheet_domain = [("employee_id", "=", selected_employee.id)]
+        if selected_employee_scope and selected_user:
+            timesheet_domain = ["|", ("employee_id", "in", selected_employee_scope.ids), ("user_id", "=", selected_user.id)]
+        elif selected_employee_scope:
+            timesheet_domain = [("employee_id", "in", selected_employee_scope.ids)]
         elif selected_user:
             timesheet_domain = [("user_id", "=", selected_user.id)]
         else:
@@ -285,14 +313,14 @@ class XsellencePortal(http.Controller):
         ticket_new = 0
         ticket_solve = 0
 
-        if selected_employee:
+        if selected_employee_scope:
             ticket_new = HelpdeskTicket.search_count([
-                ("employee_ids", "in", [selected_employee.id]),
+                ("employee_ids", "in", selected_employee_scope.ids),
                 ("stage_id.name", "=", "New"),
             ])
 
             ticket_solve = HelpdeskTicket.search_count([
-                ("employee_ids", "in", [selected_employee.id]),
+                ("employee_ids", "in", selected_employee_scope.ids),
                 ("stage_id.name", "=", "Solved"),
             ])
 
@@ -302,10 +330,10 @@ class XsellencePortal(http.Controller):
         worked_days = 0
         attendance_ratio = 0.0
 
-        if Attendance and selected_employee:
+        if Attendance and selected_employee_scope:
             yearly_attendances = Attendance.search(
                 [
-                    ("employee_id", "=", selected_employee.id),
+                    ("employee_id", "in", selected_employee_scope.ids),
                     ("check_in", "!=", False),
                     ("check_in", ">=", datetime.combine(start_year, time.min)),
                     ("check_in", "<", datetime.combine(next_year, time.min)),
@@ -351,9 +379,9 @@ class XsellencePortal(http.Controller):
         daily_average_hours = month_hours / worked_days if worked_days else 0.0
         today_duration_text = self._format_hours(daily_average_hours, 1)
 
-        if Attendance and selected_employee:
+        if Attendance and selected_employee_scope:
             today_attendances = Attendance.search(
-                [("employee_id", "=", selected_employee.id), ("check_in", "!=", False)],
+                [("employee_id", "in", selected_employee_scope.ids), ("check_in", "!=", False)],
                 order="check_in desc",
                 limit=200,
             ).filtered(lambda attendance: self._local_date(attendance.check_in) == today)
