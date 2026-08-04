@@ -3326,7 +3326,10 @@ aside .sidebar-bottom {
     z-index: 12;
     line-height: 1.45;
 }
-
+.proj-card {
+    max-width:500px;
+    width:100%;
+}
 
 @media (max-width:1539px) {
     .tasks,.projects {
