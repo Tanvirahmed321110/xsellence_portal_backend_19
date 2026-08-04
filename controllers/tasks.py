@@ -1,6 +1,6 @@
 from odoo import http
 from odoo.http import request
-from datetime import date
+from datetime import date, datetime
 from odoo.tools import html2plaintext
 from markupsafe import Markup, escape
 from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
@@ -41,6 +41,19 @@ class XsellencePortal(http.Controller):
             user.has_group('xsellence_portal.group_project_manager')
             or user.has_group('xsellence_portal.group_admin')
         )
+
+    def _is_completed_stage(self, stage_name):
+        normalized = (stage_name or '').strip().casefold()
+        return any(keyword in normalized for keyword in ('done', 'complete', 'completed', 'closed', 'finish'))
+
+    def _to_date(self, value):
+        if isinstance(value, datetime):
+            return value.date()
+        return value
+
+    def _is_task_overdue(self, task):
+        deadline_date = self._to_date(task.date_deadline)
+        return bool(deadline_date and deadline_date < date.today() and not self._is_completed_stage(task.stage_id.name))
 
     def _task_manager_only_response(self, back_url='/tasks'):
         return request.render('xsellence_portal.error_page', {
@@ -176,9 +189,12 @@ class XsellencePortal(http.Controller):
 
 
 
+        overdue_task_ids = {task.id for task in tasks if self._is_task_overdue(task)}
+
         return request.render('xsellence_portal.tasks_page', {
             'active_menu': 'tasks',
             'tasks': tasks,
+            'overdue_task_ids': overdue_task_ids,
             'statuses': statuses,
             'task_stage_styles': {task.id: self._stage_badge_style(task.stage_id.name) for task in tasks},
             'can_manage_tasks': self._can_manage_tasks(),

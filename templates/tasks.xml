@@ -94,8 +94,12 @@
                     <div class="view-panel visible" id="panel-grid">
                         <div class="grid-5 grid-lg-4 grid-md-2 gap-lg-4 gap-4  grid-sm-2 row-gap-lg-6 row-gap-sm-4 grid-md-2 tasks mt-6 mt-sm-5 gap-sm-2">
                             <t t-foreach="tasks" t-as="task">
+                                <t t-set="is_overdue" t-value="task.id in overdue_task_ids"/>
                                 <!--================||   Single Task Card here ||===============-->
-                                <div class="proj-card task-card">
+                                <div t-attf-class="proj-card task-card #{'overdue' if is_overdue else ''}">
+                                    <t t-if="is_overdue">
+                                        <div class="overdue-batch">overdue</div>
+                                    </t>
                                     <div class="card-banner"> </div>
                                     <div class="card-body">
                                         <div class="card-top">
