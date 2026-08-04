@@ -225,26 +225,6 @@
                                                 </svg>
                                             </a>
 
-                                            <t t-if="can_manage_tasks">
-                                                <!-- Delete button -->
-                                                <form method="post" action="/task/delete">
-                                                    <input type="hidden" name="csrf_token"
-                                                           t-att-value="request.csrf_token()"/>
-                                                    <input type="hidden" name="task_id" t-att-value="task.id"/>
-                                                    <button type="button" class="action-btn del"
-                                                            onclick="return openDeleteModal(this)">
-                                                        <svg width="12" height="12" viewBox="0 0 24 24"
-                                                             fill="none" stroke="currentColor" stroke-width="2"
-                                                             stroke-linecap="round" stroke-linejoin="round">
-                                                            <polyline points="3 6 5 6 21 6"/>
-                                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                                            <path d="M10 11v6"/>
-                                                            <path d="M14 11v6"/>
-                                                            <path d="M9 6V4h6v2"/>
-                                                        </svg>
-                                                    </button>
-                                                </form>
-                                            </t>
                                         </div>
                                     </div>
 

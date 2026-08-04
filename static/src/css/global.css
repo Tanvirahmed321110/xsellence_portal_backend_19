@@ -2725,7 +2725,10 @@ aside .sidebar-bottom {
     background-color: var(--color-secondary-hover);
 }
 
-
+.tasks,.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+}
 /* Tags row */
 .proj-card .card-tags {
     display: flex;
@@ -3324,6 +3327,10 @@ aside .sidebar-bottom {
 
 
 @media (max-width:1439px) {
+    .tasks,.projects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(246px, 1fr));
+    }
     .sts {
         display: inline-flex;
         align-items: center;
@@ -3339,15 +3346,15 @@ aside .sidebar-bottom {
     }
 
     aside {
-        width: 250px;
+        width: 260px;
         padding-right: 0;
         padding-top: 0;
         background-color: transparent;
     }
 
     .main-content {
-        width: calc(100% - 250px);
-        margin-left: 250px;
+        width: calc(100% - 260px);
+        margin-left: 260px;
         padding: 28px;
         padding-left: 32px;
         height: calc(100dvh - 113px);
@@ -3358,7 +3365,6 @@ aside .sidebar-bottom {
     }
 
     .proj-card {
-        overflow: unset;
         border-radius: 10px;
     }
 
@@ -3518,13 +3524,29 @@ aside .sidebar-bottom {
         padding-top: 4px;
         height: 178px;
     }
-
-
 }
 
 
 /*===================|| For Mobile Responsive ||====================*/
 @media (max-width:767px) {
+.projects-search {
+   flex-basis: unset;
+}
+.tasks, .projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.proj-card.overdue .overdue-batch {
+    position: absolute;
+    top: 17px;
+    right: -8px;
+    width: 84px;
+    text-align: center;
+    transform: rotate(42deg);
+    background: linear-gradient(90deg, #ff6b6b, #b91d1d);
+    color: #fff;
+    font-size: 11px;
+}
     .task-card .timesheet {
         padding: 0 10px;
         padding-bottom: 10px;

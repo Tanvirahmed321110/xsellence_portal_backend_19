@@ -12,8 +12,8 @@
                 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet"/>
                 <link rel="stylesheet" href="/xsellence_portal/static/src/css/custom_class.css?v=100"/>
                 <link rel="stylesheet" href="/xsellence_portal/static/src/css/my_component.css?v=100"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=100"/>
-                <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=101"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/global.css?v=101"/>
+                <link rel="stylesheet" href="/xsellence_portal/static/src/css/pages.css?v=102"/>
                         <t t-raw="header"/>
             </head>
 
