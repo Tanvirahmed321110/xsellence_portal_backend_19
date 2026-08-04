@@ -43,6 +43,13 @@ class XsellencePortal(http.Controller):
             or user.has_group('xsellence_portal.group_admin')
         )
 
+    def _is_completed_stage(self, stage_name):
+        normalized = (stage_name or '').strip().casefold()
+        return any(keyword in normalized for keyword in ('done', 'complete', 'completed', 'closed', 'finish'))
+
+    def _is_project_overdue(self, project):
+        return bool(project.date and project.remaining_days < 0 and not self._is_completed_stage(project.stage_id.name))
+
     def _project_manager_only_response(self, back_url='/projects'):
         return request.render('xsellence_portal.error_page', {
             'error_title': 'Access Denied',
@@ -153,9 +160,12 @@ class XsellencePortal(http.Controller):
 
         statuses = self._get_project_stages()
 
+        overdue_project_ids = {project.id for project in projects if self._is_project_overdue(project)}
+
         return request.render('xsellence_portal.projects_page', {
             'active_menu': 'projects',
             'projects': projects,
+            'overdue_project_ids': overdue_project_ids,
             'statuses': statuses,
             'project_stage_styles': {project.id: self._stage_badge_style(project.stage_id.name) for project in projects},
             'can_manage_projects': self._can_manage_projects(),

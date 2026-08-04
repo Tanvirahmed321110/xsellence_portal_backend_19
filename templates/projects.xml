@@ -98,7 +98,12 @@
 
                             <!--================||   Single Project Card here ||===============-->
                             <t t-foreach="projects" t-as="project">
-                                 <div class="proj-card">
+                                <t t-set="is_overdue" t-value="project.id in overdue_project_ids"/>
+
+                                <div t-attf-class="proj-card #{'overdue' if is_overdue else ''}">
+                                    <t t-if="is_overdue">
+                                        <div class="overdue-batch">overdue</div>
+                                    </t>
 
                                     <div class="card-banner"> </div>
                                     <div class="card-body">

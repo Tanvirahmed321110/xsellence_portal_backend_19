@@ -2629,8 +2629,8 @@ aside .sidebar-bottom {
 
 .proj-card.overdue .overdue-batch {
     position: absolute;
-    top: 14px;
-    right: -41px;
+    top: 24px;
+    right: -33px;
     width: 140px;
     text-align: center;
     transform: rotate(42deg);
@@ -2640,6 +2640,8 @@ aside .sidebar-bottom {
     font-weight: 400;
     padding: 4px 0;
     z-index: 3;
+    text-transform: uppercase;
+    letter-spacing:.8px;
 }
 
 .proj-card:hover {
