@@ -8,6 +8,20 @@ from odoo.http import request
 class XsellencePortal(http.Controller):
     _APPROVED_LEAVE_STATES = ("validate", "validate1")
 
+    def _can_manage_employee_filter(self, user=None):
+        user = user or request.env.user
+        return (
+            user.has_group("xsellence_portal.group_admin")
+            or user.has_group("xsellence_portal.group_project_manager")
+        )
+
+    def _current_employee(self, user=None):
+        user = user or request.env.user
+        return request.env["hr.employee"].sudo().search(
+            [("user_id", "=", user.id)],
+            limit=1,
+        )
+
     def _safe_model(self, model_name):
         try:
             return request.env[model_name].sudo()
@@ -52,15 +66,11 @@ class XsellencePortal(http.Controller):
             current += timedelta(days=1)
         return total
 
-    def _resolve_selected_employee(self, active_employees, employee_param):
-        current_user = request.env.user
-        current_employee = request.env["hr.employee"].sudo().search(
-            [("user_id", "=", current_user.id)],
-            limit=1,
-        )
+    def _resolve_selected_employee(self, active_employees, employee_param, can_manage=False):
+        current_employee = self._current_employee()
 
         selected_employee = False
-        if employee_param and str(employee_param).isdigit():
+        if can_manage and employee_param and str(employee_param).isdigit():
             candidate_id = int(employee_param)
             selected_employee = active_employees.filtered(lambda employee: employee.id == candidate_id)[:1]
 
@@ -173,14 +183,20 @@ class XsellencePortal(http.Controller):
     def dashboard_f(self, **kw):
         user = request.env.user
         today = fields.Date.context_today(user)
-        active_employees = request.env["hr.employee"].sudo().search(
-            [("active", "=", True)],
-            order="name asc",
-        )
+        can_manage_employee_filter = self._can_manage_employee_filter(user)
+        current_employee = self._current_employee(user)
+        if can_manage_employee_filter:
+            active_employees = request.env["hr.employee"].sudo().search(
+                [("active", "=", True)],
+                order="name asc",
+            )
+        else:
+            active_employees = current_employee
 
         current_employee, selected_employee = self._resolve_selected_employee(
             active_employees,
             kw.get("employee_id"),
+            can_manage_employee_filter,
         )
         selected_user = selected_employee.user_id if selected_employee and selected_employee.user_id else False
 
@@ -242,9 +258,7 @@ class XsellencePortal(http.Controller):
         ]
 
         login_user_total_tasks = Task.search_count(login_user_task_domain)
-        login_user_completed_tasks = Task.search_count(
-            login_user_task_domain + [("custom_status", "=", "completed")]
-        )
+        login_user_completed_tasks = Task.search_count(login_user_task_domain + [("custom_status", "=", "completed")])
 
         total_tasks = Task.search_count(task_domain)
         completed_tasks = Task.search_count(task_domain + [("custom_status", "=", "completed")])
@@ -271,14 +285,14 @@ class XsellencePortal(http.Controller):
         ticket_new = 0
         ticket_solve = 0
 
-        if current_employee:
+        if selected_employee:
             ticket_new = HelpdeskTicket.search_count([
-                ("employee_ids", "in", [current_employee.id]),
+                ("employee_ids", "in", [selected_employee.id]),
                 ("stage_id.name", "=", "New"),
             ])
 
             ticket_solve = HelpdeskTicket.search_count([
-                ("employee_ids", "in", [current_employee.id]),
+                ("employee_ids", "in", [selected_employee.id]),
                 ("stage_id.name", "=", "Solved"),
             ])
 
@@ -491,6 +505,7 @@ class XsellencePortal(http.Controller):
                 "is_admin": is_admin,
                 "is_project_manager": is_project_manager,
                 "is_general_employee": is_general_employee,
+                "can_manage_employee_filter": can_manage_employee_filter,
                 "current_employee": current_employee,
                 "active_employees": active_employees,
                 **dashboard_context,

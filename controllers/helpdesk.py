@@ -4,6 +4,35 @@ from datetime import date
 from ..utilitis.pagination import get_pager
 
 class XsellencePortalHelpdesk(http.Controller):
+    def _can_manage_employee_filter(self):
+        user = request.env.user
+        return (
+            user.has_group('xsellence_portal.group_project_manager')
+            or user.has_group('xsellence_portal.group_admin')
+        )
+
+    def _current_employee(self, user=None):
+        user = user or request.env.user
+        return request.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)],
+            limit=1,
+        )
+
+    def _resolve_selected_employee(self, raw_employee_id):
+        user = request.env.user
+        current_employee = self._current_employee(user)
+        selected_employee_id = int(raw_employee_id or 0)
+
+        if not self._can_manage_employee_filter():
+            return current_employee, current_employee.id if current_employee else 0
+
+        if selected_employee_id:
+            employee = request.env['hr.employee'].sudo().browse(selected_employee_id)
+            if employee.exists():
+                return employee, employee.id
+
+        return current_employee, current_employee.id if current_employee else 0
+
     @staticmethod
     def _ticket_priorities(ticket_model):
         field = ticket_model._fields.get('priority')
@@ -32,8 +61,8 @@ class XsellencePortalHelpdesk(http.Controller):
         return priority_keys[0] if priority_keys else False
 
     @staticmethod
-    def _get_visible_ticket_domain(user):
-        employee = request.env['hr.employee'].sudo().search(
+    def _get_visible_ticket_domain(user, employee=False):
+        employee = employee or request.env['hr.employee'].sudo().search(
             [('user_id', '=', user.id)],
             limit=1,
         )
@@ -48,7 +77,8 @@ class XsellencePortalHelpdesk(http.Controller):
     def helpdesk_f(self, **kw):
         user = request.env.user
         Ticket = request.env['helpdesk.ticket'].sudo()
-        domain = self._get_visible_ticket_domain(user)
+        selected_employee, selected_employee_id = self._resolve_selected_employee(kw.get('employee_id'))
+        domain = self._get_visible_ticket_domain(user, selected_employee)
         search = (kw.get('search') or '').strip()
         selected_project_id = int(kw.get('project_id') or 0)
         selected_stage_id = int(kw.get('stage_id') or 0)
@@ -72,6 +102,7 @@ class XsellencePortalHelpdesk(http.Controller):
             per_page=per_page,
             url_args={
                 'search': search,
+                'employee_id': selected_employee_id if selected_employee_id else '',
                 'project_id': selected_project_id if selected_project_id else '',
                 'stage_id': selected_stage_id if selected_stage_id else '',
             },
@@ -111,6 +142,7 @@ class XsellencePortalHelpdesk(http.Controller):
             'projects': projects,
             'stages': stages,
             'search': search,
+            'selected_employee_id': selected_employee_id,
             'selected_project_id': selected_project_id,
             'selected_stage_id': selected_stage_id,
         })

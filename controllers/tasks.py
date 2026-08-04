@@ -42,6 +42,28 @@ class XsellencePortal(http.Controller):
             or user.has_group('xsellence_portal.group_admin')
         )
 
+    def _current_employee(self, user=None):
+        user = user or request.env.user
+        return request.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)],
+            limit=1,
+        )
+
+    def _resolve_selected_employee(self, raw_employee_id):
+        user = request.env.user
+        current_employee = self._current_employee(user)
+        selected_employee_id = int(raw_employee_id or 0)
+
+        if not self._can_manage_tasks():
+            return current_employee, current_employee.id if current_employee else 0
+
+        if selected_employee_id:
+            employee = request.env['hr.employee'].sudo().browse(selected_employee_id)
+            if employee.exists():
+                return employee, employee.id
+
+        return current_employee, current_employee.id if current_employee else 0
+
     def _is_completed_stage(self, stage_name):
         normalized = (stage_name or '').strip().casefold()
         return any(keyword in normalized for keyword in ('done', 'complete', 'completed', 'closed', 'finish'))
@@ -139,8 +161,7 @@ class XsellencePortal(http.Controller):
         user = request.env.user
         status = kw.get('status')
         search = (kw.get('search') or '').strip()
-        selected_employee_id = int(kw.get('employee_id') or 0)
-        selected_employee = request.env['hr.employee'].sudo().browse(selected_employee_id) if selected_employee_id else False
+        selected_employee, selected_employee_id = self._resolve_selected_employee(kw.get('employee_id'))
         selected_user = selected_employee.user_id if selected_employee and selected_employee.exists() and selected_employee.user_id else False
 
         domain = self._get_visible_task_domain(user=user, selected_user=selected_user)

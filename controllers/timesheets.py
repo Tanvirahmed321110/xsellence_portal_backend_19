@@ -6,6 +6,35 @@ from odoo.addons.xsellence_portal.utilitis.pagination import get_pager
 
 
 class XsellencePortal(http.Controller):
+    def _can_manage_employee_filter(self):
+        user = request.env.user
+        return (
+            user.has_group('xsellence_portal.group_project_manager')
+            or user.has_group('xsellence_portal.group_admin')
+        )
+
+    def _current_employee(self, user=None):
+        user = user or request.env.user
+        return request.env['hr.employee'].sudo().search(
+            [('user_id', '=', user.id)],
+            limit=1,
+        )
+
+    def _resolve_selected_employee(self, raw_employee_id):
+        user = request.env.user
+        current_employee = self._current_employee(user)
+        selected_employee_id = int(raw_employee_id or 0)
+
+        if not self._can_manage_employee_filter():
+            return current_employee, current_employee.id if current_employee else 0
+
+        if selected_employee_id:
+            employee = request.env['hr.employee'].sudo().browse(selected_employee_id)
+            if employee.exists():
+                return employee, employee.id
+
+        return current_employee, current_employee.id if current_employee else 0
+
     def _get_visible_task_domain(self):
         return [('create_uid.login', '!=', '__system__')]
 
@@ -54,12 +83,11 @@ class XsellencePortal(http.Controller):
 
         today = date.today().strftime('%Y-%m-%d')
 
-        selected_employee_id = int(kw.get('employee_id') or 0)
+        selected_employee, selected_employee_id = self._resolve_selected_employee(kw.get('employee_id'))
         selected_project_id = int(kw.get('project_id') or 0)
         selected_start_date = kw.get('start_date', '')
         selected_end_date = kw.get('end_date', '')
 
-        selected_employee = request.env['hr.employee'].sudo().browse(selected_employee_id) if selected_employee_id else False
         selected_user = selected_employee.user_id if selected_employee and selected_employee.exists() and selected_employee.user_id else False
 
         if selected_employee and selected_user:
