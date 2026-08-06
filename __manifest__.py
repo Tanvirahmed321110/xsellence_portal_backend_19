@@ -57,6 +57,7 @@
         "report/user_report_templates.xml",
         "report/user_report_action.xml",
         'report/product_report_templates.xml',
+        'report/pending_project_report.xml',
     ],
     "assets": {
         "web.assets_backend": [

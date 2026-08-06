@@ -8,7 +8,25 @@
             <div class="flex-between align-center gap-1 flex-wrap n-btn-wrap">
                 <t t-call="xsellence_portal.breadcrumb_component"/>
                 <t t-if="can_manage_tasks">
-                    <a t-att-href="'/add_task?source=tasks%s' % employee_query_suffix" class="btn btn-primary">Add New Task +</a>
+                    <a t-att-href="'/add_task?source=tasks%s' % employee_query_suffix"
+                       class="btn btn-primary shadow add-btn">
+                        <span class="add-btn-icon">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="18"
+                                 height="18"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <path d="M5 12h14"/>
+                                <path d="m13 6 6 6-6 6"/>
+                            </svg>
+                        </span>
+                        <span class="add-btn-text">Add New Task +</span>
+                    </a>
                 </t>
             </div>
 
@@ -100,7 +118,7 @@
                                     <t t-if="is_overdue">
                                         <div class="overdue-batch">overdue</div>
                                     </t>
-                                    <div class="card-banner"> </div>
+                                    <div class="card-banner"></div>
                                     <div class="card-body">
                                         <div class="card-top">
                                             <div class="card-title-wrap">
@@ -248,26 +266,26 @@
 
                     <!-- =====  Delete Modal  ===== -->
                     <t t-if="can_manage_tasks">
-                    <div class="modal-overlay " id="deleteModal">
-                        <div class="modal-container">
-                            <div class="glass-icon">🗑️</div>
-                            <h3>Delete Task?</h3>
-                            <p>
-                                This action cannot be undone.
-                                <br/>
-                                The task will be permanently removed.
-                            </p>
+                        <div class="modal-overlay " id="deleteModal">
+                            <div class="modal-container">
+                                <div class="glass-icon">🗑️</div>
+                                <h3>Delete Task?</h3>
+                                <p>
+                                    This action cannot be undone.
+                                    <br/>
+                                    The task will be permanently removed.
+                                </p>
 
-                            <div class="glass-actions">
-                                <button type="button" id="confirmYes" class="btn-glass-yes">
-                                    Yes, Delete
-                                </button>
-                                <button class="btn-glass-no" onclick="closeModal('deleteModal')">
-                                    Cancel
-                                </button>
+                                <div class="glass-actions">
+                                    <button type="button" id="confirmYes" class="btn-glass-yes">
+                                        Yes, Delete
+                                    </button>
+                                    <button class="btn-glass-no" onclick="closeModal('deleteModal')">
+                                        Cancel
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </t>
 
                     <!--==============================|| List View All Projects Here ||============================-->
@@ -297,7 +315,8 @@
                                                     <input type="hidden" name="task_id" t-att-value="task.id"/>
                                                     <input type="hidden" name="redirect_url"
                                                            t-att-value="request.httprequest.referrer"/>
-                                                    <select class="filter-select" name="status" onchange="this.form.submit()">
+                                                    <select class="filter-select" name="status"
+                                                            onchange="this.form.submit()">
                                                         <t t-foreach="statuses" t-as="status">
                                                             <option t-att-value="status.id"
                                                                     t-att-selected="task.stage_id.id == status.id">
@@ -335,7 +354,7 @@
 
 
                 <!--================ When task empty ===============-->
-                 <t t-if="not tasks">
+                <t t-if="not tasks">
                     <div class="design-wrapper  mt-7" id="error-container">
                         <div class="empty-4">
                             <div class="e4-glass">
@@ -367,39 +386,41 @@
             </section>
             <script type="text/javascript">
                 function applyTaskFilters() {
-                    const wrapper = document.querySelector(".projects-wrap");
-                    const status = document.getElementById("filter-status") ? document.getElementById("filter-status").value : "";
-                    const search = document.getElementById("task-search") ? document.getElementById("task-search").value : "";
-                    const params = new URLSearchParams(window.location.search);
-                    const employeeId = wrapper ? (wrapper.dataset.employeeId || "") : "";
-                    const projectId = wrapper ? (wrapper.dataset.projectId || "") : "";
+                const wrapper = document.querySelector(".projects-wrap");
+                const status = document.getElementById("filter-status") ? document.getElementById("filter-status").value
+                : "";
+                const search = document.getElementById("task-search") ? document.getElementById("task-search").value :
+                "";
+                const params = new URLSearchParams(window.location.search);
+                const employeeId = wrapper ? (wrapper.dataset.employeeId || "") : "";
+                const projectId = wrapper ? (wrapper.dataset.projectId || "") : "";
 
-                    if (status) {
-                        params.set("status", status);
-                    } else {
-                        params.delete("status");
-                    }
+                if (status) {
+                params.set("status", status);
+                } else {
+                params.delete("status");
+                }
 
-                    if (search) {
-                        params.set("search", search);
-                    } else {
-                        params.delete("search");
-                    }
+                if (search) {
+                params.set("search", search);
+                } else {
+                params.delete("search");
+                }
 
-                    if (employeeId) {
-                        params.set("employee_id", employeeId);
-                    } else {
-                        params.delete("employee_id");
-                    }
+                if (employeeId) {
+                params.set("employee_id", employeeId);
+                } else {
+                params.delete("employee_id");
+                }
 
-                    if (projectId) {
-                        params.set("project_id", projectId);
-                    } else {
-                        params.delete("project_id");
-                    }
+                if (projectId) {
+                params.set("project_id", projectId);
+                } else {
+                params.delete("project_id");
+                }
 
-                    const queryString = params.toString();
-                    window.location.href = queryString ? "/tasks?" + queryString : "/tasks";
+                const queryString = params.toString();
+                window.location.href = queryString ? "/tasks?" + queryString : "/tasks";
                 }
             </script>
         </t>

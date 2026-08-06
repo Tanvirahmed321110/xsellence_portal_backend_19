@@ -12,7 +12,25 @@
             <div class="flex-between align-center gap-1 flex-wrap n-btn-wrap">
                 <t t-call="xsellence_portal.breadcrumb_component"/>
                 <t t-if="can_manage_projects">
-                    <a t-att-href="'/create_project?source=projects%s' % employee_query_suffix" class="btn btn-primary">Create Project +</a>
+                    <a t-att-href="'/create_project?source=projects%s' % employee_query_suffix" class="btn add-btn btn-primary shadow">
+
+                        <span class="add-btn-icon">
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="18"
+                                 height="18"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <path d="M5 12h14"/>
+                                <path d="m13 6 6 6-6 6"/>
+                            </svg>
+                        </span>
+                        <span class="add-btn-text">  Create Project +</span>
+                    </a>
                 </t>
             </div>
 

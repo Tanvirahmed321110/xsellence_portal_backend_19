@@ -1739,6 +1739,48 @@ body.dark-theme .profile .main-info .manager-msg-btn {
     }
 }
 
+.add-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    min-width: 130px;
+    transition: all 0.3s ease;
+}
+
+.add-btn-text {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+.add-btn-icon {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    transform: translateX(-40px);
+
+    transition: all 0.3s ease;
+}
+.add-btn:hover {
+     transform:translateY(4px)
+}
+.add-btn:hover .add-btn-text {
+    opacity: 0;
+    transform: translateY(-16px);
+}
+
+.add-btn:hover .add-btn-icon {
+    opacity: 1;
+    transform: translateX(0);
+}
+.shadow{
+    box-shadow: rgba(0, 0, 0, 0.5) 1px 10px 40px -7px;
+}
 @media (max-width:1080px){
     .profile .main-info {
         display: grid;

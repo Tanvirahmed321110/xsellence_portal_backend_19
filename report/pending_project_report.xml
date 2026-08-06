@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_pending_project" model="ir.actions.report">
+        <field name="name"> Pending Project </field>
+        <field name="model">project.project</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">xsellence_portal.report_pending_project_document</field>
+        <field name="report_file">xsellence_portal.report_pending_project_document</field>
+        <field name="binding_model_id" ref="project.model_project_project"/>
+        <field name="print_report_name">'Pending Projects'</field>
+    </record>
+
+    <template id="report_pending_project_document">
+        <t t-call="web.html_container">
+
+            <t t-call="web.external_layout">
+                <div class="page">
+                     <style>
+                        td{
+                            padding:4px;
+                        }
+                    </style>
+                    <h2 class="text-center" style="font-weight:bold">Pending Projects</h2>
+                    <p class="text-center text-muted" style="margin-bottom: 24px;">
+                        Status: Planning
+                    </p>
+
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr style="background-color:#f1f1f1;">
+                                <th>Project Name</th>
+                                <th>Company</th>
+                                <th>Assigned Member</th>
+                                <th>Assign Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="project">
+                                <tr>
+                                    <td>
+                                        <span t-field="project.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="project.company_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="project.user_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="project.create_date" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <p t-if="not docs">No pending projects found.</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

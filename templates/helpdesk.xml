@@ -54,7 +54,7 @@
                             </t>
                         </select>
 
-                        <a t-att-href="'/helpdesks/create_ticket?employee_id=%s' % selected_employee_id if selected_employee_id else '/helpdesks/create_ticket'" class="btn btn-primary">Create Ticket
+                        <a t-att-href="'/helpdesks/create_ticket?employee_id=%s' % selected_employee_id if selected_employee_id else '/helpdesks/create_ticket'" class="btn shadow btn-primary">Create Ticket
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  width="16"
                                  height="14"
