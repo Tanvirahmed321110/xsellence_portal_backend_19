@@ -3359,6 +3359,7 @@ body.dark-theme .proj-card.overdue .card-footer {
 }
 
 @media (max-width:1539px) {
+
     .tasks,.projects {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(246px, 1fr));
@@ -3558,7 +3559,11 @@ body.dark-theme .proj-card.overdue .card-footer {
     }
 }
 
-
+@media (max-width:1080px){
+    .timesheets .table-wrap {
+        overflow: auto !important;
+    }
+}
 /*===================|| For Mobile Responsive ||====================*/
 @media (max-width:767px) {
 .projects-search {
