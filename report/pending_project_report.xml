@@ -9,6 +9,7 @@
         <field name="report_file">xsellence_portal.report_pending_project_document</field>
         <field name="binding_model_id" ref="project.model_project_project"/>
         <field name="print_report_name">'Pending Projects'</field>
+        <field name="binding_type">report</field>
     </record>
 
     <template id="report_pending_project_document">
@@ -18,7 +19,7 @@
                 <div class="page">
                      <style>
                         td{
-                            padding:4px;
+                            padding:4px !important;
                         }
                     </style>
                     <h2 class="text-center" style="font-weight:bold">Pending Projects</h2>

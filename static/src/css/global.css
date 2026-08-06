@@ -3036,6 +3036,36 @@ body.dark-theme .proj-card.overdue .card-footer {
 .projects>*:nth-child(12),
 .tasks>*:nth-child(12) {
     animation-delay: 1.2s;
+}.projects>*:nth-child(12),
+.tasks>*:nth-child(12) {
+    animation-delay: 1.25s;
+}.projects>*:nth-child(13),
+.tasks>*:nth-child(13) {
+    animation-delay: 1.3s;
+}.projects>*:nth-child(14),
+.tasks>*:nth-child(14) {
+    animation-delay: 1.35s;
+}.projects>*:nth-child(15),
+.tasks>*:nth-child(15) {
+    animation-delay: 1.4s;
+}.projects>*:nth-child(16),
+.tasks>*:nth-child(16) {
+    animation-delay: 1.45s;
+}.projects>*:nth-child(17),
+.tasks>*:nth-child(17) {
+    animation-delay: 1.5s;
+}.projects>*:nth-child(18),
+.tasks>*:nth-child(18) {
+    animation-delay: 1.55s;
+}.projects>*:nth-child(19),
+.tasks>*:nth-child(19) {
+    animation-delay: 1.6s;
+}.projects>*:nth-child(19),
+.tasks>*:nth-child(20) {
+    animation-delay: 1.65s;
+}.projects>*:nth-child(20),
+.tasks>*:nth-child(20) {
+    animation-delay: 1.7s;
 }
 
 @keyframes fadeUp {
